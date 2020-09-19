@@ -1019,7 +1019,7 @@ namespace AimsharpWow.Modules {
 							return true;
 						}
 
-						if (Rage >= 60 && Aimsharp.CanCast("Slam")) {
+						if (Rage >= 50 && Aimsharp.CanCast("Slam")) {
 							Aimsharp.Cast("Slam");
 							return true;
 						}
