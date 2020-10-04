@@ -637,7 +637,7 @@ namespace AimsharpWow.Modules {
 								}
 							}
 
-							if (BuffDeadlyCalmUp
+							
 							if (MajorPower!= "Memory of Lucid Dreams" || BuffMemoryOfLucidDreamsUp || CDMemoryOfLucidDreamsRemains > 10000) {
 								
 								if (!TalentWarbreaker) {
