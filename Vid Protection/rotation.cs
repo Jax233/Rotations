@@ -219,6 +219,7 @@ namespace AimsharpWow.Modules
             int BuffRecklessForceRemains = Aimsharp.BuffRemaining("Reckless Force") - GCD;
             bool BuffRecklessForceUp = BuffRecklessForceRemains > 0;
             int BuffRecklessForceStacks = Aimsharp.BuffStacks("Reckless Force");
+            bool IgnorePainUP = Aimsharp.HasBuff("Ignore Pain");
 
             int Rage = Aimsharp.Power("player");
             int MaxRage = Aimsharp.PlayerMaxPower();
@@ -337,7 +338,7 @@ namespace AimsharpWow.Modules
 
                 //actions+=/ignore_pain,if=rage.deficit<25+20*talent.booming_voice.enabled*cooldown.demoralizing_shout.ready
                 if (Aimsharp.CanCast("Ignore Pain", "player")) {
-                    if ((RageDefecit < 25 + 20 * (TalentBoomingVoice ? 1 : 0) * (CDDemoralizingShoutReady ? 1 : 0)) || PlayerHealth >= GetSlider("Use Ignore Pain for survival @ HP%")) {
+                    if ((RageDefecit < 25 + 20 * (TalentBoomingVoice ? 1 : 0) * (CDDemoralizingShoutReady ? 1 : 0)) || PlayerHealth <= GetSlider("Use Ignore Pain for survival @ HP%") && !IgnorePainUP) {
                         Aimsharp.Cast("Ignore Pain");
                         return true;
                     }
