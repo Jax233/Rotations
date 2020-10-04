@@ -114,7 +114,7 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Intimidating Shout");
             Spellbook.Add("Shockwave");
             Spellbook.Add("Storm Bolt");
-            Spellbook.Add("Rallying Cry")
+            Spellbook.Add("Rallying Cry");
 
             Buffs.Add("Bloodlust");
             Buffs.Add("Heroism");
@@ -433,6 +433,13 @@ namespace AimsharpWow.Modules
                     return true;
                 }
                 
+                / Auto Victory Rush
+                if (Aimsharp.CanCast("Victory Rush")) {
+                    if (PlayerHealth <= GetSlider("Auto Victory Rush @ HP%")) {
+                        Aimsharp.Cast("Victory Rush");
+                        return true;
+                    }
+                }
                 #region AOE
                 if (EnemiesInMelee >= 3) {
                     //actions.aoe = thunder_clap
