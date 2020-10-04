@@ -423,7 +423,7 @@ namespace AimsharpWow.Modules
                 }
 
                 // QUEUED Shockwave
-                if (CDShockwaveRemains > 25000 && ShockWave) {
+                if (CDShockwaveRemains > 15000 && ShockWave) {
                     Aimsharp.Cast("ShockWaveOff");
                     return true;
                 }
