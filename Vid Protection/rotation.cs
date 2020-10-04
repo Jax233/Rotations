@@ -433,7 +433,7 @@ namespace AimsharpWow.Modules
                     return true;
                 }
                 
-                / Auto Victory Rush
+                // Auto Victory Rush
                 if (Aimsharp.CanCast("Victory Rush")) {
                     if (PlayerHealth <= GetSlider("Auto Victory Rush @ HP%")) {
                         Aimsharp.Cast("Victory Rush");
