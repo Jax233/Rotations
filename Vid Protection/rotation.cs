@@ -589,6 +589,7 @@ namespace AimsharpWow.Modules
                     Aimsharp.Cast("Devastate");
                     return true;
                 }
+                #endregion
 
             }
 
