@@ -520,7 +520,7 @@ namespace AimsharpWow.Modules {
 			
 			#region Utility
 			// Utility
-			if (Fighting) {
+			
 				
 				// QUEUED STORMBOLT
 				if(CDStormBoltRemains > 25000 && StormBolt) {
@@ -607,7 +607,7 @@ namespace AimsharpWow.Modules {
 						return true;
 					}
 				}
-			}
+			
 			#endregion
 			
 			#region PVE Rotation
