@@ -58,11 +58,12 @@ namespace AimsharpWow.Modules {
 			Settings.Add(new Setting("Racial Power", Race, "None"));
 			Settings.Add(new Setting("Test of Might Trait?", true));
 			Settings.Add(new Setting("Mitigation"));
-			Settings.Add(new Setting("Auto Victory Rush @ HP%", 0, 100, 100));
-			Settings.Add(new Setting("Auto Shout @ HP%", 0, 100, 75));
-			Settings.Add(new Setting("Auto Die by the Sword @ HP%", 0, 100, 50));
+			Settings.Add(new Setting("Auto Victory Rush @ HP%", 0, 100, 60));
+			Settings.Add(new Setting("Auto Healthstone @ HP%", 0, 100, 25));
+			Settings.Add(new Setting("Auto Shout @ HP%", 0, 100, 15));
+			Settings.Add(new Setting("Auto Die by the Sword @ HP%", 0, 100, 0));
 			Settings.Add(new Setting("Auto Stance @ HP%", 0, 100, 30));
-			Settings.Add(new Setting("Unstance @ HP%", 0, 100, 80));
+			Settings.Add(new Setting("Unstance @ HP%", 0, 100, 70));
 		}
 		
 		string MajorPower;
@@ -498,7 +499,7 @@ namespace AimsharpWow.Modules {
 				//MEMORY OF LUCID DREAMS TODO: TTK maybe?
 				if (MajorPower == "Memory of Lucid Dreams") {
 					if (Aimsharp.CanCast("Memory of Lucid Dreams", "player")) {
-						if (CDColossusSmashRemains<=GCD) {
+						if (CDColossusSmashRemains <= (GCD+GCDMAX)) {
 							Aimsharp.Cast("Memory of Lucid Dreams");
 							return true;
 						}
@@ -523,7 +524,7 @@ namespace AimsharpWow.Modules {
 			
 				
 				// QUEUED STORMBOLT
-				if(CDStormBoltRemains > 25000 && StormBolt) {
+				if(!Aimsharp.CanCast("Storm Bolt") && StormBolt) {
 					Aimsharp.Cast("StormBoltOff");
 					return true;
 				}
@@ -535,7 +536,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED INTIMIDATING SHOUT
-				if(CDIntimidatingShoutRemains > 25000 && IntimidatingShout) {
+				if(!Aimsharp.CanCast("Intimidating Shout") && IntimidatingShout) {
 					Aimsharp.Cast("IntimidatingShoutOff");
 					return true;
 				}
@@ -547,7 +548,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED RALLYING CRY
-				if(CDRallyingCryRemains > 25000 && RallyingCry) {
+				if(!Aimsharp.CanCast("Rallying Cry") && RallyingCry) {
 					Aimsharp.Cast("RallyingCryOff");
 					return true;
 				}
@@ -559,7 +560,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED BLADESTORM
-				if(CDBladestormRemains > 25000 && Bladestorm) {
+				if(Aimsharp.CanCast("Bladestorm") > 25000 && Bladestorm) {
 					Aimsharp.Cast("BladestormOff");
 					return true;
 				}
@@ -582,6 +583,14 @@ namespace AimsharpWow.Modules {
 				if (Aimsharp.CanCast("Rallying Cry", "player")) {
 					if (PlayerHealth <= GetSlider("Auto Shout @ HP%")) {
 						Aimsharp.Cast("Rallying Cry");
+						return true;
+					}
+				}
+				
+				//Auto Healthstone
+				if (Aimsharp.CanUseItem("Healthstone")) {
+					if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
+						Aimsharp.CanUseItem("Healthstone");
 						return true;
 					}
 				}
@@ -753,7 +762,7 @@ namespace AimsharpWow.Modules {
 								return true;
 							}
 							
-							if(CDMortalStrikeRemains <= 0 && Rage >=30 ) {
+							if(CDMortalStrikeRemains <= 0 && Rage >=30 || Aimsharp.CanCast("Mortal Strike")) {
 								Aimsharp.Cast("Mortal Strike");
 								return true;
 							}
@@ -1043,6 +1052,21 @@ namespace AimsharpWow.Modules {
 			if (Aimsharp.CanCast("Battle Shout", "player") && !Aimsharp.HasBuff("Battle Shout", "player", false)) {
 				Aimsharp.Cast("Battle Shout");
 				return true;
+			}
+			
+			// Auto Defensive Stance
+			if (!Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
+				if (PlayerHealth <= GetSlider("Auto Stance @ HP%")) {
+					Aimsharp.Cast("Defensive Stance");
+					return true;
+				}
+			}
+				
+			if (Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
+				if (PlayerHealth >= GetSlider("Unstance @ HP%")) {
+					Aimsharp.Cast("Defensive Stance");
+					return true;
+				}
 			}
 			
 			
