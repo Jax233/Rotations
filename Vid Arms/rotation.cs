@@ -560,7 +560,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED BLADESTORM
-				if(Aimsharp.CanCast("Bladestorm") > 25000 && Bladestorm) {
+				if(Aimsharp.CanCast("Bladestorm") && Bladestorm) {
 					Aimsharp.Cast("BladestormOff");
 					return true;
 				}
@@ -1054,19 +1054,11 @@ namespace AimsharpWow.Modules {
 				return true;
 			}
 			
-			// Auto Defensive Stance
-			if (!Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-				if (PlayerHealth <= GetSlider("Auto Stance @ HP%")) {
-					Aimsharp.Cast("Defensive Stance");
-					return true;
-				}
-			}
-				
 			if (Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-				if (PlayerHealth >= GetSlider("Unstance @ HP%")) {
+				
 					Aimsharp.Cast("Defensive Stance");
 					return true;
-				}
+				
 			}
 			
 			
