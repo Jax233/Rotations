@@ -536,19 +536,19 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED INTIMIDATING SHOUT
-				if(!Aimsharp.CanCast("Intimidating Shout") && IntimidatingShout) {
+				if(CDStormBoltRemains > 5000 && IntimidatingShout) {
 					Aimsharp.Cast("IntimidatingShoutOff");
 					return true;
 				}
 				
-				if (IntimidatingShout && Aimsharp.CanCast("Intimidating Shout")) {
+				if (CDIntimidatingShoutRemains > 5000 && Aimsharp.CanCast("Intimidating Shout")) {
 					Aimsharp.PrintMessage("Queued Intimidating Shout");
 					Aimsharp.Cast("Intimidating Shout");
 					return true;
 				}
 				
 				// QUEUED RALLYING CRY
-				if(!Aimsharp.CanCast("Rallying Cry") && RallyingCry) {
+				if(CDRallyingCryRemains > 5000 && RallyingCry) {
 					Aimsharp.Cast("RallyingCryOff");
 					return true;
 				}
@@ -560,7 +560,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED BLADESTORM
-				if(Aimsharp.CanCast("Bladestorm") && Bladestorm) {
+				if(CDBladestormRemains > 5000 && Bladestorm) {
 					Aimsharp.Cast("BladestormOff");
 					return true;
 				}
