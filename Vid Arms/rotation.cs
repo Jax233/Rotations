@@ -89,6 +89,7 @@ namespace AimsharpWow.Modules {
 			Aimsharp.PrintMessage("/xxxxx RallyingCry --Queues Rallying Cry up to be used on the next GCD.", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx IntimidatingShout --Queues Intimidating SHout up to be used on the next GCD.", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx Bladestorm --Queues Bladestorm up to be used on the next GCD.", Color.Red);
+			Aimsharp.PrintMessage("/xxxxx DefensiveStance --Toggles on Defensive Stance", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx pvp --Toggles PVP Mode.", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx Burst --Toggles Burst for pvp on.", Color.Red);
 			
@@ -198,6 +199,8 @@ namespace AimsharpWow.Modules {
 			CustomCommands.Add("RallyingCry");
 			CustomCommands.Add("IntimidatingShout");
 			CustomCommands.Add("Bladestorm");
+			CustomCommands.Add("DefensiveStance");
+
 			#endregion
 		}
 		
@@ -245,6 +248,7 @@ namespace AimsharpWow.Modules {
 			bool IntimidatingShout = Aimsharp.IsCustomCodeOn("IntimidatingShout");
 			bool Bladestorm = Aimsharp.IsCustomCodeOn("Bladestorm");
 			bool Burst = Aimsharp.IsCustomCodeOn("Burst");
+			bool DefensiveStanceToggle = Aimsharp.IsCustomCodeOn("DefensiveStance");
 			#endregion
 			
 			#region CooldownsSetup
@@ -604,14 +608,14 @@ namespace AimsharpWow.Modules {
 				}
 				
 				if (Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-					if (PlayerHealth >= GetSlider("Unstance @ HP%")) {
+					if (PlayerHealth >= GetSlider("Unstance @ HP%") && !DefensiveStanceToggle) {
 						Aimsharp.Cast("Defensive Stance");
 						return true;
 					}
 				}
 				
 				if (Aimsharp.CanCast("Die by the Sword", "player")) {
-					if (PlayerHealth <= GetSlider("Auto Die by the Sword @ HP%")) {
+					if (PlayerHealth <= GetSlider("Auto Die by the Sword @ HP%") || DefensiveStanceToggle) {
 						Aimsharp.Cast("Die by the Sword");
 						return true;
 					}
@@ -1048,17 +1052,27 @@ namespace AimsharpWow.Modules {
 		
 		public override bool OutOfCombatTick() {
 			bool Prepull = Aimsharp.IsCustomCodeOn("savepp");
+			int PlayerHealth = Aimsharp.Health("player");
+			bool DefensiveStanceToggle = Aimsharp.IsCustomCodeOn("DefensiveStance");
 			
 			if (Aimsharp.CanCast("Battle Shout", "player") && !Aimsharp.HasBuff("Battle Shout", "player", false)) {
 				Aimsharp.Cast("Battle Shout");
 				return true;
 			}
 			
-			if (Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-				
+			// Auto Defensive Stance
+			if (!Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
+				if (PlayerHealth <= GetSlider("Auto Stance @ HP%") || DefensiveStanceToggle) {
 					Aimsharp.Cast("Defensive Stance");
 					return true;
+				}
+			}
 				
+			if (Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
+				if (PlayerHealth >= GetSlider("Unstance @ HP%") && !DefensiveStanceToggle) {
+					Aimsharp.Cast("Defensive Stance");
+					return true;
+				}
 			}
 			
 			
