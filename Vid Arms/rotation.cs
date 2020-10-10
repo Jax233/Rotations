@@ -601,7 +601,7 @@ namespace AimsharpWow.Modules {
 				
 				// Auto Defensive Stance
 				if (!Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-					if (PlayerHealth <= GetSlider("Auto Stance @ HP%")) {
+					if (PlayerHealth <= GetSlider("Auto Stance @ HP%") || DefensiveStanceToggle) {
 						Aimsharp.Cast("Defensive Stance");
 						return true;
 					}
@@ -615,7 +615,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				if (Aimsharp.CanCast("Die by the Sword", "player")) {
-					if (PlayerHealth <= GetSlider("Auto Die by the Sword @ HP%") || DefensiveStanceToggle) {
+					if (PlayerHealth <= GetSlider("Auto Die by the Sword @ HP%")) {
 						Aimsharp.Cast("Die by the Sword");
 						return true;
 					}
