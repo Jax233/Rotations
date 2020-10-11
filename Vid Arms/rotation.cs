@@ -74,7 +74,7 @@ namespace AimsharpWow.Modules {
 		string FiveLetters;
 		
 		public override void Initialize() {
-			//Aimsharp.DebugMode();
+			Aimsharp.DebugMode();
 			
 			Aimsharp.PrintMessage("Vid Arms Warrior 1.04", Color.Yellow);
 			Aimsharp.PrintMessage("Recommended PVE talents: 3323311", Color.Yellow);
@@ -528,7 +528,7 @@ namespace AimsharpWow.Modules {
 			
 				
 				// QUEUED STORMBOLT
-				if(!Aimsharp.CanCast("Storm Bolt") && StormBolt) {
+				if(CDStormBoltRemains > 5000 && StormBolt) {
 					Aimsharp.Cast("StormBoltOff");
 					return true;
 				}
@@ -540,12 +540,12 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED INTIMIDATING SHOUT
-				if(CDStormBoltRemains > 5000 && IntimidatingShout) {
+				if(CDIntimidatingShoutRemains > 5000 && IntimidatingShout) {
 					Aimsharp.Cast("IntimidatingShoutOff");
 					return true;
 				}
 				
-				if (CDIntimidatingShoutRemains > 5000 && Aimsharp.CanCast("Intimidating Shout")) {
+				if (IntimidatingShout && Aimsharp.CanCast("Intimidating Shout")) {
 					Aimsharp.PrintMessage("Queued Intimidating Shout");
 					Aimsharp.Cast("Intimidating Shout");
 					return true;

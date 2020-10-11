@@ -387,7 +387,7 @@ namespace AimsharpWow.Modules
                 }
 
                 // QUEUED STORMBOLT
-                if (CDStormBoltRemains > 25000 && StormBolt) {
+                if (CDStormBoltRemains > 5000 && StormBolt) {
                     Aimsharp.Cast("StormBoltOff");
                     return true;
                 }
@@ -399,7 +399,7 @@ namespace AimsharpWow.Modules
                 }
 
                 // QUEUED INTIMIDATING SHOUT
-                if (CDIntimidatingShoutRemains > 25000 && IntimidatingShout) {
+                if (CDIntimidatingShoutRemains > 5000 && IntimidatingShout) {
                     Aimsharp.Cast("IntimidatingShoutOff");
                     return true;
                 }
@@ -411,7 +411,7 @@ namespace AimsharpWow.Modules
                 }
 
                 // QUEUED RALLYING CRY
-                if (CDRallyingCryRemains > 25000 && RallyingCry) {
+                if (CDRallyingCryRemains > 5000 && RallyingCry) {
                     Aimsharp.Cast("RallyingCryOff");
                     return true;
                 }
@@ -423,7 +423,7 @@ namespace AimsharpWow.Modules
                 }
 
                 // QUEUED Shockwave
-                if (CDShockwaveRemains > 15000 && ShockWave) {
+                if (CDShockwaveRemains > 5000 && ShockWave) {
                     Aimsharp.Cast("ShockWaveOff");
                     return true;
                 }
