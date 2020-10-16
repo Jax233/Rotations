@@ -249,10 +249,7 @@ namespace AimsharpWow.Modules
                 return false;
             }
 
-            if (IsMoving && !DebuffWeakenedSoulUp) {
-                Aimsharp.Cast("Power Word: Shield");
-                return true;
-            }
+            
 
 
             if (UsePotion)
@@ -387,9 +384,15 @@ namespace AimsharpWow.Modules
                 Aimsharp.Cast("Mind Sear");
                 return true;
             }
-            Aimsharp.PrintMessage("CanCast Mind Flay"+ Aimsharp.CanCast("Mind Flay"));
+            
+            
             if(Fighting && !IsChanneling && GCD <= 0 && EnemiesNearTarget <3) {
                 Aimsharp.Cast("Mind Flay");
+                return true;
+            }
+            
+            if (IsMoving && !DebuffWeakenedSoulUp) {
+                Aimsharp.Cast("Power Word: Shield");
                 return true;
             }
 
