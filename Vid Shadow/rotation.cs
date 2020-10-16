@@ -197,7 +197,7 @@ namespace AimsharpWow.Modules
 
 
 
-            Aimsharp.PrintMessage("Enemies Near Target" + EnemiesNearTarget);
+            
             
             
             if (Aimsharp.CanCast("Shadow Mend", "player")) {
