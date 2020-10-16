@@ -45,9 +45,8 @@ namespace AimsharpWow.Modules
         public override void Initialize() {
             Aimsharp.DebugMode();
             Aimsharp.PrintMessage("Vid Shadow - v 1.0", Color.Blue);
-            Aimsharp.PrintMessage("Recommended talents: 3111111", Color.Blue);
             Aimsharp.PrintMessage("These macros can be used for manual control:", Color.Blue);
-            Aimsharp.PrintMessage("/xxxxx AOE", Color.Blue);
+            Aimsharp.PrintMessage("/xxxxx NoAOE", Color.Blue);
             Aimsharp.PrintMessage("--Toggles AOE mode on/off.", Color.Blue);
             Aimsharp.PrintMessage(" ");
             Aimsharp.PrintMessage("/xxxxx Potions", Color.Blue);
@@ -59,9 +58,9 @@ namespace AimsharpWow.Modules
             Aimsharp.PrintMessage("--Replace xxxxx with first 5 letters of your addon, lowercase.", Color.Blue);
 
 
-            Aimsharp.Latency = 100;
-            Aimsharp.QuickDelay = 125;
-            Aimsharp.SlowDelay = 300;
+            Aimsharp.Latency = 50;
+            Aimsharp.QuickDelay = 100;
+            Aimsharp.SlowDelay = 125;
 
             MajorPower = GetDropDown("Major Power");
             TopTrinket = GetDropDown("Top Trinket");
@@ -90,6 +89,7 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Shadow Mend");
             Spellbook.Add("Vampiric Embrace");
             Spellbook.Add("Searing Nightmare");
+            Spellbook.Add("Power Word: Shield");
 
             Buffs.Add("Bloodlust");
             Buffs.Add("Heroism");
@@ -108,6 +108,8 @@ namespace AimsharpWow.Modules
             Debuffs.Add("Shadow Word: Pain");
             Debuffs.Add("Vampiric Touch");
             Debuffs.Add("Shiver Venom");
+            Debuffs.Add("Unfurling Darkness");
+            Debuffs.Add("Weakened Soul");
 
             Items.Add(TopTrinket);
             Items.Add(BotTrinket);
@@ -194,6 +196,8 @@ namespace AimsharpWow.Modules
             bool BuffUnfurlingDarknessUp = Aimsharp.HasBuff("Unfurling Darkness");
             bool TalentPsychicLinkEnabled = Aimsharp.Talent(5, 2);
             bool TalentHungeringVoidEnabled = Aimsharp.Talent(7, 2);
+            bool DebuffUnfurlingDarknessUp = Aimsharp.HasDebuff("Unfurling Darkness", "player");
+            bool DebuffWeakenedSoulUp = Aimsharp.HasDebuff("Weakened Soul", "player");
 
 
 
@@ -245,7 +249,10 @@ namespace AimsharpWow.Modules
                 return false;
             }
 
-
+            if (IsMoving && !DebuffWeakenedSoulUp) {
+                Aimsharp.Cast("Power Word: Shield");
+                return true;
+            }
 
 
             if (UsePotion)
@@ -262,7 +269,7 @@ namespace AimsharpWow.Modules
 
 
 
-            if (Aimsharp.CanCast("Void Eruption", "player") && !IsMoving && Fighting && Insanity >= 40)
+            if (!NoCooldowns && Aimsharp.CanCast("Void Eruption", "player") && !IsMoving && Fighting && Insanity >= 40)
             {
                 Aimsharp.Cast("Void Eruption");
                 return true;
@@ -318,13 +325,13 @@ namespace AimsharpWow.Modules
                 return true;
             }
             
-            if (Aimsharp.CanCast("Shadowfiend") && VTRemains > 0 &&
+            if (!NoCooldowns && Aimsharp.CanCast("Shadowfiend") && VTRemains > 0 &&
                 ((TalentSearingNightmareEnabled && EnemiesNearTarget > 4) || SWPRemains > 0)) {
                 Aimsharp.Cast("Shadowfiend");
                 return true;
             }
 
-            Aimsharp.PrintMessage("241");
+            
             if (Aimsharp.CanCast("Void Torrent") && AllDotsUp && !BuffVoidformUp) {
                 Aimsharp.Cast("Void Torrent");
                 return true;
@@ -346,9 +353,14 @@ namespace AimsharpWow.Modules
                 return true;
             }
 
-            if (Aimsharp.CanCast("Vampiric Touch") &&
+            if (Aimsharp.CanCast("Vampiric Touch") && !(!BuffUnfurlingDarknessUp && DebuffUnfurlingDarknessUp && Aimsharp.LastCast() == "Vampiric Touch") &&
                 (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable) || BuffUnfurlingDarknessUp)) {
                 Aimsharp.Cast("Vampiric Touch");
+                return true;
+            }
+            
+            if (Aimsharp.CanCast("Shadow Word: Pain") && IsMoving) {
+                Aimsharp.Cast("Shadow Word: Pain");
                 return true;
             }
 
@@ -371,20 +383,17 @@ namespace AimsharpWow.Modules
                 Aimsharp.PrintMessage("CanCast Mind Sear" + Aimsharp.CanCast("Mind Sear"));
             }
             
-            if (!IsChanneling && GCD <= 0 && EnemiesNearTarget > 3) {
+            if (Fighting && (!IsChanneling || PlayerCastingID == 15407) && GCD <= 0 && EnemiesNearTarget >= 2) {
                 Aimsharp.Cast("Mind Sear");
                 return true;
             }
             Aimsharp.PrintMessage("CanCast Mind Flay"+ Aimsharp.CanCast("Mind Flay"));
-            if(!IsChanneling && GCD <= 0 && EnemiesNearTarget <=3) {
+            if(Fighting && !IsChanneling && GCD <= 0 && EnemiesNearTarget <3) {
                 Aimsharp.Cast("Mind Flay");
                 return true;
             }
 
-            if (Aimsharp.CanCast("Shadow Word: Pain") && IsMoving) {
-                Aimsharp.Cast("Shadow Word: Pain");
-                return true;
-            }
+            
 
             
 
@@ -395,6 +404,8 @@ namespace AimsharpWow.Modules
 
         public override bool OutOfCombatTick()
         {
+            bool IsMoving = Aimsharp.PlayerIsMoving();
+            bool DebuffWeakenedSoulUp = Aimsharp.HasDebuff("Weakened Soul", "player");
             if (!Aimsharp.HasBuff("Shadowform"))
             {
                 if (Aimsharp.CanCast("Shadowform", "player"))
@@ -406,6 +417,11 @@ namespace AimsharpWow.Modules
             
             if (Aimsharp.CanCast("Power Word: Fortitude", "player") && !Aimsharp.HasBuff("Power Word: Fortitude", "player", false)) {
                 Aimsharp.Cast("Power Word: Fortitude");
+                return true;
+            }
+            
+            if (IsMoving && !DebuffWeakenedSoulUp) {
+                Aimsharp.Cast("Power Word: Shield");
                 return true;
             }
             return false;
