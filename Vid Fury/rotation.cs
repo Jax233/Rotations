@@ -54,14 +54,13 @@ namespace AimsharpWow.Modules {
 				"Lightforged Draenei",
 				"None"
 			});
-			Settings.Add(new Setting("Racial Power", Race, "Orc"));
-			Settings.Add(new Setting("Cold Steel, Hot Blood Trait Number:", 0, 3, 0));
+			Settings.Add(new Setting("Racial Power", Race, "None"));
+			Settings.Add(new Setting("Cold Steel, Hot Blood Trait Number:", 0, 3, 2));
 			Settings.Add(new Setting("Mitigation"));
-			Settings.Add(new Setting("Auto Victory Rush @ HP%", 0, 100, 100));
-			Settings.Add(new Setting("Auto Shout @ HP%", 0, 100, 75));
-			Settings.Add(new Setting("Auto Die by the Sword @ HP%", 0, 100, 50));
-			Settings.Add(new Setting("Auto Stance @ HP%", 0, 100, 30));
-			Settings.Add(new Setting("Unstance @ HP%", 0, 100, 80));
+			Settings.Add(new Setting("Auto Victory Rush @ HP%", 0, 100, 70));
+			Settings.Add(new Setting("Auto Shout @ HP%", 0, 100, 15));
+			Settings.Add(new Setting("Auto Enraged Regeneration @ HP%", 0, 100, 30));
+
 		}
 		
 		string MajorPower;
@@ -69,15 +68,15 @@ namespace AimsharpWow.Modules {
 		string BotTrinket;
 		string RacialPower;
 		string usableitems;
-		int ColdSteel;
+		int AzeriteColdSteel;
 		string FiveLetters;
 		
 		public override void Initialize() {
-			//Aimsharp.DebugMode();
+			Aimsharp.DebugMode();
 			
 			Aimsharp.PrintMessage("Vid Fury Warrior 1.02", Color.Yellow);
-			Aimsharp.PrintMessage("Recommended PVE talents: 2133123", Color.Yellow);
-			Aimsharp.PrintMessage("Recommended PVP talents: 2333211", Color.Yellow);
+			Aimsharp.PrintMessage("Recommended Single Target talents: 2133123", Color.Yellow);
+			Aimsharp.PrintMessage("Recommended Dungeon talents: 3133222", Color.Yellow);
 			Aimsharp.PrintMessage("Default mode: PVE, AOE ON, USE CDs/Pots", Color.Yellow);
 			Aimsharp.PrintMessage("These macros can be used for manual control:", Color.Yellow);
 			Aimsharp.PrintMessage("/xxxxx Potions --Toggles using buff potions on/off.", Color.Blue);
@@ -89,7 +88,7 @@ namespace AimsharpWow.Modules {
 			Aimsharp.PrintMessage("/xxxxx RallyingCry --Queues Rallying Cry up to be used on the next GCD.", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx IntimidatingShout --Queues Intimidating SHout up to be used on the next GCD.", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx Bladestorm --Queues Bladestorm up to be used on the next GCD.", Color.Red);
-			Aimsharp.PrintMessage("/xxxxx pvp --Toggles PVP Mode.", Color.Red);
+			
 			
 			
 			Aimsharp.Latency = 100;
@@ -100,7 +99,7 @@ namespace AimsharpWow.Modules {
 			BotTrinket = GetDropDown("Bot Trinket");
 			RacialPower = GetDropDown("Racial Power");
 			usableitems = GetString("Use item: Case Sens");
-			ColdSteel = GetSlider("Cold Steel, Hot Blood Trait Number:");
+			AzeriteColdSteel = GetSlider("Cold Steel, Hot Blood Trait Number:");
 			
 			Spellbook.Add(MajorPower);
 			
@@ -113,7 +112,7 @@ namespace AimsharpWow.Modules {
 			
 			
 			Spellbook.Add("Victory Rush");
-			Spellbook.Add("Die by the Sword");
+			Spellbook.Add("Enraged Regeneration");
 			
 			Spellbook.Add("Avatar");
 			
@@ -140,6 +139,10 @@ namespace AimsharpWow.Modules {
 			Spellbook.Add("Storm Bolt");
 			Spellbook.Add("Intimidating Shout");
 			Spellbook.Add("Rallying Cry");
+			Spellbook.Add("Onslaught");
+			Spellbook.Add("Enraged Regeneration");
+			Spellbook.Add("Bloodbath");
+			Spellbook.Add("Crushing Blow");
 			
 			
 			
@@ -153,6 +156,7 @@ namespace AimsharpWow.Modules {
 			Buffs.Add("Memory of Lucid Dreams");
 			Buffs.Add("Reckless Force");
 			Buffs.Add("Guardian of Azeroth");
+			
 			
 			Buffs.Add("Bloodlust");
             Buffs.Add("Heroism");
@@ -189,12 +193,12 @@ namespace AimsharpWow.Modules {
 			Buffs.Add("Bladestorm");
 			Buffs.Add("Defensive Stance");
 			Buffs.Add("Sweeping Strikes");
+			Buffs.Add("Sudden Death");
 			
 			Debuffs.Add("Razor Coral");
 			Debuffs.Add("Conductive Ink");
 			Debuffs.Add("Shiver Venom");
 			Debuffs.Add("Siegebreaker");
-			Debuffs.Add("Colossus Smash");
 			Debuffs.Add("Rend");
 			Debuffs.Add("Hamstring");
 			Debuffs.Add("Deep Wounds");
@@ -221,10 +225,14 @@ namespace AimsharpWow.Modules {
 			CustomCommands.Add("IntimidatingShout");
 			CustomCommands.Add("Bladestorm");
 			CustomCommands.Add("AzeriteBeamOff");
+			
 		}
 		
 		// optional override for the CombatTick which executes while in combat
+		
 		public override bool CombatTick() {
+			
+			
 			bool Fighting = Aimsharp.Range("target") <= 8 && Aimsharp.TargetIsEnemy();
 			bool Moving = Aimsharp.PlayerIsMoving();
 			float Haste = Aimsharp.Haste() / 100f;
@@ -268,14 +276,10 @@ namespace AimsharpWow.Modules {
 			#endregion
 			
 			#region CooldownsSetup
+
+			
 			// CDS
-			int CDSweepingStrikesRemains = Aimsharp.SpellCooldown("Sweeping Strikes") - GCD;
-			int ColossusSmashRemains = Aimsharp.DebuffRemaining("Colossus Smash", "target") - GCD;
-			int CDColossusSmashRemains = Aimsharp.SpellCooldown("Colossus Smash") - GCD;
-			int CDBladestormRemains = Aimsharp.SpellCooldown("Bladestorm") -GCD;
-			bool DebuffColossusSmashUp = ColossusSmashRemains > 0;
-			int RendRemains = Aimsharp.DebuffRemaining("Rend") - GCD;
-			bool DebuffRendUp = RendRemains > 0;
+			int CDBladestormRemains = Aimsharp.SpellCooldown("Bladestorm");
 			bool DebuffHamstringUp = Aimsharp.DebuffRemaining("Hamstring") - GCD > 0;
 			int BerserkerRageRemains = Aimsharp.BuffRemaining("Berserker Rage");
 			bool BuffBerserkerRageUp = BerserkerRageRemains > 0;
@@ -283,273 +287,96 @@ namespace AimsharpWow.Modules {
 			bool CDStormBoltUp = CDStormBoltRemains > GCD;
 			int CDIntimidatingShoutRemains = Aimsharp.SpellCooldown("Intimidating Shout");
 			int CDRallyingCryRemains = Aimsharp.SpellCooldown("Rallying Cry");
-			int CDBloodthirstRemaining = Aimsharp.SpellCooldown("Bloodthirst") - GCD;
-			int CDSiegebreakerRemaining = Aimsharp.SpellCooldown("Siegebreaker") - GCD;
-			int CDDragonRoarRemaining = Aimsharp.SpellCooldown("Dragon Roar") - GCD;
-			int CDRampageRemaining = Aimsharp.SpellCooldown("Rampage") - GCD;
-			int CDRagingBlowRemaining = Aimsharp.SpellCooldown("Raging Blow") - GCD;
+			int CDBloodthirstRemaining = Aimsharp.SpellCooldown("Bloodthirst");
+			int CDSiegebreakerRemaining = Aimsharp.SpellCooldown("Siegebreaker");
+			int CDDragonRoarRemaining = Aimsharp.SpellCooldown("Dragon Roar");
+			int CDRampageRemaining = Aimsharp.SpellCooldown("Rampage");
+			int CDRagingBlowRemaining = Aimsharp.SpellCooldown("Raging Blow");
+			int CDOnslaughtRemaining = Aimsharp.SpellCooldown("Onslaught");
+			int CDRecklessnessRemains = Aimsharp.SpellCooldown("Recklessness");
+
+			
 
 			#endregion
 			
 			#region TalentSetup
 			//Talents
+			
 			bool TalentDoubleTime = Aimsharp.Talent(2, 1);
 			bool TalentStormbolt = Aimsharp.Talent(2, 3);
 			bool TalentMassacre = Aimsharp.Talent(3, 1);
-			bool TalentFervorOfBattle = Aimsharp.Talent(3, 2);
-			bool TalentCollateralDamage = Aimsharp.Talent(5, 1);
-			bool TalentWarbreaker = Aimsharp.Talent(5, 2);
-			bool TalentCleave = Aimsharp.Talent(5, 3);
-			bool TalentAvatar = Aimsharp.Talent(6, 2);
-			bool TalentFrothingBerserker = Aimsharp.Talent(5, 3);
+			bool TalentSeetheEnabled = Aimsharp.Talent(5, 1);
+			bool TalentFrothingBerserkerEnabled = Aimsharp.Talent(5, 2);
 			bool TalentCarnage = Aimsharp.Talent(5, 1);
+			bool TalentRecklessAbondonEnabled = Aimsharp.Talent(7, 2);
+			bool TalentSiegebreakerEnabled = Aimsharp.Talent(7, 3);
+			
 			#endregion
 			
 			//Buffs
-			bool WhirlwindUp = Aimsharp.HasBuff("Whirlwind");
 			bool SiegebreakerUp = Aimsharp.HasBuff("Siegebreaker");
 			bool RecklessnessUp = Aimsharp.HasBuff("Recklessness", "player");
-			int RecklessnessRemains = Aimsharp.BuffRemaining("Recklessness", "player") - GCD;
-			bool SweepingStrikesUp = Aimsharp.HasBuff("Sweeping Strikes", "player");
+			int BuffRecklessnessRemains = Aimsharp.BuffRemaining("Recklessness", "player");
+			
 			
 			bool BladestormUp = Aimsharp.HasBuff("Bladestorm", "player");
 			bool BattleShoutUp = Aimsharp.HasBuff("Battle Shout", "player");
 			bool BuffSharpenBladeUp = Aimsharp.HasBuff("Sharpen Blade", "player");
 			bool BuffOverpower = Aimsharp.HasBuff("Overpower", "player");
-			int BuffStacksOP = Aimsharp.BuffStacks("Overpower", "player");
-			bool BuffCrushingAssault = Aimsharp.HasBuff("Crushing Assault", "player");
-			int BuffEnrageRemains = Aimsharp.BuffRemaining("Enrage", "player") - GCD;
+			int BuffEnrageRemains = Aimsharp.BuffRemaining("Enrage", "player");
 			bool BloodlustUp = Aimsharp.HasBuff("Bloodlust", "player");
-			int FuriousSlashRemains = Aimsharp.BuffRemaining("Furious Slash", "player") - GCD;
-			bool EnrageUp = Aimsharp.HasBuff("Enrage", "player");
-		    int RagingBlowStacks = Aimsharp.SpellCharges("Raging Blow");
-		    int BuffWhirlwindRemains = Aimsharp.BuffRemaining("Whirlwind") - GCD;
+			int FuriousSlashRemains = Aimsharp.BuffRemaining("Furious Slash", "player");
+			bool BuffEnrageUp = Aimsharp.HasBuff("Enrage", "player");
+		    int BuffRagingBlowStacks = Aimsharp.SpellCharges("Raging Blow");
+		    int BuffCrushingBlowStacks = Aimsharp.SpellCharges("Crushing Blow");
+		    int BuffWhirlwindRemains = Aimsharp.BuffRemaining("Whirlwind");
 		    bool BuffWhirlwindUp = BuffWhirlwindRemains > 0;
-			
-			
+
+		    
 			
 			
 			//Debuffs
 			bool DebuffDeepWoundsUp = Aimsharp.HasDebuff("Deep Wounds", "target");
 			int DebuffDeepWoundsRemaining = Aimsharp.DebuffRemaining("Deep Wounds", "target");
 			bool DebuffConcentratedFlameUp = Aimsharp.HasDebuff("Concentrated Flame", "target");
+			bool DebuffBloodOfTheEnemyUp = Aimsharp.HasDebuff("Blood of the Enemy", "target");
+
+			#region CanCasts
+
+			bool CanCastBloodthirst = Aimsharp.CanCast("Bloodthirst");
+			bool CanCastBloodbath = Aimsharp.CanCast("Bloodbath");
+			bool CanCastDragonRoar = Aimsharp.CanCast("Dragon Roar", "player");
+			bool CanCastOnslaught = Aimsharp.CanCast("Onslaught");
+			bool CanCastRagingBlow = Aimsharp.CanCast("Raging Blow");
+			bool CanCastCrushingBlow = Aimsharp.CanCast("Crushing Blow");
+			bool CanCastRampage = Aimsharp.CanCast("Rampage");
+			bool CanCastExecute = Aimsharp.CanCast("Execute");
+			bool CanCastSiegebreaker = Aimsharp.CanCast("Siegebreaker");
+			bool CanCastWhirlwind = Aimsharp.CanCast("Whirlwind", "player");
+			bool CanCastFocusedAzeriteBeam = Aimsharp.CanCast("Focused Azerite Beam") ||  (Aimsharp.SpellCooldown("Focused Azerite Beam") <= GCD && MajorPower == "Focused Azerite Beam");
+			bool CanCastGuardianOfAzeroth = Aimsharp.CanCast("Guardian of Azeroth") || (Aimsharp.SpellCooldown("Guardian of Azeroth") <= GCD && MajorPower == "Guardian of Azeroth");
+			bool CanCastBloodOfTheEnemy = Aimsharp.CanCast("Blood of the Enemy") || (Aimsharp.SpellCooldown("Blood of the Enemy") <= GCD && MajorPower == "Blood of the Enemy");
+
+			#endregion
 			
 			
 			// Options
 			bool TopTrinketAOE = GetCheckBox("Top Trinket AOE?");
 			bool BotTrinketAOE = GetCheckBox("Bot Trinket AOE?");
+
 			
 			
-			if (OffAOE) {
-				EnemiesInMelee = EnemiesInMelee > 0 ? 1 : 0;
-			}
 			
 			if (IsChanneling) return false;
 
-			#region Fury Cooldowns
-			//COOLDOWNS
-			if (!NoCooldowns && Fighting) {
-				
-				//TRINKET 1
-				if (Aimsharp.CanUseTrinket(0) && TopTrinket == "Generic") {
-					if (!TopTrinketAOE) {
-						Aimsharp.Cast("TopTrink", true);
-						return true;
-					} 
-					else if (EnemiesInMelee >= 1) {
-						Aimsharp.Cast("TopTrink", true);
-						return true;
-					}
-				}
-				
-				//TRINKET 2
-				if (Aimsharp.CanUseTrinket(1) && BotTrinket == "Generic") {
-					if (!BotTrinketAOE) {
-						Aimsharp.Cast("BotTrink", true);
-						return true;
-					} 
-					else if (EnemiesInMelee >= 1) {
-						Aimsharp.Cast("BotTrink", true);
-						return true;
-					}
-				}
-				
-				//POTION
-				if (Aimsharp.CanUseItem(usableitems) && usableitems != "None" && !UsePotion) {
-					if (EnemiesInMelee >= 1 && PlayerHealth <= GetSlider("Use item @ HP%")) {
-						Aimsharp.Cast("ItemUse", true);
-						return true;
-					}
-				}
-				
-				//RAMPAGE
-				if (Aimsharp.CanCast("Rampage") && RecklessnessRemains <3) {
-					Aimsharp.Cast("Rampage");
-					return true;
-				}
-				
-				//BLOOD OF THE ENEMY
-				if (MajorPower == "Blood of the Enemy" && EnemiesInMelee > 0) {
-					if (Aimsharp.CanCast("Blood of the Enemy", "player") && RecklessnessUp) {
-						Aimsharp.Cast("Blood of the Enemy");
-						return true;
-					}
-				}
-				
-				//PURIFYING BLAST
-				if (MajorPower == "Purifying Blast") {
-					if (!RecklessnessUp && !SiegebreakerUp && Aimsharp.CanCast("Purifying Blast")) {
-						Aimsharp.Cast("Purifying Blast");
-						return true;
-					}
-					
-				}
-				
-				//RIPPLE IN SPACE
-				if (MajorPower == "Ripple in Space") {
-					if (!RecklessnessUp && !SiegebreakerUp && Aimsharp.CanCast("Ripple in Space")) {
-						Aimsharp.Cast("Ripple in Space");
-						return true;
-					}
-					
-				}
-				
-				//WORLDVEIN RESONANCE
-				if (MajorPower == "Worldvein Resonance") {
-					if (Aimsharp.CanCast("Worldvein Resonance", "player")) {
-						if (!RecklessnessUp && !SiegebreakerUp) {
-							Aimsharp.Cast("Worldvein Resonance");
-							return true;
-						}
-					}
-				}
-				
-				//FOCUSED AZERITE BEAM
-				if (MajorPower == "Focused Azerite Beam" && !AzeriteBeamOff) {
-					if (Aimsharp.CanCast("Focused Azerite Beam", "player")) {
-						if (!RecklessnessUp && !SiegebreakerUp) {
-							Aimsharp.Cast("Focused Azerite Beam");
-							return true;
-						}
-					}
-				}
-				
-				//REAPING FLAMES
-				if (MajorPower == "Reaping Flames") {
-					if(Aimsharp.CanCast("Reaping Flames")) {
-						if(!RecklessnessUp && !SiegebreakerUp) {
-							Aimsharp.Cast("Reaping Flames");
-							return true;
-						}
-					}
-				}
-				
-				//CONCENTRATED FLAME
-				if (MajorPower == "Concentrated Flame") {
-					if (Aimsharp.CanCast("Concentrated Flame")) {
-						if (!RecklessnessUp && !SiegebreakerUp && !DebuffConcentratedFlameUp) {
-							Aimsharp.Cast("Concentrated Flame");
-							return true;
-						}
-					}
-				}
-				
-				//THE UNBOUND FORCE
-				if (MajorPower == "The Unbound Force") {
-					if (Aimsharp.CanCast("The Unbound Force")) {
-						Aimsharp.Cast("The Unbound Force");
-						return true;
-					}
-				}
-				
-				//GUARDIAN OF AZEROTH
-				if (MajorPower == "Guardian of Azeroth") {
-					if (Aimsharp.CanCast("Guardian of Azeroth", "player")) {
-						if (CDColossusSmashRemains<10) {
-							Aimsharp.Cast("Guardian of Azeroth");
-							return true;
-						}
-					}
-				}
-				
-				//MEMORY OF LUCID DREAMS TODO: TTK maybe?
-				if (MajorPower == "Memory of Lucid Dreams") {
-					if (Aimsharp.CanCast("Memory of Lucid Dreams", "player")) {
-						if (CDColossusSmashRemains<GCD) {
-							Aimsharp.Cast("Memory of Lucid Dreams");
-							return true;
-						}
-					}
-				}
-				
-				//AVATAR								
-				if (TalentAvatar) {
-					if (Aimsharp.CanCast("Avatar", "player")) {
-						if(CDColossusSmashRemains < 8 ) {
-							Aimsharp.Cast("Avatar");
-							return true;
-						}
-						
-					}
-				}
-				
-				//actions +=/ use_item,name = ashvanes_razor_coral,if= !Debuff.razor_coral_Debuff.up | (target.health.pct < 30.1 & Debuff.conductive_ink_Debuff.up) | (!Debuff.conductive_ink_Debuff.up & buff.memory_of_lucid_dreams.up | prev_gcd.2.guardian_of_azeroth | prev_gcd.2.recklessness & (!essence.memory_of_lucid_dreams.major & !essence.condensed_lifeforce.major))
-				if (Aimsharp.CanUseItem("Ashvane's Razor Coral")) {
-					if (!DebuffRazorCoralUp || (TargetHealth <= 30 && DebuffConductiveInkUp) || (!DebuffConductiveInkUp && BuffMemoryOfLucidDreamsUp || CDGuardianOfAzerothRemains > 180000 - GCDMAX * 2 || (MajorPower != "Memory of Lucid Dreams" && MajorPower != "Guardian of Azeroth"))) {
-						Aimsharp.Cast("Ashvane's Razor Coral", true);
-						return true;
-					}
-				}
-				
-				//BLOOD FURY
-				if (RacialPower == "Orc") {
-					if (Aimsharp.CanCast("Blood Fury", "player")) {
-						if((BuffMemoryOfLucidDreamsRemains < 5 || (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
-							Aimsharp.Cast("Blood Fury", true);
-							return true;
-						}
-					}
-				}
-				
-				//BERSERKING
-				if (RacialPower == "Troll") {
-					if (Aimsharp.CanCast("Berserking", "player") && (BuffMemoryOfLucidDreamsUp || (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
-						Aimsharp.Cast("Berserking", true);
-						return true;
-					}
-				}
-				
-				//actions+=/lights_judgment,if=buff.recklessness.down
-				if (RacialPower == "Lightforged Draenei") {
-					if (Aimsharp.CanCast("Light's Judgment", "player") && !DebuffColossusSmashUp) {
-						Aimsharp.Cast("Light's Judgment", true);
-						return true;
-					}
-				}
-				
-				//actions+=/fireblood
-				if (RacialPower == "Dark Iron Dwarf") {
-					if (Aimsharp.CanCast("Fireblood", "player")&& (BuffMemoryOfLucidDreamsRemains < 5 || (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
-						Aimsharp.Cast("Fireblood", true);
-						return true;
-					}
-				}
-				
-				//actions+=/ancestral_call
-				if (RacialPower == "Mag'har Orc") {
-					if (Aimsharp.CanCast("Ancestral Call", "player")&& (BuffMemoryOfLucidDreamsRemains < 5 || (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
-						Aimsharp.Cast("Ancestral Call", true);
-						return true;
-					}
-				}
-			}
-			#endregion
+			
+
 			
 			#region Utility
 			// Utility
-			if (Fighting) {
+			
 				// QUEUED STORMBOLT
-				if(CDStormBoltRemains > 25000 && StormBolt) {
+				if(CDStormBoltRemains > 5000 && StormBolt) {
 					Aimsharp.Cast("StormBoltOff");
 					return true;
 				}
@@ -561,7 +388,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED INTIMIDATING SHOUT
-				if(CDIntimidatingShoutRemains > 25000 && IntimidatingShout) {
+				if(CDIntimidatingShoutRemains > 5000 && IntimidatingShout) {
 					Aimsharp.Cast("IntimidatingShoutOff");
 					return true;
 				}
@@ -573,7 +400,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED RALLYING CRY
-				if(CDRallyingCryRemains > 25000 && RallyingCry) {
+				if(CDRallyingCryRemains > 5000 && RallyingCry) {
 					Aimsharp.Cast("RallyingCryOff");
 					return true;
 				}
@@ -585,7 +412,7 @@ namespace AimsharpWow.Modules {
 				}
 				
 				// QUEUED BLADESTORM
-				if(CDBladestormRemains > 25000 && Bladestorm) {
+				if(CDBladestormRemains > 5000 && Bladestorm) {
 					Aimsharp.Cast("BladestormOff");
 					return true;
 				}
@@ -612,149 +439,148 @@ namespace AimsharpWow.Modules {
 					}
 				}
 				
-				// Auto Defensive Stance
-				if (!Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-					if (PlayerHealth <= GetSlider("Auto Stance @ HP%")) {
-						Aimsharp.Cast("Defensive Stance");
+				
+				if (Aimsharp.CanCast("Enraged Regeneration", "player")) {
+					if (PlayerHealth <= GetSlider("Auto Enraged Regeneration @ HP%")) {
+						Aimsharp.Cast("Enraged Regeneration");
 						return true;
 					}
 				}
-				
-				if (Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-					if (PlayerHealth >= GetSlider("Unstance @ HP%")) {
-						Aimsharp.Cast("Defensive Stance");
-						return true;
-					}
-				}
-				
-				if (Aimsharp.CanCast("Die by the Sword", "player")) {
-					if (PlayerHealth <= GetSlider("Auto Die by the Sword @ HP%")) {
-						Aimsharp.Cast("Die by the Sword");
-						return true;
-					}
+			
+			#endregion
+
+			#region Cooldowns
+
+			if (CanCastRampage && CDRecklessnessRemains < 3 && TalentRecklessAbondonEnabled) {
+				Aimsharp.Cast("Rampage");
+				return true;
+			}
+
+			if (CanCastBloodOfTheEnemy && !NoCooldowns && ((RecklessnessUp || CDRecklessnessRemains < 1) &&
+			                               (Rage > 80 && (BuffWhirlwindUp && BuffEnrageUp || EnemiesInMelee == 1)))) {
+				Aimsharp.Cast("Blood of the Enemy");
+				return true;
+			}
+
+			if (CanCastFocusedAzeriteBeam && !NoCooldowns && !RecklessnessUp && !SiegebreakerUp) {
+				Aimsharp.Cast("Focused Azerite Beam");
+				return true;
+			}
+
+			if (CanCastGuardianOfAzeroth && !NoCooldowns && !RecklessnessUp) {
+				Aimsharp.Cast("Guardian of Azeroth");
+				return true;
+			}
+			
+			//RECKLESSNESS
+			if(CDRecklessnessRemains <= 0 && !NoCooldowns) {
+				if((MajorPower != "Condensed Life-Force" && MajorPower != "Blood of the Enemy") || CDGuardianOfAzerothRemains > 1 || BuffGuardianOfAzerothUp || DebuffBloodOfTheEnemyUp) {
+					Aimsharp.Cast("Recklessness");
+					return true;
 				}
 			}
+			
+			
+			if(EnemiesInMelee > 1 && !BuffWhirlwindUp && CanCastWhirlwind && !OffAOE) {
+				Aimsharp.Cast("Whirlwind");
+				return true;
+			}
+			
+			
+
 			#endregion
+
 			
 			#region Fury Rotation
 			// PVE Rotation
-			if (!PVPmode) {
+			
 				
 				if (Fighting) {
-				
 					
-					//RAMPAGE
-					if ((Aimsharp.CanCast("Rampage") || CDRampageRemaining <= 0 && Rage >= 75) && RecklessnessRemains <3000) {
-						Aimsharp.Cast("Rampage");
+					//WHIRLWIND PROC
+					
+					
+					if(CanCastSiegebreaker) {
+						Aimsharp.Cast("Siegebreaker");
 						return true;
 					}
 					
-					//RECKLESSNESS
-					if(Aimsharp.CanCast("Recklessness", "player") && !NoCooldowns) {
-						if((MajorPower != "Condensed Life-Force" && MajorPower != "Blood of the Enemy") || CDGuardianOfAzerothRemains > 1 || BuffGuardianOfAzerothUp || CDBloodOfTheEnemyRemains < GCD) {
-							Aimsharp.Cast("Recklessness");
-							return true;
-						}
+					//RAMPAGE
+					if (CanCastRampage && (RecklessnessUp || BuffMemoryOfLucidDreamsUp) || (BuffEnrageRemains < GCD || Rage > 90) ) {
+						Aimsharp.Cast("Rampage");
+						return true;
+					}
+
+					if(CanCastExecute) {
+						Aimsharp.Cast("Execute");
+						return true;
 					}
 					
-					//WHIRLWIND PROC
-					if(EnemiesInMelee > 1 && !WhirlwindUp && Aimsharp.CanCast("Whirlwind", "player")) {
+					if (Aimsharp.CanCast("Bladestorm", "player") && Aimsharp.LastCast() == "Rampage") {
+						Aimsharp.Cast("Bladestorm");
+						return true;
+					}
+
+					if (CanCastBloodbath && (!BuffEnrageUp || AzeriteColdSteel > 1)) {
+						Aimsharp.Cast("Bloodbath");
+						return true;
+					}
+					
+					if ((!BuffEnrageUp || AzeriteColdSteel > 1) && CanCastBloodthirst){
+						Aimsharp.Cast("Bloodthirst");
+						return true;
+					}
+
+					if (CanCastOnslaught) {
+						Aimsharp.Cast("Onslaught");
+						return true;
+					}
+
+					if (CanCastDragonRoar && BuffEnrageUp) {
+						Aimsharp.Cast("Dragon Roar");
+						return true;
+					}
+					
+					
+					if (CanCastCrushingBlow && BuffCrushingBlowStacks == 2) {
+						Aimsharp.Cast("Crushing Blow");
+						return true;
+					}
+					
+					if(CanCastRagingBlow && BuffRagingBlowStacks == 2) {
+						Aimsharp.Cast("Raging Blow");
+						return true;
+					}
+
+					if (CanCastBloodbath) {
+						Aimsharp.Cast("Bloodbath");
+						return true;
+					}
+					
+					if(CanCastBloodthirst) {
+						Aimsharp.Cast("Bloodthirst");
+						return true;
+					}
+
+					if (CanCastRagingBlow) {
+						Aimsharp.Cast("Raging Blow");
+						return true;
+					}
+
+					if (CanCastCrushingBlow) {
+						Aimsharp.Cast("Crushing Blow");
+						return true;
+					}
+
+					
+					if (Aimsharp.CanCast("Whirlwind", "player")) {
 						Aimsharp.Cast("Whirlwind");
 						return true;
 					}
 					
-					
-					
-					
-					//NO AOE
-					if (EnemiesInMelee >= 1) {
-						
-						if(Aimsharp.CanCast("Siegebreaker") || CDSiegebreakerRemaining <= 0) {
-							Aimsharp.Cast("Siegebreaker");
-							return true;
-						}
-						
-						if(Aimsharp.CanCast("Rampage") || (CDRampageRemaining <= 0 && Rage >= 75)) {
-							if((RecklessnessUp || BuffMemoryOfLucidDreamsUp) || (TalentFrothingBerserker || TalentCarnage && (BuffEnrageRemains < GCD || Rage > 90) || TalentMassacre && (BuffEnrageRemains<GCD || Rage > 90))) {
-								Aimsharp.Cast("Rampage");
-								return true;
-								
-							}
-						}
-						
-						if(Aimsharp.CanCast("Execute")) {
-							Aimsharp.Cast("Execute");
-							return true;
-						}
-						
-						if(Aimsharp.CanCast("Furious Slash")) {
-							
-							if(!BloodlustUp && FuriousSlashRemains <3000) {
-								Aimsharp.Cast("Furious Slash");
-								return true;
-							}
-						}
-
-						if (Aimsharp.CanCast("Bladestorm", "player") && Aimsharp.LastCast() == "Rampage") {
-							Aimsharp.Cast("Bladestorm");
-							return true;
-						}
-						
-							
-						
-						
-						if(Aimsharp.CanCast("Bloodthirst") || CDBloodthirstRemaining <= 0) {
-							if(!EnrageUp || ColdSteel > 1 ) {
-								Aimsharp.Cast("Bloodthirst");
-								return true;
-							}
-						}
-						
-						if(Aimsharp.CanCast("Dragon Roar", "player") || CDDragonRoarRemaining <=0) {
-							
-							
-							if(EnrageUp) {
-								Aimsharp.Cast("Dragon Roar");
-								return true;
-							}
-						}
-						
-						if((Aimsharp.CanCast("Raging Blow") || CDRagingBlowRemaining <= 0)&& RagingBlowStacks==2) {
-							Aimsharp.Cast("Raging Blow");
-							return true;
-						}
-						
-						if(Aimsharp.CanCast("Bloodthirst") || CDBloodthirstRemaining <= 0) {
-							Aimsharp.Cast("Bloodthirst");
-							return true;
-						}
-						
-						if(Aimsharp.CanCast("Raging Blow") || CDRagingBlowRemaining <= 0) {
-							if(TalentCarnage || (TalentMassacre && Rage<80) || (TalentFrothingBerserker && Rage <90)) {
-								Aimsharp.Cast("Raging Blow");
-								return true;
-							}
-						}
-						
-						if(Aimsharp.CanCast("Furious Slash")) {
-							Aimsharp.Cast("Furious Slash");
-							return true;
-						}
-						
-						if(Aimsharp.CanCast("Whirlwind", "player")) {
-							Aimsharp.Cast("Whirlwind");
-							return true;
-						}
-						
-						
-						
-						
-						//SINGLE TARGET OVER
-						
-						
 					}
-				}
-				}
+				
+				
 			#endregion
 			
 			
@@ -768,12 +594,13 @@ namespace AimsharpWow.Modules {
 		}
 		
 		public override bool OutOfCombatTick() {
-			bool Prepull = Aimsharp.IsCustomCodeOn("savepp");
-			
+						
 			if (Aimsharp.CanCast("Battle Shout", "player") && !Aimsharp.HasBuff("Battle Shout", "player", false)) {
 				Aimsharp.Cast("Battle Shout");
 				return true;
 			}
+
+			
 			
 			
 			return false;

@@ -205,6 +205,7 @@ namespace AimsharpWow.Modules {
 		}
 		
 		// optional override for the CombatTick which executes while in combat
+		
 		public override bool CombatTick() {
 			
 			#region MiscSetup
@@ -629,7 +630,8 @@ namespace AimsharpWow.Modules {
 				
 				if (Fighting) {
 					
-					//SWEEPING STRIKES
+					//SWEEPING STRIKES actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>10|cooldown.colossus_smash.remains>8|azerite.test_of_might.enabled)
+
 					if(Aimsharp.CanCast("Sweeping Strikes", "player") && !OffAOE) {
 						if(EnemiesInMelee > 1 && (CDBladestormRemains>10000 || CDColossusSmashRemains > 8000 || TestOfMightTrait)) {
 							Aimsharp.Cast("Sweeping Strikes");
