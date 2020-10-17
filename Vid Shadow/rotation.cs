@@ -146,7 +146,8 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("SaveCooldowns");
             CustomCommands.Add("MassDispel");
             CustomCommands.Add("PsychicScream");
-            
+            CustomCommands.Add("JustEssences");
+
 
 
         }
@@ -187,6 +188,7 @@ namespace AimsharpWow.Modules
             int GCDMAX = (int)((1500f / (Haste + 1f)) + GCD);
             float InsanityDrain = 6f + .68f * VoidformStacks;
             int MindBlastCastTime = (int)((1500f / (Haste + 1f)));
+            
             int ChorusStacks = Aimsharp.BuffStacks("Chorus of Insanity");
             bool ChorusEnabled = GetCheckBox("Chorus of Insanity Trait?");
             bool IsMoving = Aimsharp.PlayerIsMoving();
@@ -212,11 +214,11 @@ namespace AimsharpWow.Modules
             bool LegacyEnabled = Aimsharp.Talent(7, 1);
             bool CooldownMindbenderUp = Aimsharp.SpellCooldown("Mindbender") <= 0;
             bool BuffVoidformUp = Aimsharp.HasBuff("Voidform");
-            bool BuffDarkThoughtsUp = Aimsharp.HasBuff("Dark Thoughts");
+            bool BuffDarkThoughtsUp = Aimsharp.SpellCharges("Mind Blast") > 1;
             bool BuffUnfurlingDarknessUp = Aimsharp.HasBuff("Unfurling Darkness");
             bool TalentPsychicLinkEnabled = Aimsharp.Talent(5, 2);
             bool TalentHungeringVoidEnabled = Aimsharp.Talent(7, 2);
-            bool DebuffConcentratedFlameRemaining = Aimsharp.DebuffRemaining("Concentrated Flame", "target");
+            int DebuffConcentratedFlameRemaining = Aimsharp.DebuffRemaining("Concentrated Flame", "target");
             bool DebuffUnfurlingDarknessUp = Aimsharp.HasDebuff("Unfurling Darkness", "player");
             bool DebuffWeakenedSoulUp = Aimsharp.HasDebuff("Weakened Soul", "player");
             bool DebuffWrathfulFaerieUp = Aimsharp.HasDebuff("Wrathful Faerie", "target");
@@ -228,9 +230,17 @@ namespace AimsharpWow.Modules
             int MindSearCutOff = 1;
             bool SelfPowerInfusion = true;
             bool TalenTwistOfFateEnabled = Aimsharp.Talent(3, 1);
+            
+            int ChannelDuration = (int) ((4500f / (Haste + 1f)));
+            int TickTimeChannel = ChannelDuration / 6;
+            bool CancelChannel = IsChanneling && (PlayerCastingID == 15407 || PlayerCastingID == 48045) &&
+                                   ((Aimsharp.CastingElapsed("player") <= TickTimeChannel) || Aimsharp.CastingElapsed("player") >= (TickTimeChannel * 2) );
+            bool TicksBTwo =
+            
             int CDMassDispel = Aimsharp.SpellCooldown("Mass Dispel");
 
             bool MassDispel = Aimsharp.IsCustomCodeOn("MassDispel");
+            bool JustEssences = Aimsharp.IsCustomCodeOn("JustEssences");
             
             
                     
@@ -292,9 +302,9 @@ namespace AimsharpWow.Modules
             }
 
             #region CWC
-            if (IsChanneling) {
+            if (IsChanneling && !CancelChannel) {
                 if (PlayerCastingID == 15407 && EnemiesNearTarget > 2) {
-                    Aimsharp.Cast("Mind Sear");
+                    Aimsharp.Cast("Stopcasting");
                     return true;
                 }
 
@@ -307,7 +317,7 @@ namespace AimsharpWow.Modules
 
                 if (PlayerCastingID == 48045) {
                     if (EnemiesNearTarget < 2) {
-                        Aimsharp.Cast("Mind Flay");
+                        Aimsharp.Cast("Stopcasting");
                         return true;
                     }
                     
@@ -426,7 +436,7 @@ namespace AimsharpWow.Modules
 
                 if (MajorPower == "Purifying Blast") {
                     if (Aimsharp.CanCast("Purifying Blast", "player") && EnemiesNearTarget >= 2) {
-                        Aimsharp.Cast("Purifying Blast", "player");
+                        Aimsharp.Cast("Purifying Blast");
                         return true;
                     }
                 }
