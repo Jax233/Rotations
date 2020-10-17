@@ -123,6 +123,7 @@ namespace AimsharpWow.Modules
             Debuffs.Add("Unfurling Darkness");
             Debuffs.Add("Weakened Soul");
             Debuffs.Add("Wrathful Faerie");
+            Debuffs.Add("Concentrated Flame");
             
 
             Items.Add(TopTrinket);
@@ -215,6 +216,7 @@ namespace AimsharpWow.Modules
             bool BuffUnfurlingDarknessUp = Aimsharp.HasBuff("Unfurling Darkness");
             bool TalentPsychicLinkEnabled = Aimsharp.Talent(5, 2);
             bool TalentHungeringVoidEnabled = Aimsharp.Talent(7, 2);
+            bool DebuffConcentratedFlameRemaining = Aimsharp.DebuffRemaining("Concentrated Flame", "target");
             bool DebuffUnfurlingDarknessUp = Aimsharp.HasDebuff("Unfurling Darkness", "player");
             bool DebuffWeakenedSoulUp = Aimsharp.HasDebuff("Weakened Soul", "player");
             bool DebuffWrathfulFaerieUp = Aimsharp.HasDebuff("Wrathful Faerie", "target");
@@ -377,17 +379,69 @@ namespace AimsharpWow.Modules
 
             #region Cooldowns
 
-            if (Aimsharp.CanCast("Power Infusion") && BuffVoidformUp) {
-                Aimsharp.Cast("Void Form");
-                return true;
+            if (!NoCooldowns) {
+                if (Aimsharp.CanCast("Power Infusion") && BuffVoidformUp) {
+                    Aimsharp.Cast("Void Form");
+                    return true;
+                }
+
+                if (Aimsharp.CanCast("Mindgames") && Insanity < 90 && (AllDotsUp || VoidformUp)) {
+                    Aimsharp.Cast("Mindgames");
+                    return true;
+                }
+                                
+                
             }
 
-            if (Aimsharp.CanCast("Mindgames") && Insanity < 90 && (AllDotsUp || VoidformUp)) {
-                Aimsharp.Cast("Mindgames");
-                return true;
+            #region Essences
+
+            if (!NoCooldowns || JustEssences) {
+                if (MajorPower == "Memory of Lucid Dreams") {
+                    if (Aimsharp.CanCast("Memory of Lucid Dreams", "player")) {
+                        Aimsharp.Cast("Lucid Dreams");
+                        return true;
+                    }
+                }
+
+                if (MajorPower == "Blood of the Enemy") {
+                    if (Aimsharp.CanCast("Blood of the Enemy", "player")) {
+                        Aimsharp.Cast("Blood of the Enemy");
+                        return true;
+                    }
+                }
+
+                if (MajorPower == "Guardian of Azeroth") {
+                    if (Aimsharp.CanCast("Guardian of Azeroth", "player")) {
+                        Aimsharp.Cast("Guardian of Azeroth");
+                        return true;
+                    }
+                }
+
+                if (MajorPower == "Focused Azerite Beam") {
+                    if (Aimsharp.CanCast("Focused Azerite Beam") && EnemiesNearTarget >= 2) {
+                        Aimsharp.Cast("Focused Azerite Beam");
+                        return true;
+                    }
+                }
+
+                if (MajorPower == "Purifying Blast") {
+                    if (Aimsharp.CanCast("Purifying Blast", "player") && EnemiesNearTarget >= 2) {
+                        Aimsharp.Cast("Purifying Blast", "player");
+                        return true;
+                    }
+                }
+
+                if (MajorPower == "Concentrated Flame") {
+                    if (Aimsharp.CanCast("Concentrated Flame") && FlameFullRecharge < GCD) {
+                        Aimsharp.Cast("Concentrated Flame");
+                        return true;
+                    }
+                }
             }
-            
-            
+
+            #endregion
+
+
 
             #endregion
 
