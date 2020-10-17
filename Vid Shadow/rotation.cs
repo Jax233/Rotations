@@ -233,14 +233,26 @@ namespace AimsharpWow.Modules
             
             int ChannelDuration = (int) ((4500f / (Haste + 1f)));
             int TickTimeChannel = ChannelDuration / 6;
-            bool CancelChannel = IsChanneling && (PlayerCastingID == 15407 || PlayerCastingID == 48045) &&
-                                   ((Aimsharp.CastingElapsed("player") <= TickTimeChannel) || Aimsharp.CastingElapsed("player") >= (TickTimeChannel * 2) );
-            bool TicksBTwo =
+            bool CancelTicks = IsChanneling && (PlayerCastingID == 15407 || PlayerCastingID == 48045) &&
+                                   (Aimsharp.CastingElapsed("player") <= TickTimeChannel);
+            bool TwoTicksChanneled = (Aimsharp.CastingElapsed("player") >= (TickTimeChannel + 2));
+            bool CancelChannel = (PlayerCastingID == 15407 &&
+                                  TwoTicksChanneled && VoidBoltCD <= 0) || (PlayerCastingID == 48045 && TwoTicksChanneled);
+            
             
             int CDMassDispel = Aimsharp.SpellCooldown("Mass Dispel");
 
             bool MassDispel = Aimsharp.IsCustomCodeOn("MassDispel");
             bool JustEssences = Aimsharp.IsCustomCodeOn("JustEssences");
+
+
+
+
+            #region TTK
+
+            
+
+            #endregion
             
             
                     
@@ -503,14 +515,14 @@ namespace AimsharpWow.Modules
             //Use Mind Sear to consume Dark Thoughts procs on AOE. TODO Confirm is this is a higher priority than redotting on AOE unless dark thoughts is about to time out
             //actions.main+=/mind_sear,target_if=spell_targets.mind_sear>variable.mind_sear_cutoff&buff.dark_thoughts.up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
 
-            if (Aimsharp.CanCast("Mind Sear") && EnemiesNearTarget > MindSearCutOff && BuffDarkThoughtsUp) {
+            if (Aimsharp.CanCast("Mind Sear") && EnemiesNearTarget > MindSearCutOff && BuffDarkThoughtsUp && PlayerCastingID != 48045) {
                 Aimsharp.Cast("Mind Sear");
                 return true;
             }
 
             //Use Mind Flay to consume Dark Thoughts procs on ST. TODO Confirm if this is a higher priority than redotting unless dark thoughts is about to time out
             //actions.main+=/mind_flay,if=buff.dark_thoughts.up&variable.dots_up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&cooldown.void_bolt.up
-            if (BuffDarkThoughtsUp && DotsUp && EnemiesNearTarget <= MindSearCutOff) {
+            if (BuffDarkThoughtsUp && DotsUp && EnemiesNearTarget <= MindSearCutOff && PlayerCastingID != 15407) {
                 Aimsharp.Cast("Mind Flay");
                 return true;
             }
@@ -555,13 +567,13 @@ namespace AimsharpWow.Modules
                 return true;
             }
 
-            if (Aimsharp.CanCast("Mind Sear", "target") && EnemiesNearTarget > MindSearCutOff) {
+            if (Aimsharp.CanCast("Mind Sear", "target") && EnemiesNearTarget > MindSearCutOff && PlayerCastingID != 48045) {
                 Aimsharp.Cast("Mind Sear");
                 return true;
             }
             
             
-            if(!IsChanneling && !IsMoving && EnemiesNearTarget < 2) {
+            if(!IsChanneling && !IsMoving && EnemiesNearTarget < 2 && PlayerCastingID != 15407) {
                 Aimsharp.Cast("Mind Flay");
                 return true;
             }
