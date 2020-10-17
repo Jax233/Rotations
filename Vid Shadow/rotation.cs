@@ -36,12 +36,18 @@ namespace AimsharpWow.Modules
             
             Settings.Add(new Setting("Auto Vampiric Embrace @ HP%", 0, 100, 45));
             
+            Settings.Add(new Setting("First 5 Letters of the Addon:", "xxxxx"));
+            
 
         }
 
         string MajorPower;
         string TopTrinket;
         string BotTrinket;
+
+        private string FiveLetters;
+
+        private string[] DispelList;
         public override void Initialize() {
             Aimsharp.DebugMode();
             Aimsharp.PrintMessage("Vid Shadow - v 1.0", Color.Blue);
@@ -65,6 +71,7 @@ namespace AimsharpWow.Modules
             MajorPower = GetDropDown("Major Power");
             TopTrinket = GetDropDown("Top Trinket");
             BotTrinket = GetDropDown("Bot Trinket");
+            FiveLetters = GetString("First 5 Letters of the Addon:");
 
             Spellbook.Add(MajorPower);
             Spellbook.Add("Void Eruption");
@@ -91,6 +98,9 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Searing Nightmare");
             Spellbook.Add("Power Word: Shield");
             Spellbook.Add("Power Infusion");
+            Spellbook.Add("Mass Dispel");
+            Spellbook.Add("Psychic Scream");
+            Spellbook.Add("Dispel Magic");
 
             Buffs.Add("Bloodlust");
             Buffs.Add("Heroism");
@@ -113,6 +123,7 @@ namespace AimsharpWow.Modules
             Debuffs.Add("Unfurling Darkness");
             Debuffs.Add("Weakened Soul");
             Debuffs.Add("Wrathful Faerie");
+            
 
             Items.Add(TopTrinket);
             Items.Add(BotTrinket);
@@ -125,12 +136,17 @@ namespace AimsharpWow.Modules
             Macros.Add("potion", "/use " + GetDropDown("Potion Type"));
             Macros.Add("crash cursor", "/cast [@cursor] Shadow Crash");
             Macros.Add("Stopcasting", "/stopcasting");
+            Macros.Add("MassDispel", "/cast [@cursor] Mass Dispel");
+            Macros.Add("MassDispelOff", "/" + FiveLetters+ " MassDispel");
 
             CustomCommands.Add("NoAOE");
             CustomCommands.Add("Prepull");
             CustomCommands.Add("Potions");
             CustomCommands.Add("SaveCooldowns");
-			
+            CustomCommands.Add("MassDispel");
+            CustomCommands.Add("PsychicScream");
+            
+
 
         }
 
@@ -156,7 +172,6 @@ namespace AimsharpWow.Modules
             int TargetTimeToDie = 1000000000;
             int TargetHealth = Aimsharp.Health("target");
             int PlayerHealth = Aimsharp.Health("player");
-            //int EnemiesNearTarget = Aimsharp.EnemiesNearTarget();
             
             int EnemiesNearTarget = Aimsharp.EnemiesNearTarget();
             
@@ -211,6 +226,11 @@ namespace AimsharpWow.Modules
             int MindSearCutOff = 1;
             bool SelfPowerInfusion = true;
             bool TalenTwistOfFateEnabled = Aimsharp.Talent(3, 1);
+            int CDMassDispel = Aimsharp.SpellCooldown("Mass Dispel");
+
+            bool MassDispel = Aimsharp.IsCustomCodeOn("MassDispel");
+            
+            
                     
 
 
@@ -231,7 +251,19 @@ namespace AimsharpWow.Modules
 
 
             
+            #region Utillity
             
+            // QUEUED MD
+            if(CDMassDispel > 5000 && MassDispel) {
+                Aimsharp.Cast("MassDispelOff");
+                return true;
+            }
+				
+            if (MassDispel && Aimsharp.CanCast("Mass Dispel", "player")) {
+                Aimsharp.PrintMessage("Queued Mass Dispel");
+                Aimsharp.Cast("MassDispel");
+                return true;
+            }
             
             if (Aimsharp.CanCast("Shadow Mend", "player")) {
                 if (PlayerHealth <= GetSlider("Auto Shadow Mend Self @ HP%")) {
@@ -241,12 +273,15 @@ namespace AimsharpWow.Modules
             }
             
 			
-            if (Aimsharp.CanCast("Vampiric Embrace")) {
+            if (Aimsharp.CanCast("Vampiric Embrace", "player") && Aimsharp.GroupSize() > 0) {
                 if (PlayerHealth <= GetSlider("Auto Vampiric Embrace @ HP%")) {
                     Aimsharp.Cast("Vampiric Embrace");
                     return true;
                 }
             }
+            
+            #endregion
+            
 
             if (NoAOE)
             {
