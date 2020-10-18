@@ -45,11 +45,18 @@ namespace AimsharpWow.Modules
         string TopTrinket;
         string BotTrinket;
 
-        private string FiveLetters;
+        private int[] HPSnapshots = {0, 0};
 
-        private string[] DispelList;
+        private int ttk;
+
+
+        private string FiveLetters;
+        
+        
+
+        
         public override void Initialize() {
-            Aimsharp.DebugMode();
+            //Aimsharp.DebugMode();
             Aimsharp.PrintMessage("Vid Shadow - v 1.0", Color.Blue);
             Aimsharp.PrintMessage("These macros can be used for manual control:", Color.Blue);
             Aimsharp.PrintMessage("/xxxxx NoAOE", Color.Blue);
@@ -250,7 +257,42 @@ namespace AimsharpWow.Modules
 
             #region TTK
 
+            int maxHP = Aimsharp.TargetMaxHP();
+            int currentHP = Aimsharp.TargetCurrentHP();
+            int timer = Aimsharp.CombatTime();
+            Aimsharp.PrintMessage("HPSnapshot 0 " + HPSnapshots[0]);
+            Aimsharp.PrintMessage("Timer " + timer);
             
+            Aimsharp.PrintMessage("HPSnapshot 1 " + HPSnapshots[1]);
+            Aimsharp.PrintMessage("Current HP " + currentHP);
+            
+            
+            if (HPSnapshots[0] == 0) {
+                HPSnapshots[0] = timer;
+                HPSnapshots[1] = currentHP;
+            }
+
+            if (HPSnapshots[0] > 0 && HPSnapshots[1] > 0 && HPSnapshots[1] > currentHP) {
+                int elapsed = timer - HPSnapshots[0];
+                if (elapsed > 0) {
+                    int diff = HPSnapshots[1] - currentHP;
+                    if (diff > 0) {
+                        int dps = diff / elapsed;
+                        if (dps > 0) {
+                            ttk = currentHP / dps;
+                            HPSnapshots[0] = timer;
+                            HPSnapshots[1] = currentHP;
+                            if (Aimsharp.TargetMaxHP() != maxHP) {
+                                HPSnapshots[0] = 0;
+                                HPSnapshots[1] = 1;
+                            }
+                            Aimsharp.PrintMessage("TTK  " + ttk / 1000);
+                        }
+                    }
+                }
+            }
+            
+                  
 
             #endregion
             
@@ -315,10 +357,7 @@ namespace AimsharpWow.Modules
 
             #region CWC
             if (IsChanneling && !CancelChannel) {
-                if (PlayerCastingID == 15407 && EnemiesNearTarget > 2) {
-                    Aimsharp.Cast("Stopcasting");
-                    return true;
-                }
+                
 
                 if (PlayerCastingID == 15407) {
                     if (Aimsharp.CanCast("Mind Blast") && BuffDarkThoughtsUp) {
@@ -328,10 +367,7 @@ namespace AimsharpWow.Modules
                 }
 
                 if (PlayerCastingID == 48045) {
-                    if (EnemiesNearTarget < 2) {
-                        Aimsharp.Cast("Stopcasting");
-                        return true;
-                    }
+                    
                     
                     if ((SearingNightmaresCutoff && !PiOrVe) || (SWPRefreshable && EnemiesNearTarget > 1) &&
                         Aimsharp.CanCast("Searing Nightmare", "player")) {
@@ -390,7 +426,7 @@ namespace AimsharpWow.Modules
             //High Priority Mind Sear action to refresh DoTs with Searing Nightmare
             //actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
             if (Aimsharp.CanCast("Mind Sear", "target") && EnemiesNearTarget > (MindSearCutOff + 1) &&
-                SWPRemains <= 0 && !CooldownMindbenderUp) {
+                SWPRemains <= 0 && !CooldownMindbenderUp && PlayerCastingID != 48045) {
                 Aimsharp.Cast("Mind Sear");
                 return true;
             }
