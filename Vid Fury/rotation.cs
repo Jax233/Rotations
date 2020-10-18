@@ -60,6 +60,7 @@ namespace AimsharpWow.Modules {
 			Settings.Add(new Setting("Auto Victory Rush @ HP%", 0, 100, 70));
 			Settings.Add(new Setting("Auto Shout @ HP%", 0, 100, 15));
 			Settings.Add(new Setting("Auto Enraged Regeneration @ HP%", 0, 100, 30));
+			Settings.Add(new Setting("First 5 Letters of the Addon:", "xxxxx"));
 
 		}
 		
@@ -100,6 +101,7 @@ namespace AimsharpWow.Modules {
 			RacialPower = GetDropDown("Racial Power");
 			usableitems = GetString("Use item: Case Sens");
 			AzeriteColdSteel = GetSlider("Cold Steel, Hot Blood Trait Number:");
+			FiveLetters = GetString("First 5 Letters of the Addon:");
 			
 			Spellbook.Add(MajorPower);
 			
@@ -485,6 +487,31 @@ namespace AimsharpWow.Modules {
 				Aimsharp.Cast("Whirlwind");
 				return true;
 			}
+
+			if (RecklessnessUp && Aimsharp.CanCast("Blood Fury", "player")) {
+				Aimsharp.Cast("Blood Fury");
+				return true;
+			}
+			
+			if (RecklessnessUp && Aimsharp.CanCast("Berserking", "player")) {
+				Aimsharp.Cast("Berserking");
+				return true;
+			}
+
+			if (!RecklessnessUp && !SiegebreakerUp && Aimsharp.CanCast("Light's Judgement")) {
+				Aimsharp.Cast("Light's Judgement");
+				return true;
+			}
+			
+			if (RecklessnessUp && Aimsharp.CanCast("Fire Blood", "player")) {
+				Aimsharp.Cast("Fire Blood");
+				return true;
+			}
+			
+			if (RecklessnessUp && Aimsharp.CanCast("Ancestral Call", "player")) {
+				Aimsharp.Cast("Ancestral Call");
+				return true;
+			}
 			
 			
 
@@ -506,7 +533,7 @@ namespace AimsharpWow.Modules {
 					}
 					
 					//RAMPAGE
-					if (CanCastRampage && (RecklessnessUp || BuffMemoryOfLucidDreamsUp) || (BuffEnrageRemains < GCD || Rage > 90) ) {
+					if (CanCastRampage && ((RecklessnessUp || BuffMemoryOfLucidDreamsUp) || (BuffEnrageRemains < GCD || Rage > 90) )) {
 						Aimsharp.Cast("Rampage");
 						return true;
 					}
