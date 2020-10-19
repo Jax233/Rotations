@@ -143,7 +143,6 @@ namespace AimsharpWow.Modules
             Macros.Add("BotTrink", "/use 14");
             Macros.Add("potion", "/use " + GetDropDown("Potion Type"));
             Macros.Add("crash cursor", "/cast [@cursor] Shadow Crash");
-            Macros.Add("Stopcasting", "/stopcasting");
             Macros.Add("MassDispel", "/cast [@cursor] Mass Dispel");
             Macros.Add("MassDispelOff", "/" + FiveLetters+ " MassDispel");
             
@@ -562,6 +561,29 @@ namespace AimsharpWow.Modules
                 }
 
                 #endregion
+
+                if (Aimsharp.CanUseItem(TopTrinket)) {
+                    Aimsharp.Cast(TopTrinket, true);
+                    return true;
+                }
+
+                if (Aimsharp.CanUseItem(BotTrinket)) {
+                    Aimsharp.Cast(BotTrinket, true);
+                }
+                
+                if (Aimsharp.CanUseTrinket(0) && TopTrinket == "Generic") {
+                    
+                    Aimsharp.Cast("TopTrink", true);
+                    return true;
+                    
+                }
+
+                if (Aimsharp.CanUseTrinket(1) && BotTrinket == "Generic") {
+                    
+                    Aimsharp.Cast("BotTrink", true);
+                    return true;
+                    
+                }
 
 
 
