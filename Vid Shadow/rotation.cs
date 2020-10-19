@@ -672,7 +672,7 @@ namespace AimsharpWow.Modules
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain") &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus") &&
                             (SWPFocusRefreshable && !TalentMiseryEnabled &&
                              !(TalentSearingNightmareEnabled && EnemiesNearTarget > (MindSearCutOff + 1)) &&
                              (!TalentPsychicLinkEnabled || (TalentPsychicLinkEnabled &&
