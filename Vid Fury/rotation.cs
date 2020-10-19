@@ -358,6 +358,9 @@ namespace AimsharpWow.Modules {
 			bool CanCastFocusedAzeriteBeam = Aimsharp.CanCast("Focused Azerite Beam") ||  (Aimsharp.SpellCooldown("Focused Azerite Beam") <= GCD && MajorPower == "Focused Azerite Beam");
 			bool CanCastGuardianOfAzeroth = Aimsharp.CanCast("Guardian of Azeroth") || (Aimsharp.SpellCooldown("Guardian of Azeroth") <= GCD && MajorPower == "Guardian of Azeroth");
 			bool CanCastBloodOfTheEnemy = Aimsharp.CanCast("Blood of the Enemy") || (Aimsharp.SpellCooldown("Blood of the Enemy") <= GCD && MajorPower == "Blood of the Enemy");
+			bool CanCastConcentratedFlame = Aimsharp.CanCast("Concentrated Flame") ||
+			                                (Aimsharp.SpellCooldown("Concentrated Flame") <= GCD &&
+			                                 MajorPower == "Concentrated Flame");
 
 			#endregion
 			
@@ -464,6 +467,12 @@ namespace AimsharpWow.Modules {
 				return true;
 			}
 
+			if (CanCastConcentratedFlame && !RecklessnessUp && !SiegebreakerUp && !DebuffConcentratedFlameUp)
+			{
+				Aimsharp.Cast("Concentrated Flame");
+				return true;
+			}
+			
 			if (CanCastFocusedAzeriteBeam && !NoCooldowns && !RecklessnessUp && !SiegebreakerUp) {
 				Aimsharp.Cast("Focused Azerite Beam");
 				return true;
