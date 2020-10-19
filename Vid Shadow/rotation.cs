@@ -643,7 +643,7 @@ namespace AimsharpWow.Modules
 
                 if (CouncilDots) {
                     if (!Aimsharp.TargetIsUnit("focus")) {
-                        if (Aimsharp.CanCast("Vampiric Touch") &&
+                        if (Aimsharp.CanCast("Vampiric Touch", "focus") &&
                             (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
                             Aimsharp.PrintMessage("VT @ focus");
                             Aimsharp.Cast("VTFocus");
