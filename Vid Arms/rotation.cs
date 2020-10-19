@@ -6,10 +6,10 @@ using System.Drawing;
 using AimsharpWow.API; //needed to access Aimsharp API
 
 namespace AimsharpWow.Modules {
-	public class VidArmsWarrior: Rotation {
-		
+	public class VidArmsWarrior : Rotation {
+
 		public override void LoadSettings() {
-			List < string > MajorAzeritePower = new List < string > (new string[] {
+			List<string> MajorAzeritePower = new List<string>(new string[] {
 				"Guardian of Azeroth",
 				"Focused Azerite Beam",
 				"Concentrated Flame",
@@ -21,8 +21,8 @@ namespace AimsharpWow.Modules {
 				"None"
 			});
 			Settings.Add(new Setting("Major Power", MajorAzeritePower, "None"));
-			
-			List < string > Trinkets = new List < string > (new string[] {
+
+			List<string> Trinkets = new List<string>(new string[] {
 				"Azshara's Font of Power",
 				"Ashvane's Razor Coral",
 				"Pocket-Sized Computation Device",
@@ -47,7 +47,7 @@ namespace AimsharpWow.Modules {
 			Settings.Add(new Setting("Use item: Case Sens", "None"));
 			Settings.Add(new Setting("Use item @ HP%", 0, 100, 100));
 			Settings.Add(new Setting("First 5 Letters of the Addon:", "xxxxx"));
-			List < string > Race = new List < string > (new string[] {
+			List<string> Race = new List<string>(new string[] {
 				"Orc",
 				"Troll",
 				"Dark Iron Dwarf",
@@ -65,17 +65,17 @@ namespace AimsharpWow.Modules {
 			Settings.Add(new Setting("Auto Stance @ HP%", 0, 100, 30));
 			Settings.Add(new Setting("Unstance @ HP%", 0, 100, 70));
 		}
-		
+
 		string MajorPower;
 		string TopTrinket;
 		string BotTrinket;
 		string RacialPower;
 		string usableitems;
 		string FiveLetters;
-		
+
 		public override void Initialize() {
 			Aimsharp.DebugMode();
-			
+
 			Aimsharp.PrintMessage("Vid Arms Warrior 1.04", Color.Yellow);
 			Aimsharp.PrintMessage("Recommended PVE talents: 3323311", Color.Yellow);
 			Aimsharp.PrintMessage("Recommended PVP talents: 2333211", Color.Yellow);
@@ -87,31 +87,33 @@ namespace AimsharpWow.Modules {
 			Aimsharp.PrintMessage("/xxxxx savepp -- Toggles the use of prepull", Color.Orange);
 			Aimsharp.PrintMessage("/xxxxx StormBolt --Queues Storm Bolt up to be used on the next GCD.", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx RallyingCry --Queues Rallying Cry up to be used on the next GCD.", Color.Red);
-			Aimsharp.PrintMessage("/xxxxx IntimidatingShout --Queues Intimidating SHout up to be used on the next GCD.", Color.Red);
+			Aimsharp.PrintMessage("/xxxxx IntimidatingShout --Queues Intimidating SHout up to be used on the next GCD.",
+				Color.Red);
 			Aimsharp.PrintMessage("/xxxxx Bladestorm --Queues Bladestorm up to be used on the next GCD.", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx DefensiveStance --Toggles on Defensive Stance", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx pvp --Toggles PVP Mode.", Color.Red);
 			Aimsharp.PrintMessage("/xxxxx Burst --Toggles Burst for pvp on.", Color.Red);
-			
+
 			Aimsharp.Latency = 100;
 			Aimsharp.QuickDelay = 125;
-			
+
 			MajorPower = GetDropDown("Major Power");
 			TopTrinket = GetDropDown("Top Trinket");
 			BotTrinket = GetDropDown("Bot Trinket");
 			RacialPower = GetDropDown("Racial Power");
 			usableitems = GetString("Use item: Case Sens");
 			FiveLetters = GetString("First 5 Letters of the Addon:");
-			
+
 			#region Spellbook
+
 			Spellbook.Add(MajorPower);
-			
+
 			if (RacialPower == "Orc") Spellbook.Add("Blood Fury");
 			if (RacialPower == "Troll") Spellbook.Add("Berserking");
 			if (RacialPower == "Dark Iron Dwarf") Spellbook.Add("Fireblood");
 			if (RacialPower == "Mag'har Orc") Spellbook.Add("Ancestral Call");
 			if (RacialPower == "Lightforged Draenei") Spellbook.Add("Light's Judgment");
-			
+
 			Spellbook.Add("Charge");
 			Spellbook.Add("Skullsplitter");
 			Spellbook.Add("Colossus Smash");
@@ -138,7 +140,7 @@ namespace AimsharpWow.Modules {
 			Spellbook.Add("Storm Bolt");
 			Spellbook.Add("Intimidating Shout");
 			Spellbook.Add("Deadly Calm");
-			
+
 			Buffs.Add("Bloodlust");
 			Buffs.Add("Heroism");
 			Buffs.Add("Time Warp");
@@ -150,7 +152,7 @@ namespace AimsharpWow.Modules {
 			Buffs.Add("Reckless Force");
 			Buffs.Add("Guardian of Azeroth");
 			Buffs.Add("Crushing Assault");
-			
+
 			Buffs.Add("Berserker Rage");
 			Buffs.Add("Meat Cleaver");
 			Buffs.Add("Enrage");
@@ -166,7 +168,7 @@ namespace AimsharpWow.Modules {
 			Buffs.Add("Sweeping Strikes");
 			Buffs.Add("Deadly Calm");
 			Buffs.Add("Executioner's Precision");
-			
+
 			Debuffs.Add("Razor Coral");
 			Debuffs.Add("Conductive Ink");
 			Debuffs.Add("Shiver Venom");
@@ -176,18 +178,18 @@ namespace AimsharpWow.Modules {
 			Debuffs.Add("Hamstring");
 			Debuffs.Add("Deep Wounds");
 			Debuffs.Add("Concentrated Flame");
-			
+
 			Items.Add(TopTrinket);
 			Items.Add(BotTrinket);
 			Items.Add(usableitems);
-			
+
 			Macros.Add("ItemUse", "/use " + usableitems);
 			Macros.Add("TopTrink", "/use 13");
 			Macros.Add("BotTrink", "/use 14");
-			Macros.Add("StormBoltOff", "/"+FiveLetters+" StormBolt");
-			Macros.Add("IntimidatingShoutOff", "/"+FiveLetters+" IntimidatingShout");
-			Macros.Add("RallyingCryOff", "/"+FiveLetters+" RallyingCry");
-			Macros.Add("BladestormOff", "/"+FiveLetters+" Bladestorm");
+			Macros.Add("StormBoltOff", "/" + FiveLetters + " StormBolt");
+			Macros.Add("IntimidatingShoutOff", "/" + FiveLetters + " IntimidatingShout");
+			Macros.Add("RallyingCryOff", "/" + FiveLetters + " RallyingCry");
+			Macros.Add("BladestormOff", "/" + FiveLetters + " Bladestorm");
 
 			CustomCommands.Add("Burst");
 			CustomCommands.Add("Potions");
@@ -203,12 +205,13 @@ namespace AimsharpWow.Modules {
 
 			#endregion
 		}
-		
+
 		// optional override for the CombatTick which executes while in combat
-		
+
 		public override bool CombatTick() {
-			
+
 			#region MiscSetup
+
 			bool Fighting = Aimsharp.Range("target") <= 8 && Aimsharp.TargetIsEnemy();
 			bool Moving = Aimsharp.PlayerIsMoving();
 			float Haste = Aimsharp.Haste() / 100f;
@@ -218,15 +221,21 @@ namespace AimsharpWow.Modules {
 			int PlayerHealth = Aimsharp.Health("player");
 			string LastCast = Aimsharp.LastCast();
 			bool IsChanneling = Aimsharp.IsChanneling("player");
-			
+
 			int EnemiesInMelee = Aimsharp.EnemiesInMelee();
-			int GCDMAX = (int)(1500f / (Haste + 1f));
+			int GCDMAX = (int) (1500f / (Haste + 1f));
 			int GCD = Aimsharp.GCD();
 			int Latency = Aimsharp.Latency;
-			bool HasLust = Aimsharp.HasBuff("Bloodlust", "player", false) || Aimsharp.HasBuff("Heroism", "player", false) || Aimsharp.HasBuff("Time Warp", "player", false) || Aimsharp.HasBuff("Ancient Hysteria", "player", false) || Aimsharp.HasBuff("Netherwinds", "player", false) || Aimsharp.HasBuff("Drums of Rage", "player", false);
-			int FlameFullRecharge = (int)(Aimsharp.RechargeTime("Concentrated Flame") - GCD + (30000f) * (1f - Aimsharp.SpellCharges("Concentrated Flame")));
+			bool HasLust = Aimsharp.HasBuff("Bloodlust", "player", false) ||
+			               Aimsharp.HasBuff("Heroism", "player", false) ||
+			               Aimsharp.HasBuff("Time Warp", "player", false) ||
+			               Aimsharp.HasBuff("Ancient Hysteria", "player", false) ||
+			               Aimsharp.HasBuff("Netherwinds", "player", false) ||
+			               Aimsharp.HasBuff("Drums of Rage", "player", false);
+			int FlameFullRecharge = (int) (Aimsharp.RechargeTime("Concentrated Flame") - GCD +
+			                               (30000f) * (1f - Aimsharp.SpellCharges("Concentrated Flame")));
 			int ShiverVenomStacks = Aimsharp.DebuffStacks("Shiver Venom");
-			
+
 			int CDGuardianOfAzerothRemains = Aimsharp.SpellCooldown("Guardian of Azeroth") - GCD;
 			bool BuffGuardianOfAzerothUp = Aimsharp.HasBuff("Guardian of Azeroth");
 			int CDBloodOfTheEnemyRemains = Aimsharp.SpellCooldown("Blood of the Enemy") - GCD;
@@ -236,9 +245,11 @@ namespace AimsharpWow.Modules {
 			bool DebuffRazorCoralUp = Aimsharp.HasDebuff("Razor Coral");
 			bool DebuffConductiveInkUp = Aimsharp.HasDebuff("Conductive Ink");
 			int Rage = Aimsharp.Power("player");
+
 			#endregion
-			
+
 			#region CommandsSetup
+
 			// Commands
 			bool UsePotion = Aimsharp.IsCustomCodeOn("Potions");
 			bool NoCooldowns = Aimsharp.IsCustomCodeOn("SaveCooldowns");
@@ -250,14 +261,16 @@ namespace AimsharpWow.Modules {
 			bool Bladestorm = Aimsharp.IsCustomCodeOn("Bladestorm");
 			bool Burst = Aimsharp.IsCustomCodeOn("Burst");
 			bool DefensiveStanceToggle = Aimsharp.IsCustomCodeOn("DefensiveStance");
+
 			#endregion
-			
+
 			#region CooldownsSetup
+
 			// CDS
 			int CDSweepingStrikesRemains = Aimsharp.SpellCooldown("Sweeping Strikes") - GCD;
 			int ColossusSmashRemains = Aimsharp.DebuffRemaining("Colossus Smash", "target") - GCD;
 			int CDColossusSmashRemains = Aimsharp.SpellCooldown("Colossus Smash") - GCD;
-			int CDBladestormRemains = Aimsharp.SpellCooldown("Bladestorm") -GCD;
+			int CDBladestormRemains = Aimsharp.SpellCooldown("Bladestorm") - GCD;
 			bool DebuffColossusSmashUp = ColossusSmashRemains > 0;
 			int RendRemains = Aimsharp.DebuffRemaining("Rend") - GCD;
 			bool DebuffRendUp = RendRemains > 0;
@@ -269,15 +282,17 @@ namespace AimsharpWow.Modules {
 			int CDIntimidatingShoutRemains = Aimsharp.SpellCooldown("Intimidating Shout");
 			int CDRallyingCryRemains = Aimsharp.SpellCooldown("Rallying Cry");
 			int CDDeadlyCalmRemains = Aimsharp.SpellCooldown("Deadly Calm") - GCD;
-			bool CDDeadlyCalmUp = CDDeadlyCalmRemains >0;
+			bool CDDeadlyCalmUp = CDDeadlyCalmRemains > 0;
 			int CDMortalStrikeRemains = Aimsharp.SpellCooldown("Mortal Strike") - GCD;
 			bool CDMortalStrikeUp = CDMortalStrikeRemains > 0;
 			int CDSkullsplitterRemains = Aimsharp.SpellCooldown("Skullsplitter") - GCD;
 			int CDOverpowerRemains = Aimsharp.SpellCooldown("Overpower") - GCD;
 			int CDCleaveRemains = Aimsharp.SpellCooldown("Cleave") - GCD;
+
 			#endregion
-			
+
 			#region TalentsSetup
+
 			//Talents
 			bool TalentDoubleTime = Aimsharp.Talent(2, 1);
 			bool TalentStormbolt = Aimsharp.Talent(2, 3);
@@ -289,9 +304,11 @@ namespace AimsharpWow.Modules {
 			bool TalentAvatar = Aimsharp.Talent(6, 2);
 			bool TalentDreadnaught = Aimsharp.Talent(7, 2);
 			bool TalentDeadlyCalm = Aimsharp.Talent(6, 3);
+
 			#endregion
-			
+
 			#region BuffsSetup
+
 			//Buffs
 			bool SweepingStrikesUp = Aimsharp.HasBuff("Sweeping Strikes", "player");
 			bool TestOfMightUp = Aimsharp.HasBuff("Test of Might", "player");
@@ -302,63 +319,69 @@ namespace AimsharpWow.Modules {
 			int BuffStacksOP = Aimsharp.BuffStacks("Overpower", "player");
 			bool BuffCrushingAssault = Aimsharp.HasBuff("Crushing Assault", "player");
 			bool BuffDeadlyCalmUp = Aimsharp.HasBuff("Deadly Calm", "player");
-			
+
 			int BuffTestOfMightRemains = Aimsharp.BuffRemaining("Test of Might", "player") - GCD;
 			bool BuffTestOfMightReady = BuffTestOfMightRemains <= 800 && BuffTestOfMightRemains >= 500;
 			int BuffExecutionersPrecisionStacks = Aimsharp.BuffStacks("Executioner's Precision", "player");
 			int BuffWhirlwindRemains = Aimsharp.BuffRemaining("Whirlwind") - GCD;
 			bool BuffWhirlwindUp = BuffWhirlwindRemains > 0;
+
 			#endregion
 
 			#region DebuffsSetup
+
 			//Debuffs
 			bool DebuffDeepWoundsUp = Aimsharp.HasDebuff("Deep Wounds", "target");
 			int DebuffDeepWoundsRemaining = Aimsharp.DebuffRemaining("Deep Wounds", "target");
 			int DebuffConcentratedFlameRemaining = Aimsharp.DebuffRemaining("Concentrated Flame", "target");
 			bool DebuffConcentratedFlameUp = Aimsharp.HasDebuff("Concentrated Flame", "target");
+
 			#endregion
-			
+
 			#region OptionsSetup
+
 			// Options
 			bool TopTrinketAOE = GetCheckBox("Top Trinket AOE?");
 			bool BotTrinketAOE = GetCheckBox("Bot Trinket AOE?");
 			bool TestOfMightTrait = GetCheckBox("Test of Might Trait?");
+
 			#endregion
-			
+
 			if (OffAOE) {
 				EnemiesInMelee = EnemiesInMelee > 0 ? 1 : 0;
 			}
-			
+
 			if (IsChanneling) return false;
-			
+
 			#region Cooldowns
+
 			//COOLDOWNS
 			if (!NoCooldowns && Fighting) {
-				
+
 				//TRINKET 1
 				if (Aimsharp.CanUseTrinket(0) && TopTrinket == "Generic") {
 					if (!TopTrinketAOE) {
 						Aimsharp.Cast("TopTrink", true);
 						return true;
-					} 
+					}
 					else if (EnemiesInMelee >= 1) {
 						Aimsharp.Cast("TopTrink", true);
 						return true;
 					}
 				}
-				
+
 				//TRINKET 2
 				if (Aimsharp.CanUseTrinket(1) && BotTrinket == "Generic") {
 					if (!BotTrinketAOE) {
 						Aimsharp.Cast("BotTrink", true);
 						return true;
-					} 
+					}
 					else if (EnemiesInMelee >= 1) {
 						Aimsharp.Cast("BotTrink", true);
 						return true;
 					}
 				}
-				
+
 				//POTION
 				if (Aimsharp.CanUseItem(usableitems) && usableitems != "None" && !UsePotion) {
 					if (EnemiesInMelee >= 1 && PlayerHealth <= GetSlider("Use item @ HP%")) {
@@ -366,25 +389,28 @@ namespace AimsharpWow.Modules {
 						return true;
 					}
 				}
-				
+
 				//BLOOD FURY
 				if (RacialPower == "Orc") {
 					if (Aimsharp.CanCast("Blood Fury", "player")) {
-						if((BuffMemoryOfLucidDreamsRemains < 5000 || (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
+						if ((BuffMemoryOfLucidDreamsRemains < 5000 ||
+						     (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
 							Aimsharp.Cast("Blood Fury", true);
 							return true;
 						}
 					}
 				}
-				
+
 				//BERSERKING
 				if (RacialPower == "Troll") {
-					if (Aimsharp.CanCast("Berserking", "player") && (BuffMemoryOfLucidDreamsUp || (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
+					if (Aimsharp.CanCast("Berserking", "player") && (BuffMemoryOfLucidDreamsUp ||
+					                                                 (MajorPower != "Memory of Lucid Dreams" &&
+					                                                  DebuffColossusSmashUp))) {
 						Aimsharp.Cast("Berserking", true);
 						return true;
 					}
 				}
-				
+
 				//LIGHTS JUDGEMENT
 				if (RacialPower == "Lightforged Draenei") {
 					if (Aimsharp.CanCast("Light's Judgment", "player") && !DebuffColossusSmashUp) {
@@ -392,61 +418,66 @@ namespace AimsharpWow.Modules {
 						return true;
 					}
 				}
-				
+
 				//FIREBLOOD
 				if (RacialPower == "Dark Iron Dwarf") {
-					if (Aimsharp.CanCast("Fireblood", "player")&& (BuffMemoryOfLucidDreamsRemains < 5000 || (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
+					if (Aimsharp.CanCast("Fireblood", "player") && (BuffMemoryOfLucidDreamsRemains < 5000 ||
+					                                                (MajorPower != "Memory of Lucid Dreams" &&
+					                                                 DebuffColossusSmashUp))) {
 						Aimsharp.Cast("Fireblood", true);
 						return true;
 					}
 				}
-				
+
 				//ANCESTRAL CALL
 				if (RacialPower == "Mag'har Orc") {
-					if (Aimsharp.CanCast("Ancestral Call", "player")&& (BuffMemoryOfLucidDreamsRemains < 5000 || (MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp))) {
+					if (Aimsharp.CanCast("Ancestral Call", "player") && (BuffMemoryOfLucidDreamsRemains < 5000 ||
+					                                                     (MajorPower != "Memory of Lucid Dreams" &&
+					                                                      DebuffColossusSmashUp))) {
 						Aimsharp.Cast("Ancestral Call", true);
 						return true;
 					}
-				}				
-				
+				}
+
 				//AVATAR								
 				if (TalentAvatar) {
 					if (Aimsharp.CanCast("Avatar", "player") && !PVPmode) {
-						if(CDColossusSmashRemains < 8000 ) {
+						if (CDColossusSmashRemains < 8000) {
 							Aimsharp.Cast("Avatar");
 							return true;
 						}
-						
+
 					}
 				}
-				
-				
+
+
 				//BLOOD OF THE ENEMY
 				if (MajorPower == "Blood of the Enemy" && EnemiesInMelee > 0) {
-					if (Aimsharp.CanCast("Blood of the Enemy", "player") && (TestOfMightUp || (DebuffColossusSmashUp && !TestOfMightTrait))) {
+					if (Aimsharp.CanCast("Blood of the Enemy", "player") &&
+					    (TestOfMightUp || (DebuffColossusSmashUp && !TestOfMightTrait))) {
 						Aimsharp.Cast("Blood of the Enemy");
 						return true;
 					}
 				}
-				
+
 				//PURIFYING BLAST
 				if (MajorPower == "Purifying Blast") {
 					if (!DebuffColossusSmashUp && !TestOfMightUp && Aimsharp.CanCast("Purifying Blast")) {
 						Aimsharp.Cast("Purifying Blast");
 						return true;
 					}
-					
+
 				}
-				
+
 				//RIPPLE IN SPACE
 				if (MajorPower == "Ripple in Space") {
 					if (!DebuffColossusSmashUp && !TestOfMightUp && Aimsharp.CanCast("Ripple in Space")) {
 						Aimsharp.Cast("Ripple in Space");
 						return true;
 					}
-					
+
 				}
-				
+
 				//WORLDVEIN RESONANCE
 				if (MajorPower == "Worldvein Resonance") {
 					if (Aimsharp.CanCast("Worldvein Resonance", "player")) {
@@ -456,7 +487,7 @@ namespace AimsharpWow.Modules {
 						}
 					}
 				}
-				
+
 				//FOCUSED AZERITE BEAM
 				if (MajorPower == "Focused Azerite Beam") {
 					if (Aimsharp.CanCast("Focused Azerite Beam", "player")) {
@@ -466,23 +497,24 @@ namespace AimsharpWow.Modules {
 						}
 					}
 				}
-				
+
 				//REAPING FLAMES
-				if(MajorPower == "Reaping Flames") {
-					if(Aimsharp.CanCast("Reaping Flames") && !DebuffColossusSmashUp && !TestOfMightUp) {
+				if (MajorPower == "Reaping Flames") {
+					if (Aimsharp.CanCast("Reaping Flames") && !DebuffColossusSmashUp && !TestOfMightUp) {
 						Aimsharp.Cast("Reaping Flames");
 						return true;
 					}
 				}
-				
+
 				//CONCENTRATED FLAME
-				if ( MajorPower == "Concentrated Flame") {
-					if(Aimsharp.CanCast("Concentrated Flame", "target") && !DebuffColossusSmashUp && !TestOfMightUp && !DebuffConcentratedFlameUp) {
+				if (MajorPower == "Concentrated Flame") {
+					if (Aimsharp.CanCast("Concentrated Flame", "target") && !DebuffColossusSmashUp && !TestOfMightUp &&
+					    !DebuffConcentratedFlameUp) {
 						Aimsharp.Cast("Concentrated Flame");
 						return true;
 					}
 				}
-				
+
 				//THE UNBOUND FORCE
 				if (MajorPower == "The Unbound Force") {
 					if (Aimsharp.CanCast("The Unbound Force")) {
@@ -490,317 +522,372 @@ namespace AimsharpWow.Modules {
 						return true;
 					}
 				}
-				
+
 				//GUARDIAN OF AZEROTH
 				if (MajorPower == "Guardian of Azeroth") {
 					if (Aimsharp.CanCast("Guardian of Azeroth", "player")) {
-						if (CDColossusSmashRemains<10000) {
+						if (CDColossusSmashRemains < 10000) {
 							Aimsharp.Cast("Guardian of Azeroth");
 							return true;
 						}
 					}
 				}
-				
+
 				//MEMORY OF LUCID DREAMS TODO: TTK maybe?
 				if (MajorPower == "Memory of Lucid Dreams") {
 					if (Aimsharp.CanCast("Memory of Lucid Dreams", "player")) {
-						if (CDColossusSmashRemains <= (GCD+GCDMAX)) {
+						if (CDColossusSmashRemains <= (GCD + GCDMAX)) {
 							Aimsharp.Cast("Memory of Lucid Dreams");
 							return true;
 						}
 					}
 				}
-				
+
 				//ASHVANES RAZOR CORAL
 				if (Aimsharp.CanUseItem("Ashvane's Razor Coral")) {
-					if (!DebuffRazorCoralUp || (TargetHealth <= 20 && BuffMemoryOfLucidDreamsUp && CDMemoryOfLucidDreamsRemains<117000) || (TargetHealth<=30 && DebuffConductiveInkUp && MajorPower != "Memory of Lucid Dreams") || (!DebuffConductiveInkUp && MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp)) {
+					if (!DebuffRazorCoralUp ||
+					    (TargetHealth <= 20 && BuffMemoryOfLucidDreamsUp && CDMemoryOfLucidDreamsRemains < 117000) ||
+					    (TargetHealth <= 30 && DebuffConductiveInkUp && MajorPower != "Memory of Lucid Dreams") ||
+					    (!DebuffConductiveInkUp && MajorPower != "Memory of Lucid Dreams" && DebuffColossusSmashUp)) {
 						Aimsharp.Cast("Ashvane's Razor Coral", true);
 						return true;
 					}
 				}
-				
-				
-				
+
+
+
 			}
+
 			#endregion
-			
+
 			#region Utility
+
 			// Utility
-			
-				
-				// QUEUED STORMBOLT
-				if(CDStormBoltRemains > 5000 && StormBolt) {
-					Aimsharp.Cast("StormBoltOff");
+
+
+			// QUEUED STORMBOLT
+			if (CDStormBoltRemains > 5000 && StormBolt) {
+				Aimsharp.Cast("StormBoltOff");
+				return true;
+			}
+
+			if (StormBolt && Aimsharp.CanCast("Storm Bolt")) {
+				Aimsharp.PrintMessage("Queued Storm Bolt");
+				Aimsharp.Cast("Storm Bolt");
+				return true;
+			}
+
+			// QUEUED INTIMIDATING SHOUT
+			if (CDIntimidatingShoutRemains > 5000 && IntimidatingShout) {
+				Aimsharp.Cast("IntimidatingShoutOff");
+				return true;
+			}
+
+			if (IntimidatingShout && Aimsharp.CanCast("Intimidating Shout")) {
+				Aimsharp.PrintMessage("Queued Intimidating Shout");
+				Aimsharp.Cast("Intimidating Shout");
+				return true;
+			}
+
+			// QUEUED RALLYING CRY
+			if (CDRallyingCryRemains > 5000 && RallyingCry) {
+				Aimsharp.Cast("RallyingCryOff");
+				return true;
+			}
+
+			if (RallyingCry && Aimsharp.CanCast("Rallying Cry", "player")) {
+				Aimsharp.PrintMessage("Queued Rallying Cry");
+				Aimsharp.Cast("Rallying Cry");
+				return true;
+			}
+
+			// QUEUED BLADESTORM
+			if (CDBladestormRemains > 5000 && Bladestorm) {
+				Aimsharp.Cast("BladestormOff");
+				return true;
+			}
+
+			if (Bladestorm && Aimsharp.CanCast("Bladestorm", "player")) {
+				Aimsharp.PrintMessage("Queued Bladestorm");
+				Aimsharp.Cast("Bladestorm");
+				return true;
+			}
+
+			// Auto Victory Rush
+			if (Aimsharp.CanCast("Victory Rush")) {
+				if (PlayerHealth <= GetSlider("Auto Victory Rush @ HP%")) {
+					Aimsharp.Cast("Victory Rush");
 					return true;
 				}
-				
-				if (StormBolt && Aimsharp.CanCast("Storm Bolt")) {
-					Aimsharp.PrintMessage("Queued Storm Bolt");
-					Aimsharp.Cast("Storm Bolt");
-					return true;
-				}
-				
-				// QUEUED INTIMIDATING SHOUT
-				if(CDIntimidatingShoutRemains > 5000 && IntimidatingShout) {
-					Aimsharp.Cast("IntimidatingShoutOff");
-					return true;
-				}
-				
-				if (IntimidatingShout && Aimsharp.CanCast("Intimidating Shout")) {
-					Aimsharp.PrintMessage("Queued Intimidating Shout");
-					Aimsharp.Cast("Intimidating Shout");
-					return true;
-				}
-				
-				// QUEUED RALLYING CRY
-				if(CDRallyingCryRemains > 5000 && RallyingCry) {
-					Aimsharp.Cast("RallyingCryOff");
-					return true;
-				}
-				
-				if (RallyingCry && Aimsharp.CanCast("Rallying Cry","player")) {
-					Aimsharp.PrintMessage("Queued Rallying Cry");
+			}
+
+			// Auto Commanding Shout
+			if (Aimsharp.CanCast("Rallying Cry", "player")) {
+				if (PlayerHealth <= GetSlider("Auto Shout @ HP%")) {
 					Aimsharp.Cast("Rallying Cry");
 					return true;
 				}
-				
-				// QUEUED BLADESTORM
-				if(CDBladestormRemains > 5000 && Bladestorm) {
-					Aimsharp.Cast("BladestormOff");
+			}
+
+			//Auto Healthstone
+			if (Aimsharp.CanUseItem("Healthstone")) {
+				if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
+					Aimsharp.CanUseItem("Healthstone");
 					return true;
 				}
-				
-				if (Bladestorm && Aimsharp.CanCast("Bladestorm","player")) {
-					Aimsharp.PrintMessage("Queued Bladestorm");
-					Aimsharp.Cast("Bladestorm");
+			}
+
+			// Auto Defensive Stance
+			if (!Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
+				if (PlayerHealth <= GetSlider("Auto Stance @ HP%") || DefensiveStanceToggle) {
+					Aimsharp.Cast("Defensive Stance");
 					return true;
 				}
-				
-				// Auto Victory Rush
-				if (Aimsharp.CanCast("Victory Rush")) {
-					if (PlayerHealth <= GetSlider("Auto Victory Rush @ HP%")) {
-						Aimsharp.Cast("Victory Rush");
-						return true;
-					}
+			}
+
+			if (Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
+				if (PlayerHealth >= GetSlider("Unstance @ HP%") && !DefensiveStanceToggle) {
+					Aimsharp.Cast("Defensive Stance");
+					return true;
 				}
-				
-				// Auto Commanding Shout
-				if (Aimsharp.CanCast("Rallying Cry", "player")) {
-					if (PlayerHealth <= GetSlider("Auto Shout @ HP%")) {
-						Aimsharp.Cast("Rallying Cry");
-						return true;
-					}
+			}
+
+			if (Aimsharp.CanCast("Die by the Sword", "player")) {
+				if (PlayerHealth <= GetSlider("Auto Die by the Sword @ HP%")) {
+					Aimsharp.Cast("Die by the Sword");
+					return true;
 				}
-				
-				//Auto Healthstone
-				if (Aimsharp.CanUseItem("Healthstone")) {
-					if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
-						Aimsharp.CanUseItem("Healthstone");
-						return true;
-					}
-				}
-				
-				// Auto Defensive Stance
-				if (!Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-					if (PlayerHealth <= GetSlider("Auto Stance @ HP%") || DefensiveStanceToggle) {
-						Aimsharp.Cast("Defensive Stance");
-						return true;
-					}
-				}
-				
-				if (Aimsharp.HasBuff("Defensive Stance", "player") && Aimsharp.CanCast("Defensive Stance", "player")) {
-					if (PlayerHealth >= GetSlider("Unstance @ HP%") && !DefensiveStanceToggle) {
-						Aimsharp.Cast("Defensive Stance");
-						return true;
-					}
-				}
-				
-				if (Aimsharp.CanCast("Die by the Sword", "player")) {
-					if (PlayerHealth <= GetSlider("Auto Die by the Sword @ HP%")) {
-						Aimsharp.Cast("Die by the Sword");
-						return true;
-					}
-				}
-			
+			}
+
 			#endregion
-			
+
 			#region PVE Rotation
+
 			// PVE Rotation
 			if (!PVPmode) {
-				
+
 				if (Fighting) {
-					
+
 					//SWEEPING STRIKES actions+=/sweeping_strikes,if=spell_targets.whirlwind>1&(cooldown.bladestorm.remains>10|cooldown.colossus_smash.remains>8|azerite.test_of_might.enabled)
 
-					if(Aimsharp.CanCast("Sweeping Strikes", "player") && !OffAOE) {
-						if(EnemiesInMelee > 1 && (CDBladestormRemains>10000 || CDColossusSmashRemains > 8000 || TestOfMightTrait)) {
+					if (Aimsharp.CanCast("Sweeping Strikes", "player") && !OffAOE) {
+						if (EnemiesInMelee > 1 && (CDBladestormRemains > 10000 || CDColossusSmashRemains > 8000 ||
+						                           TestOfMightTrait)) {
 							Aimsharp.Cast("Sweeping Strikes");
 							return true;
 						}
 					}
+
 					#region Single Target
+
 					//NO AOE
-					if (EnemiesInMelee >= 1 && EnemiesInMelee < 5) {
-						
+					if (EnemiesInMelee >= 1) {
+
 						//EXECUTE RANGE
-						if(TargetHealth <= 20) {
-							
-							if (CDSkullsplitterRemains <= 0 && !BuffMemoryOfLucidDreamsUp && !BuffDeadlyCalmUp) {
-								if (Rage < 60) {
-									Aimsharp.Cast("Skullsplitter");
-									return true;
-								}
+						if (TargetHealth <= 20) {
+
+							if (Aimsharp.CanCast("Deadly Calm", "player") && !NoCooldowns) {
+								Aimsharp.Cast("Deadly Calm");
+								return true;
 							}
 
-							
-							if (MajorPower!= "Memory of Lucid Dreams" || BuffMemoryOfLucidDreamsUp || CDMemoryOfLucidDreamsRemains > 10000) {
-								
+							if (CDSkullsplitterRemains <= 0 &&
+							    ((!BuffMemoryOfLucidDreamsUp && Rage < 52) || Rage < 20)) {
+								Aimsharp.Cast("Skullsplitter");
+								return true;
+
+							}
+
+
+							if (MajorPower != "Memory of Lucid Dreams" || BuffMemoryOfLucidDreamsUp ||
+							    CDMemoryOfLucidDreamsRemains > 10000) {
+
 								if (!TalentWarbreaker) {
 									if (CDColossusSmashRemains <= 0 || Aimsharp.CanCast("Colossus Smash")) {
 										Aimsharp.Cast("Colossus Smash");
 										return true;
 									}
-								} 
+								}
 								else {
 									if (Aimsharp.CanCast("Warbreaker", "player")) {
 										Aimsharp.Cast("Warbreaker");
 										return true;
 									}
 								}
-								
-							}
-							
-							if(Aimsharp.CanCast("Deadly Calm", "player") && !NoCooldowns) {
-								Aimsharp.Cast("Deadly Calm");
-								return true;
+
 							}
 
-							
-							if(!BuffDeadlyCalmUp && !BuffMemoryOfLucidDreamsUp && TestOfMightUp && Rage <30 && CDBladestormRemains <= 0) {
-								Aimsharp.Cast("Bladestorm");
-								return true;
-							}
-							
-							
-							
-							if(EnemiesInMelee > 2 && ((CDCleaveRemains <= 0 && Rage >= 20) || Aimsharp.CanCast("Cleave"))) {
-								Aimsharp.Cast("Cleave");
-								return true;
-							}
-							
-							if(BuffCrushingAssault && !BuffMemoryOfLucidDreamsUp && Aimsharp.CanCast("Slam")) {
-								Aimsharp.Cast("Slam");
-								return true;
-							}
-							
-							if(BuffStacksOP == 2 && TalentDreadnaught || BuffExecutionersPrecisionStacks==2 && Aimsharp.CanCast("Mortal Strike")) {
+							//actions.execute+=/mortal_strike,if=dot.deep_wounds.remains<=duration*0.3&(spell_targets.whirlwind=1|!spell_targets.whirlwind>1&!talent.cleave.enabled)
+							if ((DebuffDeepWoundsRemaining <= 3600 && EnemiesInMelee == 1 ||
+							     EnemiesInMelee > 1 && !TalentCleave) && Aimsharp.CanCast("Mortal Strike")) {
 								Aimsharp.Cast("Mortal Strike");
 								return true;
 							}
-							
-							if(BuffMemoryOfLucidDreamsUp || BuffDeadlyCalmUp || (TestOfMightUp && CDMemoryOfLucidDreamsRemains >94000) && Aimsharp.CanCast("Execute")) {
+
+							if ((EnemiesInMelee > 2 && DebuffDeepWoundsRemaining < 3600 || EnemiesInMelee > 3) &&
+							    ((CDCleaveRemains <= 0 && Rage >= 20) || Aimsharp.CanCast("Cleave"))) {
+								Aimsharp.Cast("Cleave");
+								return true;
+							}
+
+
+							if (!BuffDeadlyCalmUp && !BuffMemoryOfLucidDreamsUp && TestOfMightUp && Rage < 30 &&
+							    CDBladestormRemains <= 0) {
+								Aimsharp.Cast("Bladestorm");
+								return true;
+							}
+
+
+							if ((BuffMemoryOfLucidDreamsUp || BuffDeadlyCalmUp || TestOfMightUp || DebuffColossusSmashUp
+							) && Aimsharp.CanCast("Execute")) {
 								Aimsharp.Cast("Execute");
 								return true;
 							}
-							
-							if(CDOverpowerRemains <= 0 || Aimsharp.CanCast("Overpower")) {
+
+
+							if (BuffCrushingAssault && !BuffMemoryOfLucidDreamsUp && Aimsharp.CanCast("Slam")) {
+								Aimsharp.Cast("Slam");
+								return true;
+							}
+
+
+
+
+
+							if (CDOverpowerRemains <= 0 || Aimsharp.CanCast("Overpower")) {
 								Aimsharp.Cast("Overpower");
 								return true;
 							}
-							
-							if(Aimsharp.CanCast("Execute")) {
+
+							if (Aimsharp.CanCast("Execute")) {
 								Aimsharp.Cast("Execute");
 								return true;
 							}
-							
-						} 
+
+						}
 						else {
 							//EXECUTE END
-							
-							
+
+
 							//SINGLE TARGET > 20%
-							if(RendRemains <=0 && !DebuffColossusSmashUp && Aimsharp.CanCast("Rend")) {
+							if (RendRemains <= 4500 && Aimsharp.CanCast("Rend")) {
 								Aimsharp.Cast("Rend");
 								return true;
 							}
-							
-							if(Rage <60 && !BuffMemoryOfLucidDreamsUp && CDSkullsplitterRemains <= 0 && !BuffDeadlyCalmUp) {
+
+							if (Aimsharp.CanCast("Deadly Calm", "player") && !NoCooldowns) {
+								Aimsharp.Cast("Deadly Calm");
+								return false;
+							}
+
+							if (((Rage < 60 && !BuffMemoryOfLucidDreamsUp && !BuffDeadlyCalmUp) || Rage < 20) &&
+							    CDSkullsplitterRemains <= 0) {
 								Aimsharp.Cast("Skullsplitter");
 								return true;
 							}
-							
+
+							if ((DebuffDeepWoundsRemaining < 3600 && (EnemiesInMelee == 1 || !TalentCleave)) &&
+							    CDMortalStrikeRemains <= 0 && Rage >= 30) {
+								Aimsharp.Cast("Mortal Strike");
+								return true;
+
+							}
+
+							if (DebuffDeepWoundsRemaining < 3600 && EnemiesInMelee > 2 &&
+							    Aimsharp.CanCast("Cleave", "player")) {
+								Aimsharp.Cast("Cleave");
+								return true;
+							}
+
 							if (!TalentWarbreaker) {
 								if (Aimsharp.CanCast("Colossus Smash")) {
 									Aimsharp.Cast("Colossus Smash");
 									return true;
 								}
-							} 
+							}
 							else {
 								if (Aimsharp.CanCast("Warbreaker", "player")) {
 									Aimsharp.Cast("Warbreaker");
 									return true;
 								}
 							}
-							
-							if(Aimsharp.CanCast("Deadly Calm","player") && !NoCooldowns) {
-								Aimsharp.Cast("Deadly Calm");
-								return false;
-							}
-							
+
+
+
 							//SUDDEN DEATH PROC, PROBABLY
-							if(Aimsharp.CanCast("Execute")) {
+							if (Aimsharp.CanCast("Execute")) {
 								Aimsharp.Cast("Execute");
 								return true;
 							}
-							
-							if(!CDMortalStrikeUp && (!TalentDeadlyCalm || !CDDeadlyCalmUp) && ((!TestOfMightTrait && DebuffColossusSmashUp) || TestOfMightUp) && !BuffMemoryOfLucidDreamsUp && Rage < 40 && Aimsharp.CanCast("Bladestorm", "player")) {
+
+							if (!CDMortalStrikeUp && (!TalentDeadlyCalm || !CDDeadlyCalmUp) &&
+							    ((!TestOfMightTrait && DebuffColossusSmashUp) || TestOfMightUp) &&
+							    !BuffMemoryOfLucidDreamsUp && Rage < 40 && Aimsharp.CanCast("Bladestorm", "player")) {
 								Aimsharp.Cast("Bladestorm");
 								return true;
 							}
-							
-							if(EnemiesInMelee > 2 && Aimsharp.CanCast("Cleave", "player")) {
-								Aimsharp.Cast("Cleave");
-								return true;
-							}
-							
-							if(((Rage < 30 && BuffMemoryOfLucidDreamsUp && DebuffColossusSmashUp) || (Rage < 70 && !BuffMemoryOfLucidDreamsUp)) && (CDOverpowerRemains <=0 || Aimsharp.CanCast("Overpower"))) {
-								Aimsharp.Cast("Overpower");
-								return true;
-							}
-							
-							if(CDMortalStrikeRemains <= 0 && Rage >=30 || Aimsharp.CanCast("Mortal Strike")) {
+
+							if ((CDMortalStrikeRemains <= 0 && Rage >= 30 || Aimsharp.CanCast("Mortal Strike")) &&
+							    (EnemiesInMelee == 1 || !TalentCleave)) {
 								Aimsharp.Cast("Mortal Strike");
 								return true;
 							}
-							
-							
-							
-							if(TalentFervorOfBattle && (BuffMemoryOfLucidDreamsUp || DebuffColossusSmashUp) && Aimsharp.CanCast("Whirlwind", "player")) {
+
+							if (EnemiesInMelee > 2 && Aimsharp.CanCast("Cleave", "player")) {
+								Aimsharp.Cast("Cleave");
+								return true;
+							}
+
+
+							//actions.single_target+=/whirlwind,if=(((buff.memory_of_lucid_dreams.up)|(debuff.colossus_smash.up)|(buff.deadly_calm.up))&talent.fervor_of_battle.enabled)|((buff.memory_of_lucid_dreams.up|rage>89)&debuff.colossus_smash.up&buff.test_of_might.down&!talent.fervor_of_battle.enabled)
+							if (Aimsharp.CanCast("Whirlwind", "player") &&
+							    ((((BuffMemoryOfLucidDreamsUp) || (DebuffColossusSmashUp) || (BuffDeadlyCalmUp)) &&
+							      TalentFervorOfBattle) || ((BuffMemoryOfLucidDreamsUp || Rage > 89) &&
+							                                DebuffColossusSmashUp && !TestOfMightUp &&
+							                                !TalentFervorOfBattle))) {
 								Aimsharp.Cast("Whirlwind");
 								return true;
 							}
-							
-							
-							
-							if(Aimsharp.CanCast("Overpower")) {
+
+
+
+							if (((Rage < 30 && BuffMemoryOfLucidDreamsUp && DebuffColossusSmashUp) ||
+							     (Rage < 70 && !BuffMemoryOfLucidDreamsUp)) &&
+							    (CDOverpowerRemains <= 0 || Aimsharp.CanCast("Overpower"))) {
 								Aimsharp.Cast("Overpower");
 								return true;
 							}
-							
-							
-							if(TalentFervorOfBattle && (TestOfMightUp || !DebuffColossusSmashUp && !TestOfMightUp && Rage > 60) && Aimsharp.CanCast("Whirlwind", "player")) {
+
+							if (!TalentFervorOfBattle && Aimsharp.CanCast("Slam") &&
+							    (BuffMemoryOfLucidDreamsUp || DebuffColossusSmashUp)) {
+								Aimsharp.Cast("Slam");
+								return true;
+							}
+
+							if (Aimsharp.CanCast("Overpower")) {
+								Aimsharp.Cast("Overpower");
+								return true;
+							}
+
+
+							if (TalentFervorOfBattle &&
+							    (TestOfMightUp || !DebuffColossusSmashUp && !TestOfMightUp && Rage > 60) &&
+							    Aimsharp.CanCast("Whirlwind", "player")) {
 								Aimsharp.Cast("Whirlwind");
 								return true;
 							}
-							
-							if(!TalentFervorOfBattle && Aimsharp.CanCast("Slam")) {
+
+							if (!TalentFervorOfBattle && Aimsharp.CanCast("Slam")) {
 								Aimsharp.Cast("Slam");
 								return true;
 							}
 						}
 					}
+
 					//SINGLE TARGET OVER
+
 					#endregion
+
 					
 					#region AOE
 					//FIVE TARGETS+
@@ -881,15 +968,18 @@ namespace AimsharpWow.Modules {
 						
 					}
 					#endregion
+					
 				}
 			}
+
 			#endregion
-			
+
 			#region PVP Rotation
+
 			//PVP Rotation
 			if (PVPmode) {
-				
-				
+
+
 				if (Aimsharp.CanCast("Sharpen Blade")) {
 					if (!BuffSharpenBladeUp && TargetHealth <= 40) {
 						Aimsharp.Cast("Sharpen Blade");
@@ -903,7 +993,7 @@ namespace AimsharpWow.Modules {
 						return true;
 					}
 				}
-				
+
 				if (Fighting) {
 					if (Burst) {
 						if (Aimsharp.CanCast("Avatar", "player")) {
@@ -916,12 +1006,14 @@ namespace AimsharpWow.Modules {
 							return true;
 						}
 
-						if (MajorPower == "Reaping Flames" && (TargetHealth >= 80 || TargetHealth <= 20 || (TargetHealth >= 40 && TargetHealth <=70)) &&Aimsharp.CanCast("Reaping Flames")) {
+						if (MajorPower == "Reaping Flames" &&
+						    (TargetHealth >= 80 || TargetHealth <= 20 || (TargetHealth >= 40 && TargetHealth <= 70)) &&
+						    Aimsharp.CanCast("Reaping Flames")) {
 							Aimsharp.Cast("Reaping Flames");
 							return true;
 						}
-						
-						if(BuffCrushingAssault && !BuffMemoryOfLucidDreamsUp && Aimsharp.CanCast("Slam")) {
+
+						if (BuffCrushingAssault && !BuffMemoryOfLucidDreamsUp && Aimsharp.CanCast("Slam")) {
 							Aimsharp.Cast("Slam");
 							return true;
 						}
@@ -973,7 +1065,7 @@ namespace AimsharpWow.Modules {
 							Aimsharp.Cast("Bladestorm");
 							return true;
 						}
-						
+
 						if (!DebuffRendUp && Aimsharp.CanCast("Rend")) {
 							Aimsharp.Cast("Rend");
 							return true;
@@ -989,13 +1081,13 @@ namespace AimsharpWow.Modules {
 							Aimsharp.Cast("Execute");
 							return true;
 						}
-						
-						if(BuffCrushingAssault && !BuffMemoryOfLucidDreamsUp && Aimsharp.CanCast("Slam")) {
+
+						if (BuffCrushingAssault && !BuffMemoryOfLucidDreamsUp && Aimsharp.CanCast("Slam")) {
 							Aimsharp.Cast("Slam");
 							return true;
 						}
 
-						if (BuffStacksOP>=2 && Aimsharp.CanCast("Overpower")) {
+						if (BuffStacksOP >= 2 && Aimsharp.CanCast("Overpower")) {
 							Aimsharp.Cast("Overpower");
 							return true;
 						}
@@ -1004,28 +1096,28 @@ namespace AimsharpWow.Modules {
 							Aimsharp.Cast("Rend");
 							return true;
 						}
-						
+
 						if (Aimsharp.CanCast("Overpower") || CDOverpowerRemains <= 0) {
 							Aimsharp.Cast("Overpower");
 							return true;
 						}
-						
+
 						if (MajorPower == "Reaping Flames" && (TargetHealth >= 80 || TargetHealth <= 20) &&
 						    Aimsharp.CanCast("Reaping Flames")) {
 							Aimsharp.Cast("Reaping Flames");
 							return true;
 						}
-						
+
 						if (TalentWarbreaker && Aimsharp.CanCast("Warbreaker", "player") && EnemiesInMelee >= 2) {
 							Aimsharp.Cast("Warbreaker");
 							return true;
 						}
-						
+
 						if (Aimsharp.CanCast("Mortal Strike") || CDMortalStrikeRemains <= 0) {
 							Aimsharp.Cast("Mortal Strike");
 							return true;
 						}
-						
+
 						if (EnemiesInMelee >= 2 && Aimsharp.CanCast("Sweeping Strikes")) {
 							Aimsharp.Cast("Sweeping Strikes");
 							return true;
@@ -1040,19 +1132,21 @@ namespace AimsharpWow.Modules {
 							Aimsharp.Cast("Slam");
 							return true;
 						}
-						
-						
+
+
 
 
 					}
 				}
 			}
+
 			#endregion
-			
+
 			return false;
 		}
-		
-		public override bool OutOfCombatTick() {
+	
+
+	public override bool OutOfCombatTick() {
 			bool Prepull = Aimsharp.IsCustomCodeOn("savepp");
 			int PlayerHealth = Aimsharp.Health("player");
 			bool DefensiveStanceToggle = Aimsharp.IsCustomCodeOn("DefensiveStance");
