@@ -135,6 +135,7 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Mind Control");
             Spellbook.Add("Dispersion");
             Spellbook.Add("Dispel Magic");
+            Spellbook.Add("Psychic Horror");
 
             Buffs.Add("Bloodlust");
             Buffs.Add("Heroism");
