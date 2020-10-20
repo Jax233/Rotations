@@ -666,7 +666,7 @@ namespace AimsharpWow.Modules
                 }
 
                 if (MajorPower == "Blood of the Enemy") {
-                    if (Aimsharp.CanCast("Blood of the Enemy", "player")) {
+                    if (Aimsharp.CanCast("Blood of the Enemy", "player") && EnemiesInMelee >= 1) {
                         Aimsharp.Cast("Blood of the Enemy");
                         return true;
                     }
