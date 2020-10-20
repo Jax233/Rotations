@@ -542,425 +542,437 @@ namespace AimsharpWow.Modules
             }
 
 
+            if (Fighting) {
+
+                #region CWC
+
+                if (IsChanneling && PlayerCastingID != 15407 && PlayerCastingID != 48045) {
+                    return false;
+                }
+
+                if (IsChanneling && (PlayerCastingID == 15407 || PlayerCastingID == 48045)) {
 
 
-            #region CWC
+                    if (PlayerCastingID == 15407) {
+                        if (Aimsharp.CanCast("Mind Blast") || BuffDarkThoughtsUp ||
+                            Aimsharp.SpellCharges("Mind Blast") >= 1) {
+                            Aimsharp.Cast("Mind Blast");
+                            return true;
+                        }
 
-            if (IsChanneling && PlayerCastingID != 15407 && PlayerCastingID != 48045) {
-                return false;
-            }
-
-            if (IsChanneling && (PlayerCastingID == 15407 || PlayerCastingID == 48045)) {
-
-
-                if (PlayerCastingID == 15407) {
-                    if (Aimsharp.CanCast("Mind Blast") || BuffDarkThoughtsUp ||
-                        Aimsharp.SpellCharges("Mind Blast") >= 1) {
-                        Aimsharp.Cast("Mind Blast");
-                        return true;
+                        if (EnemiesNearTarget > MindSearCutOff + 1) {
+                            Aimsharp.StopCasting();
+                        }
                     }
 
-                    if (EnemiesNearTarget > MindSearCutOff + 1) {
-                        Aimsharp.StopCasting();
+                    if (PlayerCastingID == 48045) {
+
+
+                        if ((SearingNightmaresCutoff && !PiOrVe) || (SWPRefreshable && EnemiesNearTarget > 1) &&
+                            Insanity >= 35) {
+                            Aimsharp.Cast("Searing Nightmare");
+                            return true;
+                        }
+
+                        if (TalentSearingNightmareEnabled && SWPRefreshable && EnemiesNearTarget > 2 &&
+                            Insanity >= 35) {
+                            Aimsharp.Cast("Searing Nightmare");
+                            return true;
+                        }
+
+
+
+                        if (Aimsharp.CanCast("Mind Blast") || BuffDarkThoughtsUp ||
+                            Aimsharp.SpellCharges("Mind Blast") >= 1) {
+                            Aimsharp.Cast("Mind Blast");
+                            return true;
+                        }
+
+                        if (EnemiesNearTarget == MindSearCutOff) {
+                            Aimsharp.StopCasting();
+                        }
+
+                    }
+
+
+
+
+                }
+
+                #endregion
+
+
+
+
+                if (UsePotion) {
+                    if (Aimsharp.CanUseItem(PotionType, false)) // don't check if equipped
+                    {
+                        if ((HasLust || TargetTimeToDie <= 80000 || TargetHealth < 35)) {
+                            Aimsharp.Cast("potion", true);
+                            return true;
+                        }
                     }
                 }
 
-                if (PlayerCastingID == 48045) {
 
 
-                    if ((SearingNightmaresCutoff && !PiOrVe) || (SWPRefreshable && EnemiesNearTarget > 1) &&
-                        Insanity >= 35) {
-                        Aimsharp.Cast("Searing Nightmare");
-                        return true;
-                    }
-
-                    if (TalentSearingNightmareEnabled && SWPRefreshable && EnemiesNearTarget > 2 && Insanity >= 35) {
-                        Aimsharp.Cast("Searing Nightmare");
-                        return true;
-                    }
-
-
-
-                    if (Aimsharp.CanCast("Mind Blast") || BuffDarkThoughtsUp ||
-                        Aimsharp.SpellCharges("Mind Blast") >= 1) {
-                        Aimsharp.Cast("Mind Blast");
-                        return true;
-                    }
-
-                    if (EnemiesNearTarget == MindSearCutOff) {
-                        Aimsharp.StopCasting();
-                    }
-
-                }
-
-
-
-
-            }
-
-            #endregion
-
-
-
-
-            if (UsePotion) {
-                if (Aimsharp.CanUseItem(PotionType, false)) // don't check if equipped
-                {
-                    if ((HasLust || TargetTimeToDie <= 80000 || TargetHealth < 35)) {
-                        Aimsharp.Cast("potion", true);
-                        return true;
-                    }
-                }
-            }
-
-
-
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && !NoCooldowns && Aimsharp.CanCast("Void Eruption", "player") && Insanity >= 40 && PiOrVe) {
-                Aimsharp.Cast("Void Eruption");
-                return true;
-            }
-
-            // Make sure you put up SW:P ASAP on the target if Wrathful Faerie isn't active.
-            // actions.main+=/shadow_word_pain,if=buff.fae_guardians.up&!debuff.wrathful_faerie.up
-            if (Aimsharp.CanCast("Shadow Word: Pain") && BuffFaeGuardiansUp && !DebuffWrathfulFaerieUp) {
-                Aimsharp.Cast("Shadow Word: Pain");
-                return true;
-            }
-
-            //High Priority Mind Sear action to refresh DoTs with Searing Nightmare
-            //actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") && EnemiesNearTarget > (MindSearCutOff + 1) &&
-                SWPRemains <= 0 && !CooldownMindbenderUp && PlayerCastingID != 48045) {
-                Aimsharp.Cast("Mind Sear");
-                return true;
-            }
-
-
-
-
-
-            #region Cooldowns
-
-            if (!NoCooldowns) {
-                if (Aimsharp.CanCast("Power Infusion") && BuffVoidformUp) {
-                    Aimsharp.Cast("Void Form");
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && !NoCooldowns &&
+                    Aimsharp.CanCast("Void Eruption", "player") && Insanity >= 40 && PiOrVe) {
+                    Aimsharp.Cast("Void Eruption");
                     return true;
                 }
 
-                if (Aimsharp.CanCast("Mindgames") && Insanity < 90 && (AllDotsUp || VoidformUp)) {
-                    Aimsharp.Cast("Mindgames");
+                // Make sure you put up SW:P ASAP on the target if Wrathful Faerie isn't active.
+                // actions.main+=/shadow_word_pain,if=buff.fae_guardians.up&!debuff.wrathful_faerie.up
+                if (Aimsharp.CanCast("Shadow Word: Pain") && BuffFaeGuardiansUp && !DebuffWrathfulFaerieUp) {
+                    Aimsharp.Cast("Shadow Word: Pain");
+                    return true;
+                }
+
+                //High Priority Mind Sear action to refresh DoTs with Searing Nightmare
+                //actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") &&
+                    EnemiesNearTarget > (MindSearCutOff + 1) &&
+                    SWPRemains <= 0 && !CooldownMindbenderUp && PlayerCastingID != 48045) {
+                    Aimsharp.Cast("Mind Sear");
                     return true;
                 }
 
 
-            }
 
-            #region Essences
 
-            if (!NoCooldowns || JustEssences) {
-                if (MajorPower == "Memory of Lucid Dreams") {
-                    if (Aimsharp.CanCast("Memory of Lucid Dreams", "player")) {
-                        Aimsharp.Cast("Lucid Dreams");
+
+                #region Cooldowns
+
+                if (!NoCooldowns) {
+                    if (Aimsharp.CanCast("Power Infusion") && BuffVoidformUp) {
+                        Aimsharp.Cast("Void Form");
                         return true;
+                    }
+
+                    if (Aimsharp.CanCast("Mindgames") && Insanity < 90 && (AllDotsUp || VoidformUp)) {
+                        Aimsharp.Cast("Mindgames");
+                        return true;
+                    }
+
+
+                }
+
+                #region Essences
+
+                if (!NoCooldowns || JustEssences) {
+                    if (MajorPower == "Memory of Lucid Dreams") {
+                        if (Aimsharp.CanCast("Memory of Lucid Dreams", "player")) {
+                            Aimsharp.Cast("Lucid Dreams");
+                            return true;
+                        }
+                    }
+
+                    if (MajorPower == "Blood of the Enemy") {
+                        if (Aimsharp.CanCast("Blood of the Enemy", "player") && EnemiesInMelee >= 1) {
+                            Aimsharp.Cast("Blood of the Enemy");
+                            return true;
+                        }
+                    }
+
+                    if (MajorPower == "Guardian of Azeroth") {
+                        if (Aimsharp.CanCast("Guardian of Azeroth", "player")) {
+                            Aimsharp.Cast("Guardian of Azeroth");
+                            return true;
+                        }
+                    }
+
+                    if (MajorPower == "Focused Azerite Beam") {
+                        if (Aimsharp.CanCast("Focused Azerite Beam") && EnemiesNearTarget >= 2) {
+                            Aimsharp.Cast("Focused Azerite Beam");
+                            return true;
+                        }
+                    }
+
+                    if (MajorPower == "Purifying Blast") {
+                        if (Aimsharp.CanCast("Purifying Blast", "player") && EnemiesNearTarget >= 2) {
+                            Aimsharp.Cast("Purifying Blast");
+                            return true;
+                        }
+                    }
+
+                    if (MajorPower == "Concentrated Flame") {
+                        if (Aimsharp.CanCast("Concentrated Flame") && FlameFullRecharge < GCD) {
+                            Aimsharp.Cast("Concentrated Flame");
+                            return true;
+                        }
                     }
                 }
 
-                if (MajorPower == "Blood of the Enemy") {
-                    if (Aimsharp.CanCast("Blood of the Enemy", "player") && EnemiesInMelee >= 1) {
-                        Aimsharp.Cast("Blood of the Enemy");
-                        return true;
+                #endregion
+
+                if (Aimsharp.CanUseItem(TopTrinket)) {
+                    Aimsharp.Cast(TopTrinket, true);
+                    return true;
+                }
+
+                if (Aimsharp.CanUseItem(BotTrinket)) {
+                    Aimsharp.Cast(BotTrinket, true);
+                }
+
+                if (Aimsharp.CanUseTrinket(0) && TopTrinket == "Generic") {
+
+                    Aimsharp.Cast("TopTrink", true);
+                    return true;
+
+                }
+
+                if (Aimsharp.CanUseTrinket(1) && BotTrinket == "Generic") {
+
+                    Aimsharp.Cast("BotTrink", true);
+                    return true;
+
+                }
+
+
+
+                #endregion
+
+
+
+                if (Aimsharp.CanCast("Damnation") && !AllDotsUp) {
+                    Aimsharp.Cast("Damnation");
+                    return true;
+                }
+
+                //actions.main+=/devouring_plague,target_if=(refreshable|insanity>75)&!variable.pi_or_vf_sync_condition&(!talent.searing_nightmare.enabled|(talent.searing_nightmare.enabled&!variable.searing_nightmare_cutoff))
+                if (Aimsharp.CanCast("Devouring Plague") && (DVPRemains > 0 || Insanity > 75) && !PiOrVe &&
+                    (!TalentSearingNightmareEnabled || (TalentSearingNightmareEnabled && !SearingNightmaresCutoff))) {
+                    Aimsharp.Cast("Devouring Plague");
+                    return true;
+                }
+
+                // Use VB on CD if you don't need to cast Devouring Plague, and there are less than 4 targets out (5 with conduit).
+                // actions.main+=/void_bolt,if=spell_targets.mind_sear<(4+conduit.dissonant_echoes.enabled)&insanity<=85
+
+
+                if (Aimsharp.CanCast("Void Bolt") && EnemiesNearTarget < 4 && Insanity <= 85 && VoidformUp) {
+                    Aimsharp.Cast("Void Bolt");
+                    return true;
+                }
+
+                if (Aimsharp.CanCast("Shadow Word: Death") && (TargetHealth <= 20 && EnemiesNearTarget < 4) ||
+                    (PetActive && LegendaryShadowflamePrismEquipped)) {
+                    Aimsharp.Cast("Shadow Word: Death");
+                    return true;
+                }
+
+                //actions.main+=/mindbender,if=dot.vampiric_touch.ticking&((talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1))|dot.shadow_word_pain.ticking)
+                if (!NoCooldowns && Aimsharp.CanCast("Shadowfiend") && VTRemains > 0 &&
+                    ((TalentSearingNightmareEnabled && (EnemiesNearTarget > (MindSearCutOff + 1))) || SWPRemains > 0)) {
+                    Aimsharp.Cast("Shadowfiend");
+                    return true;
+                }
+
+                //actions.main+=/void_torrent,target_if=variable.dots_up&target.time_to_die>4&buff.voidform.down&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Void Torrent") && AllDotsUp &&
+                    !BuffVoidformUp &&
+                    EnemiesNearTarget < (5 + (6 * (TalenTwistOfFateEnabled ? 1 : 0)))) {
+                    Aimsharp.Cast("Void Torrent");
+                    return true;
+                }
+
+                // Use SW:D with Painbreaker Psalm unless the target will be below 20% before the cooldown comes back
+                // actions.main+=/shadow_word_death,if=runeforge.painbreaker_psalm.equipped&variable.dots_up&target.time_to_pct_20>(cooldown.shadow_word_death.duration+gcd)
+
+
+                //Use Mind Sear to consume Dark Thoughts procs on AOE. TODO Confirm is this is a higher priority than redotting on AOE unless dark thoughts is about to time out
+                //actions.main+=/mind_sear,target_if=spell_targets.mind_sear>variable.mind_sear_cutoff&buff.dark_thoughts.up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
+
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear") &&
+                    EnemiesNearTarget > MindSearCutOff &&
+                    BuffDarkThoughtsUp &&
+                    PlayerCastingID != 48045) {
+                    Aimsharp.Cast("Mind Sear");
+                    return true;
+                }
+
+                //Use Mind Flay to consume Dark Thoughts procs on ST. TODO Confirm if this is a higher priority than redotting unless dark thoughts is about to time out
+                //actions.main+=/mind_flay,if=buff.dark_thoughts.up&variable.dots_up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&cooldown.void_bolt.up
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && BuffDarkThoughtsUp && DotsUp &&
+                    EnemiesNearTarget <= MindSearCutOff &&
+                    PlayerCastingID != 15407 &&
+                    Aimsharp.CanCast("Mind Flay")) {
+                    Aimsharp.Cast("Mind Flay");
+                    return true;
+                }
+
+                //actions.main+=/mind_blast,if=variable.dots_up&raid_event.movement.in>cast_time+0.5&spell_targets.mind_sear<4
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Blast") && DotsUp &&
+                    EnemiesNearTarget < 4) {
+                    Aimsharp.Cast("Mind Blast");
+                    return true;
+                }
+
+                #region Dots
+
+                #region Council + Focus
+
+                if (CouncilDots) {
+                    if (!Aimsharp.TargetIsUnit("focus") && Aimsharp.Range("focus") < 40) {
+                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "focus") &&
+                            (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
+                            VTLastCast = true;
+                            Aimsharp.Cast("VTFocus");
+                            VTLastCast = true;
+
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus") &&
+                            (SWPFocusRefreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPFocus");
+                            return true;
+                        }
+                    }
+
+                    if (!Aimsharp.TargetIsUnit("boss1") && Aimsharp.Range("boss1") < 40) {
+                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
+                            (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
+                            VTLastCast = true;
+                            Aimsharp.Cast("VTBoss1");
+                            VTLastCast = true;
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1") &&
+                            (SWPBoss1Refreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPBoss1");
+                            return true;
+                        }
+                    }
+
+                    if (!Aimsharp.TargetIsUnit("boss2") && Aimsharp.Range("boss2") < 40) {
+                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss2") &&
+                            (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
+                            VTLastCast = true;
+                            Aimsharp.Cast("VTBoss2");
+                            VTLastCast = true;
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
+                            (SWPBoss2Refreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPBoss2");
+                            return true;
+                        }
+                    }
+
+                    if (!Aimsharp.TargetIsUnit("boss3") && Aimsharp.Range("boss3") < 40) {
+                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
+                            (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
+                            VTLastCast = true;
+                            Aimsharp.Cast("VTBoss3");
+                            VTLastCast = true;
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
+                            (SWPBoss3Refreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPBoss3");
+                            return true;
+                        }
+                    }
+
+                    if (!Aimsharp.TargetIsUnit("boss4") && Aimsharp.Range("boss4") < 40) {
+                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
+                            (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
+                            VTLastCast = true;
+                            Aimsharp.Cast("VTBoss4");
+                            VTLastCast = true;
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") &&
+                            (SWPBoss4Refreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPBoss4");
+                            return true;
+                        }
                     }
                 }
 
-                if (MajorPower == "Guardian of Azeroth") {
-                    if (Aimsharp.CanCast("Guardian of Azeroth", "player")) {
-                        Aimsharp.Cast("Guardian of Azeroth");
+                #endregion
+
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch") && !VTLastCast &&
+                    (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable) || BuffUnfurlingDarknessUp)) {
+                    VTLastCast = true;
+                    Aimsharp.Cast("Vampiric Touch");
+                    VTLastCast = true;
+                    return true;
+                }
+
+                if (Aimsharp.LastCast() != "Vampiric Touch" && PlayerCastingID != 34914) {
+                    VTLastCast = false;
+                }
+
+
+
+                //Special condition to stop casting SW:P on off-targets when fighting 3 or more stacked mobs and using Psychic Link and NOT Misery.
+                //actions.main+=/shadow_word_pain,if=refreshable&target.time_to_die>4&!talent.misery.enabled&talent.psychic_link.enabled&spell_targets.mind_sear>2
+                if (Aimsharp.CanCast("Shadow Word: Pain") && (SWPRefreshable && !TalentMiseryEnabled &&
+                                                              TalentPsychicLinkEnabled && EnemiesNearTarget > 2)) {
+                    Aimsharp.Cast("Shadow Word: Pain");
+                    return true;
+                }
+
+                //Keep SW:P up on as many targets as possible, except when fighting 3 or more stacked mobs with Psychic Link.
+                //actions.main+=/shadow_word_pain,target_if=refreshable&target.time_to_die>4&!talent.misery.enabled&!(talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1))&(!talent.psychic_link.enabled|(talent.psychic_link.enabled&spell_targets.mind_sear<=2))
+
+
+                if (Aimsharp.CanCast("Shadow Word: Pain") && (SWPRefreshable && !TalentMiseryEnabled &&
+                                                              !(TalentSearingNightmareEnabled &&
+                                                                EnemiesNearTarget > (MindSearCutOff + 1)) &&
+                                                              (!TalentPsychicLinkEnabled || (TalentPsychicLinkEnabled &&
+                                                                  EnemiesNearTarget <= 2)))) {
+                    Aimsharp.Cast("Shadow Word: Pain");
+                    return true;
+                }
+
+
+
+                #endregion
+
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") &&
+                    EnemiesNearTarget > MindSearCutOff &&
+                    PlayerCastingID != 48045) {
+                    Aimsharp.Cast("Mind Sear");
+                    return true;
+                }
+
+
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Flay") && EnemiesNearTarget < 2 &&
+                    PlayerCastingID != 15407) {
+                    Aimsharp.Cast("Mind Flay");
+                    return true;
+                }
+
+                if (IsMoving) {
+                    if (!DebuffWeakenedSoulUp) {
+                        Aimsharp.Cast("ShieldSelf");
+                        return true;
+                    }
+                    
+                    if (Aimsharp.CanCast("Shadow Word: Pain")) {
+                        Aimsharp.Cast("Shadow Word: Pain");
                         return true;
                     }
                 }
-
-                if (MajorPower == "Focused Azerite Beam") {
-                    if (Aimsharp.CanCast("Focused Azerite Beam") && EnemiesNearTarget >= 2) {
-                        Aimsharp.Cast("Focused Azerite Beam");
-                        return true;
-                    }
-                }
-
-                if (MajorPower == "Purifying Blast") {
-                    if (Aimsharp.CanCast("Purifying Blast", "player") && EnemiesNearTarget >= 2) {
-                        Aimsharp.Cast("Purifying Blast");
-                        return true;
-                    }
-                }
-
-                if (MajorPower == "Concentrated Flame") {
-                    if (Aimsharp.CanCast("Concentrated Flame") && FlameFullRecharge < GCD) {
-                        Aimsharp.Cast("Concentrated Flame");
-                        return true;
-                    }
-                }
-            }
-
-            #endregion
-
-            if (Aimsharp.CanUseItem(TopTrinket)) {
-                Aimsharp.Cast(TopTrinket, true);
-                return true;
-            }
-
-            if (Aimsharp.CanUseItem(BotTrinket)) {
-                Aimsharp.Cast(BotTrinket, true);
-            }
-
-            if (Aimsharp.CanUseTrinket(0) && TopTrinket == "Generic") {
-
-                Aimsharp.Cast("TopTrink", true);
-                return true;
-
-            }
-
-            if (Aimsharp.CanUseTrinket(1) && BotTrinket == "Generic") {
-
-                Aimsharp.Cast("BotTrink", true);
-                return true;
-
-            }
-
-
-
-            #endregion
-
-
-
-            if (Aimsharp.CanCast("Damnation") && !AllDotsUp) {
-                Aimsharp.Cast("Damnation");
-                return true;
-            }
-
-            //actions.main+=/devouring_plague,target_if=(refreshable|insanity>75)&!variable.pi_or_vf_sync_condition&(!talent.searing_nightmare.enabled|(talent.searing_nightmare.enabled&!variable.searing_nightmare_cutoff))
-            if (Aimsharp.CanCast("Devouring Plague") && (DVPRemains > 0 || Insanity > 75) && !PiOrVe &&
-                (!TalentSearingNightmareEnabled || (TalentSearingNightmareEnabled && !SearingNightmaresCutoff))) {
-                Aimsharp.Cast("Devouring Plague");
-                return true;
-            }
-
-            // Use VB on CD if you don't need to cast Devouring Plague, and there are less than 4 targets out (5 with conduit).
-            // actions.main+=/void_bolt,if=spell_targets.mind_sear<(4+conduit.dissonant_echoes.enabled)&insanity<=85
-
-
-            if (Aimsharp.CanCast("Void Bolt") && EnemiesNearTarget < 4 && Insanity <= 85 && VoidformUp) {
-                Aimsharp.Cast("Void Bolt");
-                return true;
-            }
-
-            if (Aimsharp.CanCast("Shadow Word: Death") && (TargetHealth <= 20 && EnemiesNearTarget < 4) ||
-                (PetActive && LegendaryShadowflamePrismEquipped)) {
-                Aimsharp.Cast("Shadow Word: Death");
-                return true;
-            }
-
-            //actions.main+=/mindbender,if=dot.vampiric_touch.ticking&((talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1))|dot.shadow_word_pain.ticking)
-            if (!NoCooldowns && Aimsharp.CanCast("Shadowfiend") && VTRemains > 0 &&
-                ((TalentSearingNightmareEnabled && (EnemiesNearTarget > (MindSearCutOff + 1))) || SWPRemains > 0)) {
-                Aimsharp.Cast("Shadowfiend");
-                return true;
-            }
-
-            //actions.main+=/void_torrent,target_if=variable.dots_up&target.time_to_die>4&buff.voidform.down&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Void Torrent") && AllDotsUp && !BuffVoidformUp &&
-                EnemiesNearTarget < (5 + (6 * (TalenTwistOfFateEnabled ? 1 : 0)))) {
-                Aimsharp.Cast("Void Torrent");
-                return true;
-            }
-
-            // Use SW:D with Painbreaker Psalm unless the target will be below 20% before the cooldown comes back
-            // actions.main+=/shadow_word_death,if=runeforge.painbreaker_psalm.equipped&variable.dots_up&target.time_to_pct_20>(cooldown.shadow_word_death.duration+gcd)
-
-
-            //Use Mind Sear to consume Dark Thoughts procs on AOE. TODO Confirm is this is a higher priority than redotting on AOE unless dark thoughts is about to time out
-            //actions.main+=/mind_sear,target_if=spell_targets.mind_sear>variable.mind_sear_cutoff&buff.dark_thoughts.up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
-
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear") && EnemiesNearTarget > MindSearCutOff &&
-                BuffDarkThoughtsUp &&
-                PlayerCastingID != 48045) {
-                Aimsharp.Cast("Mind Sear");
-                return true;
-            }
-
-            //Use Mind Flay to consume Dark Thoughts procs on ST. TODO Confirm if this is a higher priority than redotting unless dark thoughts is about to time out
-            //actions.main+=/mind_flay,if=buff.dark_thoughts.up&variable.dots_up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&cooldown.void_bolt.up
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && BuffDarkThoughtsUp && DotsUp && EnemiesNearTarget <= MindSearCutOff &&
-                PlayerCastingID != 15407 &&
-                Aimsharp.CanCast("Mind Flay")) {
-                Aimsharp.Cast("Mind Flay");
-                return true;
-            }
-
-            //actions.main+=/mind_blast,if=variable.dots_up&raid_event.movement.in>cast_time+0.5&spell_targets.mind_sear<4
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Blast") && DotsUp && EnemiesNearTarget < 4) {
-                Aimsharp.Cast("Mind Blast");
-                return true;
-            }
-
-            #region Dots
-
-            #region Council + Focus
-
-            if (CouncilDots) {
-                if (!Aimsharp.TargetIsUnit("focus") && Aimsharp.Range("focus") < 40) {
-                    if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch", "focus") &&
-                        (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
-                        VTLastCast = true;
-                        Aimsharp.Cast("VTFocus");
-                        VTLastCast = true;
-                        
-                        return true;
-                    }
-
-                    if (Aimsharp.CanCast("Shadow Word: Pain", "focus") &&
-                        (SWPFocusRefreshable && !TalentMiseryEnabled)) {
-                        Aimsharp.Cast("SWPFocus");
-                        return true;
-                    }
-                }
-
-                if (!Aimsharp.TargetIsUnit("boss1") && Aimsharp.Range("boss1") < 40) {
-                    if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch", "boss1") &&
-                        (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
-                        VTLastCast = true;
-                        Aimsharp.Cast("VTBoss1");
-                        VTLastCast = true;
-                        return true;
-                    }
-
-                    if (Aimsharp.CanCast("Shadow Word: Pain", "boss1") &&
-                        (SWPBoss1Refreshable && !TalentMiseryEnabled)) {
-                        Aimsharp.Cast("SWPBoss1");
-                        return true;
-                    }
-                }
-
-                if (!Aimsharp.TargetIsUnit("boss2") && Aimsharp.Range("boss2") < 40) {
-                    if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch", "boss2") &&
-                        (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
-                        VTLastCast = true;
-                        Aimsharp.Cast("VTBoss2");
-                        VTLastCast = true;
-                        return true;
-                    }
-
-                    if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
-                        (SWPBoss2Refreshable && !TalentMiseryEnabled)) {
-                        Aimsharp.Cast("SWPBoss2");
-                        return true;
-                    }
-                }
-
-                if (!Aimsharp.TargetIsUnit("boss3") && Aimsharp.Range("boss3") < 40) {
-                    if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch", "boss1") &&
-                        (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
-                        VTLastCast = true;
-                        Aimsharp.Cast("VTBoss3");
-                        VTLastCast = true;
-                        return true;
-                    }
-
-                    if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
-                        (SWPBoss3Refreshable && !TalentMiseryEnabled)) {
-                        Aimsharp.Cast("SWPBoss3");
-                        return true;
-                    }
-                }
-
-                if (!Aimsharp.TargetIsUnit("boss4") && Aimsharp.Range("boss4") <40) {
-                    if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch", "boss1") &&
-                        (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
-                        VTLastCast = true;
-                        Aimsharp.Cast("VTBoss4");
-                        VTLastCast = true;
-                        return true;
-                    }
-
-                    if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") &&
-                        (SWPBoss4Refreshable && !TalentMiseryEnabled)) {
-                        Aimsharp.Cast("SWPBoss4");
-                        return true;
-                    }
-                }
-            }
-
-            #endregion
-
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch") && !VTLastCast &&
-                (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable) || BuffUnfurlingDarknessUp)) {
-                VTLastCast = true;
-                Aimsharp.Cast("Vampiric Touch");
-                VTLastCast = true;
-                return true;
             }
             
-            if (Aimsharp.LastCast() != "Vampiric Touch" && PlayerCastingID != 34914) {
-                VTLastCast = false;
-            }
-
-
-
-            //Special condition to stop casting SW:P on off-targets when fighting 3 or more stacked mobs and using Psychic Link and NOT Misery.
-            //actions.main+=/shadow_word_pain,if=refreshable&target.time_to_die>4&!talent.misery.enabled&talent.psychic_link.enabled&spell_targets.mind_sear>2
-            if (Aimsharp.CanCast("Shadow Word: Pain") && (SWPRefreshable && !TalentMiseryEnabled &&
-                                                          TalentPsychicLinkEnabled && EnemiesNearTarget > 2)) {
-                Aimsharp.Cast("Shadow Word: Pain");
+            if (!DebuffWeakenedSoulUp) {
+                Aimsharp.Cast("ShieldSelf");
                 return true;
             }
-
-            //Keep SW:P up on as many targets as possible, except when fighting 3 or more stacked mobs with Psychic Link.
-            //actions.main+=/shadow_word_pain,target_if=refreshable&target.time_to_die>4&!talent.misery.enabled&!(talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1))&(!talent.psychic_link.enabled|(talent.psychic_link.enabled&spell_targets.mind_sear<=2))
-
-
-            if (Aimsharp.CanCast("Shadow Word: Pain") && (SWPRefreshable && !TalentMiseryEnabled &&
-                                                          !(TalentSearingNightmareEnabled &&
-                                                            EnemiesNearTarget > (MindSearCutOff + 1)) &&
-                                                          (!TalentPsychicLinkEnabled || (TalentPsychicLinkEnabled &&
-                                                              EnemiesNearTarget <= 2)))) {
-                Aimsharp.Cast("Shadow Word: Pain");
-                return true;
-            }
-
-
-
-            #endregion
-
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") && EnemiesNearTarget > MindSearCutOff &&
-                PlayerCastingID != 48045) {
-                Aimsharp.Cast("Mind Sear");
-                return true;
-            }
-
-
-            if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Flay") && EnemiesNearTarget < 2 && PlayerCastingID != 15407) {
-                Aimsharp.Cast("Mind Flay");
-                return true;
-            }
-
-            if (IsMoving) {
-                if (Aimsharp.CanCast("Power Word: Fortitude", "player") &&
-                    !Aimsharp.HasBuff("Power Word: Fortitude", "player", false)) {
-                    Aimsharp.Cast("Power Word: Fortitude");
-                    return true;
-                }
-
-                if (!DebuffWeakenedSoulUp) {
-                    Aimsharp.Cast("ShieldSelf");
-                    return true;
-                }
-            }
-
-
-
-
-
-
-
 
 
 
