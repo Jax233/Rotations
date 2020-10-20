@@ -99,8 +99,8 @@ namespace AimsharpWow.Modules
 
 
             Aimsharp.Latency = 50;
-            Aimsharp.QuickDelay = 100;
-            Aimsharp.SlowDelay = 125;
+            Aimsharp.QuickDelay = 125;
+            Aimsharp.SlowDelay = 250;
 
             MajorPower = GetDropDown("Major Power");
             TopTrinket = GetDropDown("Top Trinket");
@@ -328,6 +328,7 @@ namespace AimsharpWow.Modules
             bool SelfPowerInfusion = true;
             bool TalenTwistOfFateEnabled = Aimsharp.Talent(3, 1);
 
+            /*
             int ChannelDuration = (int) ((4500f / (Haste + 1f)));
             int TickTimeChannel = ChannelDuration / 6;
             bool CancelTicks = IsChanneling && (PlayerCastingID == 15407 || PlayerCastingID == 48045) &&
@@ -336,6 +337,8 @@ namespace AimsharpWow.Modules
             bool CancelChannel = (PlayerCastingID == 15407 &&
                                   TwoTicksChanneled && VoidBoltCD <= 0) ||
                                  (PlayerCastingID == 48045 && TwoTicksChanneled);
+                                 
+            */
 
 
             int CDMassDispel = Aimsharp.SpellCooldown("Mass Dispel");
@@ -357,7 +360,7 @@ namespace AimsharpWow.Modules
             
 
             
-
+/*
 
             #region TTK
 
@@ -401,7 +404,7 @@ namespace AimsharpWow.Modules
 
             #endregion
 
-
+*/
 
 
 
@@ -502,7 +505,7 @@ namespace AimsharpWow.Modules
                 return true;
             }
             
-            if (S2M && Aimsharp.CanCast("Surrender to Madness", "target")) {
+            if (S2M && Aimsharp.CanCast("Surrender to Madness")) {
                 Aimsharp.PrintMessage("Queued S2M");
                 Aimsharp.Cast("Surrender to Madness");
                 return true;
