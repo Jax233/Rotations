@@ -158,7 +158,8 @@ namespace AimsharpWow.Modules
             int AimedShotCastTime = (int) (2500f / (Haste + 1f));
             bool IsMoving = Aimsharp.PlayerIsMoving();
 
-            bool CAUp = TargetHealth > 70;
+            bool TalentCarefulAim = Aimsharp.Talent(2, 1);
+            bool CAUp = TargetHealth > 70 && TalentCarefulAim;
             
 
             bool TalentStreamline = Aimsharp.Talent(4, 2);
