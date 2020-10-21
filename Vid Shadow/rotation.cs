@@ -784,7 +784,7 @@ namespace AimsharpWow.Modules
                 //Use Mind Sear to consume Dark Thoughts procs on AOE. TODO Confirm is this is a higher priority than redotting on AOE unless dark thoughts is about to time out
                 //actions.main+=/mind_sear,target_if=spell_targets.mind_sear>variable.mind_sear_cutoff&buff.dark_thoughts.up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
 
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear") &&
+                if ((!IsMoving || BuffSurrenderToMadnessUp) &&
                     EnemiesNearTarget > MindSearCutOff &&
                     BuffDarkThoughtsUp &&
                     PlayerCastingID != 48045) {
@@ -796,8 +796,7 @@ namespace AimsharpWow.Modules
                 //actions.main+=/mind_flay,if=buff.dark_thoughts.up&variable.dots_up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&cooldown.void_bolt.up
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && BuffDarkThoughtsUp && DotsUp &&
                     EnemiesNearTarget <= MindSearCutOff &&
-                    PlayerCastingID != 15407 &&
-                    Aimsharp.CanCast("Mind Flay")) {
+                    PlayerCastingID != 15407 ) {
                     Aimsharp.Cast("Mind Flay");
                     return true;
                 }
@@ -942,7 +941,7 @@ namespace AimsharpWow.Modules
 
                 #endregion
 
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") &&
+                if ((!IsMoving || BuffSurrenderToMadnessUp) &&
                     EnemiesNearTarget > MindSearCutOff &&
                     PlayerCastingID != 48045) {
                     Aimsharp.Cast("Mind Sear");
@@ -950,7 +949,7 @@ namespace AimsharpWow.Modules
                 }
 
 
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Flay") && EnemiesNearTarget < 2 &&
+                if ((!IsMoving || BuffSurrenderToMadnessUp) &&  EnemiesNearTarget < 2 &&
                     PlayerCastingID != 15407) {
                     Aimsharp.Cast("Mind Flay");
                     return true;
