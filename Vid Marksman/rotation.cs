@@ -323,12 +323,12 @@ namespace AimsharpWow.Modules
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Aimed Shot") && !IsMoving && BuffTrickShotsUp && CAUp && BuffDoubleTap) {
+                    if (Aimsharp.CanCast("Aimed Shot") && !IsMoving && BuffTrickShotsUp && CAUp && BuffDoubleTap && Aimsharp.LastCast() != "Aimed Shot" && Aimsharp.LastCast() != "Rapid Fire") {
                         Aimsharp.Cast("Aimed Shot");
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Rapid Fire") && (BuffTrickShotsUp && (AzeriteFocusedFireEnabled ||
+                    if (Aimsharp.CanCast("Rapid Fire") && Aimsharp.LastCast() != "Aimed Shot" &&(BuffTrickShotsUp && (AzeriteFocusedFireEnabled ||
                         AzeriteInTheRythmRank > 1 ||
                         AzeriteSurgingShotsEnabled ||
                         TalentStreamline))) {
@@ -337,7 +337,7 @@ namespace AimsharpWow.Modules
                     }
                     
                     //buff.trick_shots.up & ( buff.precise_shots.down | cooldown.aimed_shot.full_recharge_time < action.aimed_shot.cast_time | buff.trueshot.up )
-                    if (Aimsharp.CanCast("Aimed Shot") && (BuffTrickShotsUp &&
+                    if (Aimsharp.CanCast("Aimed Shot") && Aimsharp.LastCast() != "Aimed Shot" && Aimsharp.LastCast() != "Rapid Fire" &&(BuffTrickShotsUp && !IsMoving &&
                                                            (!BuffPreciseShots ||
                                                             AimedShotFullRecharge < AimedShotCastTime ||
                                                             BuffTrueShotUp))) {
@@ -345,7 +345,7 @@ namespace AimsharpWow.Modules
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Rapid Fire") && BuffTrickShotsUp) {
+                    if (Aimsharp.CanCast("Rapid Fire") && BuffTrickShotsUp && Aimsharp.LastCast() != "Aimed Shot") {
                         Aimsharp.Cast("Rapid Fire");
                         return true;
                     }
