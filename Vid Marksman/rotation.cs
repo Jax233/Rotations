@@ -227,7 +227,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (Aimsharp.CanCast("Explosive Shot")) {
-                        Aimsharp.Cast("Explosive SHot");
+                        Aimsharp.Cast("Explosive Shot");
                         return true;
                     }
 
@@ -319,9 +319,9 @@ namespace AimsharpWow.Modules
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Multishot") &&
+                    if (Aimsharp.CanCast("Multi-Shot") &&
                         (!BuffTrickShotsUp || BuffPreciseShots && !BuffTrueShotUp || Focus > 70)) {
-                        Aimsharp.Cast("Multishot");
+                        Aimsharp.Cast("Multi-Shot");
                         return true;
                     }
 
