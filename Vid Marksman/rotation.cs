@@ -32,6 +32,8 @@ namespace AimsharpWow.Modules
             Settings.Add(new Setting("Azerite Focused Fire", false));
             Settings.Add(new Setting("Azerite Surging Shots", false));
             Settings.Add(new Setting("Azerite In the Rythm Rank: ", 0, 3, 0));
+            
+            Settings.Add(new Setting("Auto Exhilaration @ HP%", 0, 100, 35));
 
             List<string> Race = new List<string>(new string[] { "Orc", "Troll", "Dark Iron Dwarf", "Mag'har Orc", "Lightforged Draenei", "None" });
             Settings.Add(new Setting("Racial Power", Race, "None"));
@@ -96,6 +98,7 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Arcane Shot");
 			Spellbook.Add("Kill Shot");
             Spellbook.Add("Bursting Shot");
+            Spellbook.Add("Exhilaration");
             
             
             
@@ -117,7 +120,7 @@ namespace AimsharpWow.Modules
             Macros.Add("TopTrink", "/use 13");
             Macros.Add("BotTrink", "/use 14");
 
-            CustomCommands.Add("AOE");
+            CustomCommands.Add("NoAOE");
             CustomCommands.Add("Potions");
             CustomCommands.Add("SaveCooldowns");
         }
@@ -148,7 +151,7 @@ namespace AimsharpWow.Modules
             float Haste = Aimsharp.Haste() / 100f;
             int GCDMAX = (int)((1500f / (Haste + 1f)));
             bool UsePotion = Aimsharp.IsCustomCodeOn("Potions");
-            bool AOE = Aimsharp.IsCustomCodeOn("AOE");
+            bool NoAOE = Aimsharp.IsCustomCodeOn("NoAOE");
             int EnemiesNearTarget = Aimsharp.EnemiesNearTarget();
             int EnemiesInMelee = Aimsharp.EnemiesInMelee();
             int Focus = Aimsharp.Power("player");
@@ -173,9 +176,9 @@ namespace AimsharpWow.Modules
 
             bool DebuffHunterMark = Aimsharp.HasDebuff("Hunter's Mark", "target");
             bool BuffPreciseShots = Aimsharp.HasBuff("Precise Shots", "player");
-            bool BuffDoubleTap = Aimsharp.HasBuff("Double Tap");
-            bool BuffTrickShotsUp = Aimsharp.HasBuff("Trick Shots");
-            bool BuffTrueShotUp = Aimsharp.HasBuff("Trickshot");
+            bool BuffDoubleTap = Aimsharp.HasBuff("Double Tap", "player");
+            bool BuffTrickShotsUp = Aimsharp.HasBuff("Trick Shots", "player");
+            bool BuffTrueShotUp = Aimsharp.HasBuff("Trickshot", "player");
 
             int CDTrueshotRemains = Aimsharp.SpellCooldown("Trueshot");
             int CDAimedShotRemains = Aimsharp.SpellCooldown("Aimed Shot");
@@ -192,9 +195,21 @@ namespace AimsharpWow.Modules
             int FlameFullRecharge = (int)(Aimsharp.RechargeTime("Concentrated Flame") - GCD + (30000f) * (1f - Aimsharp.SpellCharges("Concentrated Flame")));
             bool NoCooldowns = Aimsharp.IsCustomCodeOn("SaveCooldowns");
 
+            #region Utillity
+
+            if (Aimsharp.CanCast("Exhilaration", "player")) {
+                if (PlayerHealth <= GetSlider("Auto Exhilaration @ HP%")) {
+                    Aimsharp.Cast("Exhilaration");
+                    return true;
+                }
+            }
+
+            #endregion
+            
+
             if (Fighting) {
 
-                if (!AOE) {
+                if (NoAOE) {
                     EnemiesNearTarget = 1;
                     EnemiesInMelee = EnemiesInMelee > 0 ? 1 : 0;
                 }
@@ -222,7 +237,7 @@ namespace AimsharpWow.Modules
 
                 if (EnemiesNearTarget < 3) {
                     if (Aimsharp.CanCast("Kill Shot")) {
-                        Aimsharp.Cast("Kill SHot");
+                        Aimsharp.Cast("Kill Shot");
                         return true;
                     }
 
@@ -282,10 +297,12 @@ namespace AimsharpWow.Modules
                         return true;
                     }
                 }
+                
+                
 
                 if (EnemiesNearTarget > 2) {
 
-
+                    
                     if (Aimsharp.CanCast("Kill Shot")) {
                         Aimsharp.Cast("Kill Shot");
                         return true;
@@ -318,9 +335,23 @@ namespace AimsharpWow.Modules
                         Aimsharp.Cast("Rapid Fire");
                         return true;
                     }
+                    
+                    //buff.trick_shots.up & ( buff.precise_shots.down | cooldown.aimed_shot.full_recharge_time < action.aimed_shot.cast_time | buff.trueshot.up )
+                    if (Aimsharp.CanCast("Aimed Shot") && (BuffTrickShotsUp &&
+                                                           (!BuffPreciseShots ||
+                                                            AimedShotFullRecharge < AimedShotCastTime ||
+                                                            BuffTrueShotUp))) {
+                        Aimsharp.Cast("Aimed Shot");
+                        return true;
+                    }
+
+                    if (Aimsharp.CanCast("Rapid Fire") && BuffTrickShotsUp) {
+                        Aimsharp.Cast("Rapid Fire");
+                        return true;
+                    }
 
                     if (Aimsharp.CanCast("Multi-Shot") &&
-                        (!BuffTrickShotsUp || BuffPreciseShots && !BuffTrueShotUp || Focus > 70)) {
+                        (!BuffTrickShotsUp || (BuffPreciseShots && !BuffTrueShotUp) || Focus > 70)) {
                         Aimsharp.Cast("Multi-Shot");
                         return true;
                     }
