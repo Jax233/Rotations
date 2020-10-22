@@ -216,6 +216,7 @@ namespace AimsharpWow.Modules
 
 
 
+
         }
 
 
@@ -322,11 +323,12 @@ namespace AimsharpWow.Modules
             bool CooldownVoidEruptionUp = Aimsharp.SpellCooldown("Void Eruption") <= 0;
             bool CooldownPowerInfusionUp = Aimsharp.SpellCooldown("Power Infusion") <= 0;
             bool BuffFaeGuardiansUp = Aimsharp.HasBuff("Fae Guardians", "player");
-            bool PetActive = Aimsharp.SpellCooldown("Mindbender") >= 45000 ||
-                             Aimsharp.SpellCooldown("Shadowfiend") >= 165000;
+            bool PetActive = Aimsharp.TotemTimer() > GCD;
             int MindSearCutOff = 1;
             bool SelfPowerInfusion = true;
             bool TalenTwistOfFateEnabled = Aimsharp.Talent(3, 1);
+            bool ChannelingMindFlay = PlayerCastingID == 15407;
+            bool ChannelingMindSear = PlayerCastingID == 48045;
 
             /*
             int ChannelDuration = (int) ((4500f / (Haste + 1f)));
@@ -546,57 +548,33 @@ namespace AimsharpWow.Modules
 
                 #region CWC
 
-                if (IsChanneling && PlayerCastingID != 15407 && PlayerCastingID != 48045) {
+                
+                if (IsChanneling && !ChannelingMindFlay && !ChannelingMindSear) {
                     return false;
                 }
 
-                if (IsChanneling && (PlayerCastingID == 15407 || PlayerCastingID == 48045)) {
-
-
-                    if (PlayerCastingID == 15407) {
-                        if (Aimsharp.CanCast("Mind Blast") || BuffDarkThoughtsUp ||
-                            Aimsharp.SpellCharges("Mind Blast") >= 1) {
-                            Aimsharp.Cast("Mind Blast");
-                            return true;
-                        }
-
-                        if (EnemiesNearTarget > MindSearCutOff + 1) {
-                            Aimsharp.StopCasting();
-                        }
+                if (IsChanneling && (ChannelingMindFlay || ChannelingMindSear)) {
+                    if ((SearingNightmaresCutoff && !PiOrVe) || (SWPRefreshable && EnemiesNearTarget > 1) &&
+                        Aimsharp.CanCast("Searing Nightmare", "player")) {
+                        Aimsharp.Cast("Searing Nightmare");
+                        return true;
                     }
 
-                    if (PlayerCastingID == 48045) {
-
-
-                        if ((SearingNightmaresCutoff && !PiOrVe) || (SWPRefreshable && EnemiesNearTarget > 1) &&
-                            Insanity >= 35) {
-                            Aimsharp.Cast("Searing Nightmare");
-                            return true;
-                        }
-
-                        if (TalentSearingNightmareEnabled && SWPRefreshable && EnemiesNearTarget > 2 &&
-                            Insanity >= 35) {
-                            Aimsharp.Cast("Searing Nightmare");
-                            return true;
-                        }
-
-
-
-                        if (Aimsharp.CanCast("Mind Blast") || BuffDarkThoughtsUp ||
-                            Aimsharp.SpellCharges("Mind Blast") >= 1) {
-                            Aimsharp.Cast("Mind Blast");
-                            return true;
-                        }
-
-                        if (EnemiesNearTarget == MindSearCutOff) {
-                            Aimsharp.StopCasting();
-                        }
-
+                    if (TalentSearingNightmareEnabled && SWPRefreshable && EnemiesNearTarget > 2 &&
+                        Aimsharp.CanCast("Searing Nightmare", "player")) {
+                        Aimsharp.Cast("Searing Nightmare");
+                        return true;
                     }
 
 
 
+                    if (Aimsharp.CanCast("Mind Blast") || BuffDarkThoughtsUp ||
+                        Aimsharp.SpellCharges("Mind Blast") >= 1) {
+                        Aimsharp.Cast("Mind Blast");
+                        return true;
+                    }
 
+                    
                 }
 
                 #endregion
@@ -725,7 +703,7 @@ namespace AimsharpWow.Modules
                 //actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") &&
                     EnemiesNearTarget > (MindSearCutOff + 1) &&
-                    SWPRemains <= 0 && !CooldownMindbenderUp && PlayerCastingID != 48045) {
+                    SWPRemains <= 0 && !CooldownMindbenderUp && !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
                 }
@@ -794,7 +772,7 @@ namespace AimsharpWow.Modules
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&
                     EnemiesNearTarget > MindSearCutOff &&
                     BuffDarkThoughtsUp && Aimsharp.CanCast("Mind Sear") &&
-                    PlayerCastingID != 48045) {
+                    !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
                 }
@@ -803,7 +781,7 @@ namespace AimsharpWow.Modules
                 //actions.main+=/mind_flay,if=buff.dark_thoughts.up&variable.dots_up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&cooldown.void_bolt.up
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && BuffDarkThoughtsUp && DotsUp &&
                     EnemiesNearTarget <= MindSearCutOff && Aimsharp.CanCast("Mind Flay") &&
-                    PlayerCastingID != 15407 ) {
+                    !ChannelingMindFlay ) {
                     Aimsharp.Cast("Mind Flay");
                     return true;
                 }
@@ -950,16 +928,16 @@ namespace AimsharpWow.Modules
 
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&
                     EnemiesNearTarget > MindSearCutOff && 
-                    Aimsharp.CanCast("Mind Sear") &&
-                    PlayerCastingID != 48045) {
+                    Aimsharp.CanCast("Mind Sear", "target") &&
+                    !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
                 }
 
 
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&  EnemiesNearTarget < 2 && 
-                    Aimsharp.CanCast("Mind Flay") &&
-                    PlayerCastingID != 15407) {
+                    Aimsharp.CanCast("Mind Flay", "target") &&
+                    !ChannelingMindFlay) {
                     Aimsharp.Cast("Mind Flay");
                     return true;
                 }
