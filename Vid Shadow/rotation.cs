@@ -628,20 +628,8 @@ namespace AimsharpWow.Modules
                     Aimsharp.Cast("Shadow Word: Pain");
                     return true;
                 }
-
-                //High Priority Mind Sear action to refresh DoTs with Searing Nightmare
-                //actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") &&
-                    EnemiesNearTarget > (MindSearCutOff + 1) &&
-                    SWPRemains <= 0 && !CooldownMindbenderUp && PlayerCastingID != 48045) {
-                    Aimsharp.Cast("Mind Sear");
-                    return true;
-                }
-
-
-
-
-
+                
+                
                 #region Cooldowns
 
                 if (!NoCooldowns) {
@@ -732,6 +720,15 @@ namespace AimsharpWow.Modules
 
 
                 #endregion
+                
+                //High Priority Mind Sear action to refresh DoTs with Searing Nightmare
+                //actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") &&
+                    EnemiesNearTarget > (MindSearCutOff + 1) &&
+                    SWPRemains <= 0 && !CooldownMindbenderUp && PlayerCastingID != 48045) {
+                    Aimsharp.Cast("Mind Sear");
+                    return true;
+                }
 
 
 
@@ -739,9 +736,19 @@ namespace AimsharpWow.Modules
                     Aimsharp.Cast("Damnation");
                     return true;
                 }
+                
+                //Use Void Bolt at higher priority with Hungering Void up to 4 targets, or other talents on ST.
+                //actions.main+=/void_bolt,if=insanity<=85&((talent.hungering_void.enabled&spell_targets.mind_sear<5)|spell_targets.mind_sear=1)
+                if (Aimsharp.CanCast("Void Bolt") && VoidformUp && (Insanity <= 85 &&
+                                                                    ((TalentHungeringVoidEnabled &&
+                                                                      EnemiesNearTarget < 5) ||
+                                                                     EnemiesNearTarget == 1))) {
+                    Aimsharp.Cast("Void Bolt");
+                }
 
+                //Don't use Devouring Plague if you can get into Voidform instead, or if Searing Nightmare is talented and will hit enough targets.
                 //actions.main+=/devouring_plague,target_if=(refreshable|insanity>75)&!variable.pi_or_vf_sync_condition&(!talent.searing_nightmare.enabled|(talent.searing_nightmare.enabled&!variable.searing_nightmare_cutoff))
-                if (Aimsharp.CanCast("Devouring Plague") && (DVPRemains > 0 || Insanity > 75) && !PiOrVe &&
+                if (Aimsharp.CanCast("Devouring Plague") &&  Insanity > 75 && !PiOrVe &&
                     (!TalentSearingNightmareEnabled || (TalentSearingNightmareEnabled && !SearingNightmaresCutoff))) {
                     Aimsharp.Cast("Devouring Plague");
                     return true;
@@ -749,13 +756,13 @@ namespace AimsharpWow.Modules
 
                 // Use VB on CD if you don't need to cast Devouring Plague, and there are less than 4 targets out (5 with conduit).
                 // actions.main+=/void_bolt,if=spell_targets.mind_sear<(4+conduit.dissonant_echoes.enabled)&insanity<=85
-
-
                 if (Aimsharp.CanCast("Void Bolt") && EnemiesNearTarget < 4 && Insanity <= 85 && VoidformUp) {
                     Aimsharp.Cast("Void Bolt");
                     return true;
                 }
-
+                
+                //Use Shadow Word: Death if the target is about to die or you have Shadowflame Prism equipped with Mindbender or Shadowfiend active.
+                //actions.main+=/shadow_word_death,target_if=(target.health.pct<20&spell_targets.mind_sear<4)|(pet.fiend.active&runeforge.shadowflame_prism.equipped)
                 if (Aimsharp.CanCast("Shadow Word: Death") && (TargetHealth <= 20 && EnemiesNearTarget < 4) ||
                     (PetActive && LegendaryShadowflamePrismEquipped)) {
                     Aimsharp.Cast("Shadow Word: Death");
@@ -769,6 +776,7 @@ namespace AimsharpWow.Modules
                     return true;
                 }
 
+                //Use Void Torrent only if SW:P and VT are active and the target won't die during the channel.
                 //actions.main+=/void_torrent,target_if=variable.dots_up&target.time_to_die>4&buff.voidform.down&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Void Torrent") && AllDotsUp &&
                     !BuffVoidformUp &&
@@ -783,10 +791,9 @@ namespace AimsharpWow.Modules
 
                 //Use Mind Sear to consume Dark Thoughts procs on AOE. TODO Confirm is this is a higher priority than redotting on AOE unless dark thoughts is about to time out
                 //actions.main+=/mind_sear,target_if=spell_targets.mind_sear>variable.mind_sear_cutoff&buff.dark_thoughts.up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
-
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&
                     EnemiesNearTarget > MindSearCutOff &&
-                    BuffDarkThoughtsUp &&
+                    BuffDarkThoughtsUp && Aimsharp.CanCast("Mind Sear") &&
                     PlayerCastingID != 48045) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
@@ -795,7 +802,7 @@ namespace AimsharpWow.Modules
                 //Use Mind Flay to consume Dark Thoughts procs on ST. TODO Confirm if this is a higher priority than redotting unless dark thoughts is about to time out
                 //actions.main+=/mind_flay,if=buff.dark_thoughts.up&variable.dots_up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&cooldown.void_bolt.up
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && BuffDarkThoughtsUp && DotsUp &&
-                    EnemiesNearTarget <= MindSearCutOff &&
+                    EnemiesNearTarget <= MindSearCutOff && Aimsharp.CanCast("Mind Flay") &&
                     PlayerCastingID != 15407 ) {
                     Aimsharp.Cast("Mind Flay");
                     return true;
@@ -942,14 +949,16 @@ namespace AimsharpWow.Modules
                 #endregion
 
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&
-                    EnemiesNearTarget > MindSearCutOff &&
+                    EnemiesNearTarget > MindSearCutOff && 
+                    Aimsharp.CanCast("Mind Sear") &&
                     PlayerCastingID != 48045) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
                 }
 
 
-                if ((!IsMoving || BuffSurrenderToMadnessUp) &&  EnemiesNearTarget < 2 &&
+                if ((!IsMoving || BuffSurrenderToMadnessUp) &&  EnemiesNearTarget < 2 && 
+                    Aimsharp.CanCast("Mind Flay") &&
                     PlayerCastingID != 15407) {
                     Aimsharp.Cast("Mind Flay");
                     return true;
@@ -967,11 +976,12 @@ namespace AimsharpWow.Modules
                     }
                 }
             }
-            
-            if (!DebuffWeakenedSoulUp) {
-                Aimsharp.Cast("ShieldSelf");
-                return true;
+
+			if (!DebuffWeakenedSoulUp && IsMoving) {
+                 Aimsharp.Cast("ShieldSelf");
+                 return true;
             }
+            
 
 
 
