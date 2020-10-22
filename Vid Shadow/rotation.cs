@@ -705,7 +705,7 @@ namespace AimsharpWow.Modules
                 //High Priority Mind Sear action to refresh DoTs with Searing Nightmare
                 //actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") &&
-                    EnemiesNearTarget > (MindSearCutOff + 1) && TalentSearingNightmareEnabled
+                    EnemiesNearTarget > (MindSearCutOff + 1) && TalentSearingNightmareEnabled &&
                     SWPRemains <= 0 && !CooldownMindbenderUp && !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
