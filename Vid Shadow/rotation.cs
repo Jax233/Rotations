@@ -36,6 +36,8 @@ namespace AimsharpWow.Modules
             Settings.Add(new Setting("Auto Vampiric Embrace @ HP%", 0, 100, 45));
             
             Settings.Add(new Setting("Auto Desperate Prayer @ HP%", 0, 100, 35));
+            
+            Settings.Add(new Setting("Auto Healthstone @ HP%", 0, 100, 25));
 
             Settings.Add(new Setting("First 5 Letters of the Addon:", "xxxxx"));
 
@@ -417,11 +419,12 @@ namespace AimsharpWow.Modules
 
             //Variable to switch between syncing cooldown usage to Power Infusion or Void Eruption depending whether priest_self_power_infusion is in use or we don't have power infusion learned.
             //actions+=/variable,name=pi_or_vf_sync_condition,op=set,value=(priest.self_power_infusion|runeforge.twins_of_the_sun_priestess.equipped)&level>=58&cooldown.power_infusion.up|(level<58|!priest.self_power_infusion&!runeforge.twins_of_the_sun_priestess.equipped)&cooldown.void_eruption.up
+            int PlayerLevel = Aimsharp.GetPlayerLevel();
             bool PiOrVe =
-                (SelfPowerInfusion || LegendaryTwinsOfTheSunEquipped) && Aimsharp.GetPlayerLevel() > 58 &&
-                CooldownPowerInfusionUp ||
-                (Aimsharp.GetPlayerLevel() < 58 || !SelfPowerInfusion && !LegendaryTwinsOfTheSunEquipped) &&
-                CooldownVoidEruptionUp;
+                ((SelfPowerInfusion || LegendaryTwinsOfTheSunEquipped) && PlayerLevel > 58 &&
+                CooldownPowerInfusionUp ) ||
+                ((PlayerLevel < 58 || !SelfPowerInfusion && !LegendaryTwinsOfTheSunEquipped) &&
+                CooldownVoidEruptionUp);
 
 
 
@@ -568,8 +571,8 @@ namespace AimsharpWow.Modules
 
 
 
-                    if (Aimsharp.CanCast("Mind Blast") || BuffDarkThoughtsUp ||
-                        Aimsharp.SpellCharges("Mind Blast") >= 1) {
+                    if ((Aimsharp.CanCast("Mind Blast") || Aimsharp.SpellCharges("Mind Blast") >= 1) &&
+                        (EnemiesNearTarget < 5 && !TalentSearingNightmareEnabled  || TalentSearingNightmareEnabled && BuffDarkThoughtsUp)) {
                         Aimsharp.Cast("Mind Blast");
                         return true;
                     }
@@ -649,7 +652,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (MajorPower == "Focused Azerite Beam") {
-                        if (Aimsharp.CanCast("Focused Azerite Beam") && EnemiesNearTarget >= 2) {
+                        if (Aimsharp.CanCast("Focused Azerite Beam", "player") && EnemiesNearTarget >= 2) {
                             Aimsharp.Cast("Focused Azerite Beam");
                             return true;
                         }
@@ -702,7 +705,7 @@ namespace AimsharpWow.Modules
                 //High Priority Mind Sear action to refresh DoTs with Searing Nightmare
                 //actions.main+=/mind_sear,target_if=talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1)&!dot.shadow_word_pain.ticking&!cooldown.mindbender.up
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Sear", "target") &&
-                    EnemiesNearTarget > (MindSearCutOff + 1) &&
+                    EnemiesNearTarget > (MindSearCutOff + 1) && TalentSearingNightmareEnabled
                     SWPRemains <= 0 && !CooldownMindbenderUp && !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
@@ -726,7 +729,7 @@ namespace AimsharpWow.Modules
 
                 //Don't use Devouring Plague if you can get into Voidform instead, or if Searing Nightmare is talented and will hit enough targets.
                 //actions.main+=/devouring_plague,target_if=(refreshable|insanity>75)&!variable.pi_or_vf_sync_condition&(!talent.searing_nightmare.enabled|(talent.searing_nightmare.enabled&!variable.searing_nightmare_cutoff))
-                if (Aimsharp.CanCast("Devouring Plague") &&  Insanity > 75 && !PiOrVe &&
+                if (Aimsharp.CanCast("Devouring Plague") &&  Insanity > 75 && (!PiOrVe || PlayerLevel < 23) &&
                     (!TalentSearingNightmareEnabled || (TalentSearingNightmareEnabled && !SearingNightmaresCutoff))) {
                     Aimsharp.Cast("Devouring Plague");
                     return true;
