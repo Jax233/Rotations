@@ -331,6 +331,7 @@ namespace AimsharpWow.Modules
             bool TalenTwistOfFateEnabled = Aimsharp.Talent(3, 1);
             bool ChannelingMindFlay = PlayerCastingID == 15407;
             bool ChannelingMindSear = PlayerCastingID == 48045;
+            bool CastingVampiricTouch = PlayerCastingID == 34914;
 
             /*
             int ChannelDuration = (int) ((4500f / (Haste + 1f)));
@@ -571,7 +572,7 @@ namespace AimsharpWow.Modules
 
 
 
-                    if ((Aimsharp.CanCast("Mind Blast") || Aimsharp.SpellCharges("Mind Blast") >= 1) &&
+                    if ((Aimsharp.CanCast("Mind Blast", "target") || Aimsharp.SpellCharges("Mind Blast") >= 1) &&
                         (EnemiesNearTarget < 5 && !TalentSearingNightmareEnabled  || TalentSearingNightmareEnabled && BuffDarkThoughtsUp)) {
                         Aimsharp.Cast("Mind Blast");
                         return true;
@@ -797,110 +798,14 @@ namespace AimsharpWow.Modules
                 }
 
                 #region Dots
-
-                #region Council + Focus
-
-                if (CouncilDots) {
-                    if (!Aimsharp.TargetIsUnit("focus") && Aimsharp.Range("focus") < 40) {
-                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "focus") &&
-                            (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
-                            VTLastCast = true;
-                            Aimsharp.Cast("VTFocus");
-                            VTLastCast = true;
-
-                            return true;
-                        }
-
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus") &&
-                            (SWPFocusRefreshable && !TalentMiseryEnabled)) {
-                            Aimsharp.Cast("SWPFocus");
-                            return true;
-                        }
-                    }
-
-                    if (!Aimsharp.TargetIsUnit("boss1") && Aimsharp.Range("boss1") < 40) {
-                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
-                            (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
-                            VTLastCast = true;
-                            Aimsharp.Cast("VTBoss1");
-                            VTLastCast = true;
-                            return true;
-                        }
-
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1") &&
-                            (SWPBoss1Refreshable && !TalentMiseryEnabled)) {
-                            Aimsharp.Cast("SWPBoss1");
-                            return true;
-                        }
-                    }
-
-                    if (!Aimsharp.TargetIsUnit("boss2") && Aimsharp.Range("boss2") < 40) {
-                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss2") &&
-                            (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
-                            VTLastCast = true;
-                            Aimsharp.Cast("VTBoss2");
-                            VTLastCast = true;
-                            return true;
-                        }
-
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
-                            (SWPBoss2Refreshable && !TalentMiseryEnabled)) {
-                            Aimsharp.Cast("SWPBoss2");
-                            return true;
-                        }
-                    }
-
-                    if (!Aimsharp.TargetIsUnit("boss3") && Aimsharp.Range("boss3") < 40) {
-                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
-                            (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
-                            VTLastCast = true;
-                            Aimsharp.Cast("VTBoss3");
-                            VTLastCast = true;
-                            return true;
-                        }
-
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
-                            (SWPBoss3Refreshable && !TalentMiseryEnabled)) {
-                            Aimsharp.Cast("SWPBoss3");
-                            return true;
-                        }
-                    }
-
-                    if (!Aimsharp.TargetIsUnit("boss4") && Aimsharp.Range("boss4") < 40) {
-                        if (!VTLastCast && (!IsMoving || BuffSurrenderToMadnessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
-                            (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
-                            VTLastCast = true;
-                            Aimsharp.Cast("VTBoss4");
-                            VTLastCast = true;
-                            return true;
-                        }
-
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") &&
-                            (SWPBoss4Refreshable && !TalentMiseryEnabled)) {
-                            Aimsharp.Cast("SWPBoss4");
-                            return true;
-                        }
-                    }
-                }
-
-                #endregion
-
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch") && !VTLastCast &&
+                
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch") && !CastingVampiricTouch &&
                     (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable) || BuffUnfurlingDarknessUp)) {
-                    VTLastCast = true;
+                    
                     Aimsharp.Cast("Vampiric Touch");
-                    VTLastCast = true;
                     return true;
                 }
-
-                if (Aimsharp.LastCast() != "Vampiric Touch" && PlayerCastingID != 34914) {
-                    VTLastCast = false;
-                }
+                
 
 
 
@@ -924,6 +829,90 @@ namespace AimsharpWow.Modules
                     Aimsharp.Cast("Shadow Word: Pain");
                     return true;
                 }
+
+                #region Council + Focus
+
+                if (CouncilDots) {
+                    if (!Aimsharp.TargetIsUnit("focus") && Aimsharp.Range("focus") < 40) {
+                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "focus") &&
+                            (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
+                            Aimsharp.Cast("VTFocus");
+
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus") &&
+                            (SWPFocusRefreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPFocus");
+                            return true;
+                        }
+                    }
+
+                    if (!Aimsharp.TargetIsUnit("boss1") && Aimsharp.Range("boss1") < 40) {
+                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
+                            (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
+                            Aimsharp.Cast("VTBoss1");
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1") &&
+                            (SWPBoss1Refreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPBoss1");
+                            return true;
+                        }
+                    }
+
+                    if (!Aimsharp.TargetIsUnit("boss2") && Aimsharp.Range("boss2") < 40) {
+                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss2") &&
+                            (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
+                            Aimsharp.Cast("VTBoss2");
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
+                            (SWPBoss2Refreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPBoss2");
+                            return true;
+                        }
+                    }
+
+                    if (!Aimsharp.TargetIsUnit("boss3") && Aimsharp.Range("boss3") < 40) {
+                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
+                            (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
+                            Aimsharp.Cast("VTBoss3");
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
+                            (SWPBoss3Refreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPBoss3");
+                            return true;
+                        }
+                    }
+
+                    if (!Aimsharp.TargetIsUnit("boss4") && Aimsharp.Range("boss4") < 40) {
+                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss1") &&
+                            (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
+                            Aimsharp.Cast("VTBoss4");
+                            return true;
+                        }
+
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") &&
+                            (SWPBoss4Refreshable && !TalentMiseryEnabled)) {
+                            Aimsharp.Cast("SWPBoss4");
+                            return true;
+                        }
+                    }
+                }
+
+                #endregion
+
+                
 
 
 
