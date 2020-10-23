@@ -182,10 +182,12 @@ namespace AimsharpWow.Modules
             bool BuffDoubleTap = Aimsharp.HasBuff("Double Tap", "player");
             bool BuffTrickShotsUp = Aimsharp.HasBuff("Trick Shots", "player");
             bool BuffTrueShotUp = Aimsharp.HasBuff("Trickshot", "player");
+            int BuffTrueShotRemains = Aimsharp.BuffRemaining("Trueshot", "player");
 
             int CDTrueshotRemains = Aimsharp.SpellCooldown("Trueshot");
             int CDAimedShotRemains = Aimsharp.SpellCooldown("Aimed Shot");
             int CDRapidFireRemains = Aimsharp.SpellCooldown("Rapid Fire");
+            
 
             
 
@@ -193,6 +195,8 @@ namespace AimsharpWow.Modules
             int AimedShotFullRecharge = (int)(Aimsharp.RechargeTime("Aimed Shot") - GCD + (AimedShotRechargeTime) * (1f - Aimsharp.SpellCharges("Aimed Shot")));
 
             int FocusMax = Aimsharp.PlayerMaxPower();
+            bool LastCastAimshot = Aimsharp.CastingID("player") == 19434;
+            bool LastCastRapidFire = Aimsharp.CastingID("player") == 257044;
             float CritPercent = Aimsharp.Crit() / 100f;
             float FocusTimeToMax = (FocusMax - Focus) * 1000f / FocusRegen;
             int FlameFullRecharge = (int)(Aimsharp.RechargeTime("Concentrated Flame") - GCD + (30000f) * (1f - Aimsharp.SpellCharges("Concentrated Flame")));
@@ -226,22 +230,30 @@ namespace AimsharpWow.Modules
                     return false;
                 }
 
-                if (Aimsharp.LastCast() == "Aimed Shot") {
-                    LastCastAimshot = false;
-                }
-
-                if (Aimsharp.LastCast() == "Rapid Fire") {
-                    LastCastRapidFire = false;
-                }
+                
 
 
                 if (!NoCooldowns) {
 
-                    if (Aimsharp.CanCast("Double Tap") &&
+                    if (Aimsharp.CanCast("Double Tap", "player") &&
                         (CDRapidFireRemains < GCD || CDRapidFireRemains < CDAimedShotRemains)) {
                         Aimsharp.Cast("Double Tap");
                         return true;
                     }
+                    
+                    //actions.cds+=/ancestral_call,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.ancestral_call.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
+                    if (Aimsharp.CanCast("Ancestral Call", "player") && (BuffTrueShotRemains > 14000)) {
+                        Aimsharp.Cast("Ancestrall Call");
+                        return true;
+                    }
+
+                    
+                    //actions.cds+=/trueshot,if=buff.trueshot.down&cooldown.rapid_fire.remains|target.time_to_die<15
+                    if (Aimsharp.CanCast("Trueshot", "player") && CDRapidFireRemains > 0 && !BuffTrueShotUp) {
+                        Aimsharp.Cast("Trueshot");
+                        return true;
+                    }
+
 
 
                 }
@@ -279,7 +291,6 @@ namespace AimsharpWow.Modules
 
                     if (Aimsharp.CanCast("Rapid Fire") &&
                         (!BuffTrueShotUp || Focus < 35 || Focus < 60 && !TalentLethalShots)) {
-                        LastCastRapidFire = true;
                         Aimsharp.Cast("Rapid Fire");
                         return true;
                     }
@@ -288,7 +299,6 @@ namespace AimsharpWow.Modules
                                                            (!BuffDoubleTap || CAUp) && !BuffPreciseShots ||
                                                            AimedShotFullRecharge < AimedShotCastTime &&
                                                            CDTrueshotRemains > 0)) {
-                        LastCastAimshot = true;
                         Aimsharp.Cast("Aimed Shot");
                         return true;
                     }
@@ -336,33 +346,29 @@ namespace AimsharpWow.Modules
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Aimed Shot") && !IsMoving && BuffTrickShotsUp && CAUp && BuffDoubleTap && Aimsharp.LastCast() != "Aimed Shot" && Aimsharp.LastCast() != "Rapid Fire" && !LastCastAimshot && !LastCastRapidFire) {
-                        LastCastAimshot = true;
+                    if (Aimsharp.CanCast("Aimed Shot") && !IsMoving && BuffTrickShotsUp && CAUp && BuffDoubleTap && !LastCastAimshot && !LastCastRapidFire) {
                         Aimsharp.Cast("Aimed Shot");
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Rapid Fire") && !LastCastAimshot && !LastCastRapidFire && Aimsharp.LastCast() != "Aimed Shot" &&(BuffTrickShotsUp && (AzeriteFocusedFireEnabled ||
+                    if (Aimsharp.CanCast("Rapid Fire") && !LastCastAimshot && !LastCastRapidFire && (BuffTrickShotsUp && (AzeriteFocusedFireEnabled ||
                         AzeriteInTheRythmRank > 1 ||
                         AzeriteSurgingShotsEnabled ||
                         TalentStreamline))) {
-                        LastCastRapidFire = true;
                         Aimsharp.Cast("Rapid Fire");
                         return true;
                     }
                     
                     //buff.trick_shots.up & ( buff.precise_shots.down | cooldown.aimed_shot.full_recharge_time < action.aimed_shot.cast_time | buff.trueshot.up )
-                    if (Aimsharp.CanCast("Aimed Shot") && !LastCastAimshot && !LastCastRapidFire && Aimsharp.LastCast() != "Aimed Shot" && Aimsharp.LastCast() != "Rapid Fire" &&(BuffTrickShotsUp && !IsMoving &&
+                    if (Aimsharp.CanCast("Aimed Shot") && !LastCastAimshot && !LastCastRapidFire && (BuffTrickShotsUp && !IsMoving &&
                                                            (!BuffPreciseShots ||
                                                             AimedShotFullRecharge < AimedShotCastTime ||
                                                             BuffTrueShotUp))) {
-                        LastCastAimshot = true;
                         Aimsharp.Cast("Aimed Shot");
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Rapid Fire") && !LastCastAimshot && !LastCastRapidFire && BuffTrickShotsUp && Aimsharp.LastCast() != "Aimed Shot") {
-                        LastCastRapidFire = true;
+                    if (Aimsharp.CanCast("Rapid Fire") && !LastCastAimshot && !LastCastRapidFire && BuffTrickShotsUp) {
                         Aimsharp.Cast("Rapid Fire");
                         return true;
                     }
