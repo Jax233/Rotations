@@ -38,6 +38,10 @@ namespace AimsharpWow.Modules
             Settings.Add(new Setting("Auto Desperate Prayer @ HP%", 0, 100, 35));
             
             Settings.Add(new Setting("Auto Healthstone @ HP%", 0, 100, 25));
+            
+            Settings.Add(new Setting("Don't dot below HP%", 0, 100, 3));
+            
+            Settings.Add(new Setting("Don't dot below HP Amount", 0, 20000, 6000));
 
             Settings.Add(new Setting("First 5 Letters of the Addon:", "xxxxx"));
 
@@ -47,15 +51,26 @@ namespace AimsharpWow.Modules
         string MajorPower;
         string TopTrinket;
         string BotTrinket;
+        
 
-        private int[] HPSnapshots = {0, 0};
+        
 
-        private int ttk;
+        private float FirstTime = 0;
+
+        private float FirstLife = 0;
+
+        private float UpdateTime = 0;
+        
+        
+        private int TTK = 10000000;
         
         bool VTLastCast;
 
 
         private string FiveLetters;
+
+        private int AmountHP;
+        private int PercentHP;
 
 
 
@@ -108,6 +123,9 @@ namespace AimsharpWow.Modules
             TopTrinket = GetDropDown("Top Trinket");
             BotTrinket = GetDropDown("Bot Trinket");
             FiveLetters = GetString("First 5 Letters of the Addon:");
+            AmountHP = GetSlider("Don't dot below HP Amount");
+            PercentHP = GetSlider("Don't dot below HP%");
+                
 
             Spellbook.Add(MajorPower);
             Spellbook.Add("Void Eruption");
@@ -220,6 +238,8 @@ namespace AimsharpWow.Modules
 
 
         }
+        
+        
 
 
 
@@ -291,7 +311,7 @@ namespace AimsharpWow.Modules
                 : SWVChargesFractional_temp;
             bool CouncilDots = Aimsharp.IsCustomCodeOn("CouncilDots");
 
-            bool SWPRefreshable = SWPRemains < 4800;
+            bool SWPRefreshable = SWPRemains < 4800 && Aimsharp.TargetExactCurrentHP() > AmountHP && TargetHealth > PercentHP;
             bool SWPFocusRefreshable = SWPRemainsFocus < 4800;
             bool SWPBoss1Refreshable = SWPRemainsBoss1 < 4800;
             bool SWPBoss2Refreshable = SWPRemainsBoss2 < 4800;
@@ -302,7 +322,7 @@ namespace AimsharpWow.Modules
             bool TalentMiseryEnabled = Aimsharp.Talent(3, 2);
             bool TalentDarkVoidEnabled = Aimsharp.Talent(3, 3);
 
-            bool VTRefreshable = VTRemains < 6300;
+            bool VTRefreshable = VTRemains < 6300 && Aimsharp.TargetExactCurrentHP() > AmountHP;
             bool VTFocusRefreshable = VTRemainsFocus < 6300;
             bool VTBoss1Refreshable = VTRemainsBoss1 < 6300;
             bool VTBoss2Refreshable = VTRemainsBoss2 < 6300;
@@ -362,54 +382,44 @@ namespace AimsharpWow.Modules
             bool PsychicHorror = Aimsharp.IsCustomCodeOn("PsychicHorror");
             bool Dispersion = Aimsharp.IsCustomCodeOn("Dispersion");
 
-            
 
-            
-/*
+
+
+
+
 
             #region TTK
 
-            int maxHP = Aimsharp.TargetMaxHP();
-            int currentHP = Aimsharp.TargetCurrentHP();
-            int timer = Aimsharp.CombatTime();
-            Aimsharp.PrintMessage("HPSnapshot 0 " + HPSnapshots[0]);
-            Aimsharp.PrintMessage("Timer " + timer);
+            float CurrentTime = Aimsharp.CombatTime();
+            float CurrentHP = Aimsharp.TargetExactCurrentHP();
+            float MaxHP = Aimsharp.TargetExactMaxHP();
+            if (CurrentTime >= UpdateTime + 1000) {
+                if (CurrentHP < FirstLife) {
+                    float HPDiff = FirstLife - CurrentHP;
+                    float TimeDiff = CurrentTime - UpdateTime;
+                    float DPS = HPDiff / TimeDiff;
+                    TTK = Math.Round(CurrentHP / DPS);
+                    
+                    
+                }
 
-            Aimsharp.PrintMessage("HPSnapshot 1 " + HPSnapshots[1]);
-            Aimsharp.PrintMessage("Current HP " + currentHP);
-
-
-            if (HPSnapshots[0] == 0) {
-                HPSnapshots[0] = timer;
-                HPSnapshots[1] = currentHP;
-            }
-
-            if (HPSnapshots[0] > 0 && HPSnapshots[1] > 0 && HPSnapshots[1] > currentHP) {
-                int elapsed = timer - HPSnapshots[0];
-                if (elapsed > 0) {
-                    int diff = HPSnapshots[1] - currentHP;
-                    if (diff > 0) {
-                        int dps = diff / elapsed;
-                        if (dps > 0) {
-                            ttk = currentHP / dps;
-                            HPSnapshots[0] = timer;
-                            HPSnapshots[1] = currentHP;
-                            if (Aimsharp.TargetMaxHP() != maxHP) {
-                                HPSnapshots[0] = 0;
-                                HPSnapshots[1] = 1;
-                            }
-
-                            Aimsharp.PrintMessage("TTK  " + ttk / 1000);
-                        }
-                    }
+                if (FirstLife == 0 && CurrentHP > 0) {
+                    FirstLife = MaxHP;
                 }
             }
+            
+            
+
+            
+            
+            
+            
 
 
 
             #endregion
 
-*/
+
 
 
 
@@ -750,6 +760,12 @@ namespace AimsharpWow.Modules
                     Aimsharp.Cast("Shadow Word: Death");
                     return true;
                 }
+                
+                //actions.main+=/surrender_to_madness,target_if=target.time_to_die<25&buff.voidform.down
+                if (Aimsharp.CanCast("Surrender to Madness") && TTK < 25000 && !BuffVoidformUp) {
+                    Aimsharp.Cast("Surrender to Madness");
+                    return true;
+                }
 
                 //actions.main+=/mindbender,if=dot.vampiric_touch.ticking&((talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1))|dot.shadow_word_pain.ticking)
                 if (!NoCooldowns && Aimsharp.CanCast("Shadowfiend") && VTRemains > 0 &&
@@ -760,7 +776,7 @@ namespace AimsharpWow.Modules
 
                 //Use Void Torrent only if SW:P and VT are active and the target won't die during the channel.
                 //actions.main+=/void_torrent,target_if=variable.dots_up&target.time_to_die>4&buff.voidform.down&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Void Torrent") && AllDotsUp &&
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 4 && Aimsharp.CanCast("Void Torrent") && AllDotsUp &&
                     !BuffVoidformUp &&
                     EnemiesNearTarget < (5 + (6 * (TalenTwistOfFateEnabled ? 1 : 0)))) {
                     Aimsharp.Cast("Void Torrent");
@@ -799,7 +815,7 @@ namespace AimsharpWow.Modules
 
                 #region Dots
                 
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Vampiric Touch") && !CastingVampiricTouch &&
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 6000 && Aimsharp.CanCast("Vampiric Touch") && !CastingVampiricTouch &&
                     (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable) || BuffUnfurlingDarknessUp)) {
                     
                     Aimsharp.Cast("Vampiric Touch");
@@ -811,8 +827,8 @@ namespace AimsharpWow.Modules
 
                 //Special condition to stop casting SW:P on off-targets when fighting 3 or more stacked mobs and using Psychic Link and NOT Misery.
                 //actions.main+=/shadow_word_pain,if=refreshable&target.time_to_die>4&!talent.misery.enabled&talent.psychic_link.enabled&spell_targets.mind_sear>2
-                if (Aimsharp.CanCast("Shadow Word: Pain") && (SWPRefreshable && !TalentMiseryEnabled &&
-                                                              TalentPsychicLinkEnabled && EnemiesNearTarget > 2)) {
+                if (Aimsharp.CanCast("Shadow Word: Pain") && TTK > 4000 && (SWPRefreshable && !TalentMiseryEnabled &&
+                                                                         TalentPsychicLinkEnabled && EnemiesNearTarget > 2)) {
                     Aimsharp.Cast("Shadow Word: Pain");
                     return true;
                 }
@@ -821,7 +837,7 @@ namespace AimsharpWow.Modules
                 //actions.main+=/shadow_word_pain,target_if=refreshable&target.time_to_die>4&!talent.misery.enabled&!(talent.searing_nightmare.enabled&spell_targets.mind_sear>(variable.mind_sear_cutoff+1))&(!talent.psychic_link.enabled|(talent.psychic_link.enabled&spell_targets.mind_sear<=2))
 
 
-                if (Aimsharp.CanCast("Shadow Word: Pain") && (SWPRefreshable && !TalentMiseryEnabled &&
+                if (Aimsharp.CanCast("Shadow Word: Pain") && TTK > 4000 && (SWPRefreshable && !TalentMiseryEnabled &&
                                                               !(TalentSearingNightmareEnabled &&
                                                                 EnemiesNearTarget > (MindSearCutOff + 1)) &&
                                                               (!TalentPsychicLinkEnabled || (TalentPsychicLinkEnabled &&
@@ -939,6 +955,11 @@ namespace AimsharpWow.Modules
                         Aimsharp.Cast("ShieldSelf");
                         return true;
                     }
+
+                    if (Aimsharp.CanCast("Shadow Word: Death")) {
+                        Aimsharp.Cast("Shadow Word: Death");
+                        return true;
+                    }
                     
                     if (Aimsharp.CanCast("Shadow Word: Pain")) {
                         Aimsharp.Cast("Shadow Word: Pain");
@@ -991,6 +1012,12 @@ namespace AimsharpWow.Modules
             return false;
         }
     }
+    
+    
+    
+    
+    
+    
     
 }
 
