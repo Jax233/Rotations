@@ -55,14 +55,16 @@ namespace AimsharpWow.Modules
 
         
 
-        private float FirstTime = 0;
+        private int FirstTime = 0;
 
-        private float FirstLife = 0;
+        private int FirstLife = 0;
 
-        private float UpdateTime = 0;
+        private int UpdateTime = 0;
         
         
         private int TTK = 10000000;
+
+        private int DPS = 0;
         
         bool VTLastCast;
 
@@ -390,17 +392,23 @@ namespace AimsharpWow.Modules
 
             #region TTK
 
-            float CurrentTime = Aimsharp.CombatTime();
-            float CurrentHP = Aimsharp.TargetExactCurrentHP();
-            float MaxHP = Aimsharp.TargetExactMaxHP();
+            int CurrentTime = Aimsharp.CombatTime();
+            int CurrentHP = Aimsharp.TargetExactCurrentHP();
+            int MaxHP = Aimsharp.TargetExactMaxHP();
             if (CurrentTime >= UpdateTime + 1000) {
                 if (CurrentHP < FirstLife) {
-                    float HPDiff = FirstLife - CurrentHP;
-                    float TimeDiff = CurrentTime - UpdateTime;
-                    float DPS = HPDiff / TimeDiff;
-                    TTK = Math.Round(CurrentHP / DPS);
-                    
-                    
+                    int HPDiff = FirstLife - CurrentHP;
+                    int TimeDiff = CurrentTime - UpdateTime;
+                    if (TimeDiff > 0) {
+                        DPS = HPDiff / TimeDiff;
+                    }
+
+                    if (DPS > 0) {
+
+                        TTK = CurrentHP / DPS;
+                    }
+
+
                 }
 
                 if (FirstLife == 0 && CurrentHP > 0) {
