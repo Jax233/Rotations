@@ -68,6 +68,8 @@ namespace AimsharpWow.Modules
         
         bool VTLastCast;
 
+        private int FirstMaxHP = 10000000;
+
 
         private string FiveLetters;
 
@@ -395,6 +397,12 @@ namespace AimsharpWow.Modules
             int CurrentTime = Aimsharp.CombatTime();
             int CurrentHP = Aimsharp.TargetExactCurrentHP();
             int MaxHP = Aimsharp.TargetExactMaxHP();
+            if (FirstMaxHP != MaxHP) {
+                UpdateTime = 0;
+                TTK = 100000000;
+                FirstLife = CurrentHP;
+                FirstMaxHP = MaxHP;
+            }
             if (CurrentTime >= UpdateTime + 1000) {
                 if (CurrentHP < FirstLife) {
                     int HPDiff = FirstLife - CurrentHP;
@@ -415,6 +423,8 @@ namespace AimsharpWow.Modules
                     FirstLife = MaxHP;
                 }
             }
+
+            Aimsharp.PrintMessage("TTK: " + TimeSpan.FromMilliseconds(TTK).ToString());
             
             
 
@@ -685,7 +695,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (MajorPower == "Concentrated Flame") {
-                        if (Aimsharp.CanCast("Concentrated Flame") && FlameFullRecharge < GCD) {
+                        if (Aimsharp.CanCast("Concentrated Flame") && (FlameFullRecharge < GCD || CurrentTime <= 10000 || TTK < 5000)) {
                             Aimsharp.Cast("Concentrated Flame");
                             return true;
                         }
@@ -729,13 +739,12 @@ namespace AimsharpWow.Modules
                     Aimsharp.Cast("Mind Sear");
                     return true;
                 }
-
-
-
+                
                 if (Aimsharp.CanCast("Damnation") && !AllDotsUp) {
                     Aimsharp.Cast("Damnation");
                     return true;
                 }
+                
                 
                 //Use Void Bolt at higher priority with Hungering Void up to 4 targets, or other talents on ST.
                 //actions.main+=/void_bolt,if=insanity<=85&((talent.hungering_void.enabled&spell_targets.mind_sear<5)|spell_targets.mind_sear=1)
@@ -745,6 +754,7 @@ namespace AimsharpWow.Modules
                                                                      EnemiesNearTarget == 1))) {
                     Aimsharp.Cast("Void Bolt");
                 }
+
 
                 //Don't use Devouring Plague if you can get into Voidform instead, or if Searing Nightmare is talented and will hit enough targets.
                 //actions.main+=/devouring_plague,target_if=(refreshable|insanity>75)&!variable.pi_or_vf_sync_condition&(!talent.searing_nightmare.enabled|(talent.searing_nightmare.enabled&!variable.searing_nightmare_cutoff))
