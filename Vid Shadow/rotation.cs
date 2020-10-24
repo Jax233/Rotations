@@ -113,7 +113,7 @@ namespace AimsharpWow.Modules
             Aimsharp.PrintMessage("/xxxxx Psychic Horror", Color.Blue);
             Aimsharp.PrintMessage("--Casts Psychic Horror at target.", Color.Blue);
             Aimsharp.PrintMessage(" ");
-            Aimsharp.PrintMessage("/xxxxx CouncilDots", Color.Blue);
+            Aimsharp.PrintMessage("/xxxxx CouncilDotsOff", Color.Blue);
             Aimsharp.PrintMessage("--Will keep SW:P and VT up on focus and Boss 1-4.", Color.Blue);
             Aimsharp.PrintMessage(" ");
             Aimsharp.PrintMessage("--Replace xxxxx with first 5 letters of your addon, lowercase.", Color.Blue);
@@ -228,7 +228,7 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("SaveCooldowns");
             CustomCommands.Add("MassDispel");
             CustomCommands.Add("JustEssences");
-            CustomCommands.Add("CouncilDots");
+            CustomCommands.Add("CouncilDotsOff");
             CustomCommands.Add("S2M");
             CustomCommands.Add("DispelMagic");
             CustomCommands.Add("Dispersion");
@@ -313,7 +313,7 @@ namespace AimsharpWow.Modules
             float SWVChargesFractional = SWVChargesFractional_temp > Aimsharp.MaxCharges("Shadow Word: Void")
                 ? Aimsharp.MaxCharges("Shadow Word: Void")
                 : SWVChargesFractional_temp;
-            bool CouncilDots = Aimsharp.IsCustomCodeOn("CouncilDots");
+            bool CouncilDotsOff = Aimsharp.IsCustomCodeOn("CouncilDotsOff");
 
             bool SWPRefreshable = SWPRemains < 4800 && Aimsharp.TargetExactCurrentHP() > AmountHP && TargetHealth > PercentHP;
             bool SWPFocusRefreshable = SWPRemainsFocus < 4800;
@@ -866,7 +866,7 @@ namespace AimsharpWow.Modules
 
                 #region Council + Focus
 
-                if (CouncilDots) {
+                if (!CouncilDotsOff) {
                     if (!Aimsharp.TargetIsUnit("focus") && Aimsharp.Range("focus") < 40) {
                         if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "focus") &&
