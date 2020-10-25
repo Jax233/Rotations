@@ -8,10 +8,7 @@ using AimsharpWow.API; //needed to access Aimsharp API
 
 namespace AimsharpWow.Modules
 {
-    /// <summary>
-    /// This is an example rotation. It is a garbage rotation.  Just trying to show some examples of using the Aimsharp API.
-    /// Check API-DOC for detailed documentation.
-    /// </summary>
+   
     public class VidShadow : Rotation {
 
 
@@ -44,7 +41,7 @@ namespace AimsharpWow.Modules
             
             Settings.Add(new Setting("Don't dot below HP%", 0, 100, 3));
             
-            Settings.Add(new Setting("Don't dot below HP Amount", 0, 20000, 6000));
+            Settings.Add(new Setting("Don't dot below HP Amount", 0, 20000, 4000));
 
             Settings.Add(new Setting("First 5 Letters of the Addon:", "xxxxx"));
 
@@ -321,6 +318,7 @@ namespace AimsharpWow.Modules
                 ? Aimsharp.MaxCharges("Shadow Word: Void")
                 : SWVChargesFractional_temp;
             bool CouncilDotsOff = Aimsharp.IsCustomCodeOn("CouncilDotsOff");
+            bool DVPRefreshable = DVPRemains < 2000;
 
             bool SWPRefreshable = SWPRemains < 4800 && Aimsharp.TargetExactCurrentHP() > AmountHP && TargetHealth > PercentHP;
             bool SWPFocusRefreshable = SWPRemainsFocus < 4800;
@@ -773,7 +771,7 @@ namespace AimsharpWow.Modules
 
                 //Don't use Devouring Plague if you can get into Voidform instead, or if Searing Nightmare is talented and will hit enough targets.
                 //actions.main+=/devouring_plague,target_if=(refreshable|insanity>75)&!variable.pi_or_vf_sync_condition&(!talent.searing_nightmare.enabled|(talent.searing_nightmare.enabled&!variable.searing_nightmare_cutoff))
-                if (Aimsharp.CanCast("Devouring Plague") &&  Insanity > 75 && (!PiOrVe || PlayerLevel < 23) &&
+                if (Aimsharp.CanCast("Devouring Plague") &&  (Insanity > 75 || DVPRefreshable) && (!PiOrVe || PlayerLevel < 23) &&
                     (!TalentSearingNightmareEnabled || (TalentSearingNightmareEnabled && !SearingNightmaresCutoff))) {
                     Aimsharp.Cast("Devouring Plague");
                     return true;
