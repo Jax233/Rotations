@@ -600,7 +600,7 @@ namespace AimsharpWow.Modules
                     return false;
                 }
 
-                if (IsChanneling && (ChannelingMindFlay || ChannelingMindSear)) {
+                if (ChannelingMindFlay || ChannelingMindSear) {
                     if ((SearingNightmaresCutoff && !PiOrVe) || (SWPRefreshable && EnemiesNearTarget > 1) &&
                         Aimsharp.CanCast("Searing Nightmare", "player")) {
                         Aimsharp.Cast("Searing Nightmare");
