@@ -26,6 +26,9 @@ namespace AimsharpWow.Modules
                 {"Azshara's Font of Power", "Shiver Venom Relic", "Generic", "None"});
             Settings.Add(new Setting("Top Trinket", Trinkets, "None"));
             Settings.Add(new Setting("Bot Trinket", Trinkets, "None"));
+            
+            Settings.Add(new Setting("Use item: Case Sens", "None"));
+            Settings.Add(new Setting("Use item @ HP%", 0, 100, 100));
 
             List<string> Potions = new List<string>(new string[]
                 {"Potion of Unbridled Fury", "Potion of Empowered Proximity", "Potion of Prolonged Power", "None"});
@@ -115,6 +118,8 @@ namespace AimsharpWow.Modules
             Aimsharp.PrintMessage(" ");
             Aimsharp.PrintMessage("/xxxxx CouncilDotsOff", Color.Blue);
             Aimsharp.PrintMessage("--Will keep SW:P and VT up on focus and Boss 1-4.", Color.Blue);
+            Aimsharp.PrintMessage("/xxxxx StartCombat", Color.Blue);
+            Aimsharp.PrintMessage("--Will initiate combat on by itself.", Color.Blue);
             Aimsharp.PrintMessage(" ");
             Aimsharp.PrintMessage("--Replace xxxxx with first 5 letters of your addon, lowercase.", Color.Blue);
 
@@ -235,7 +240,8 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("PsychicScream");
             CustomCommands.Add("PsychicHorror");
             CustomCommands.Add("MindControl");
-            
+            CustomCommands.Add("StartCombat");
+
 
 
 
@@ -267,6 +273,7 @@ namespace AimsharpWow.Modules
             int VTRemainsBoss3 = Aimsharp.DebuffRemaining("Vampiric Touch", "boss3") - GCD;
             int VTRemainsBoss4 = Aimsharp.DebuffRemaining("Vampiric Touch", "boss4") - GCD;
             int DVPRemains = Aimsharp.DebuffRemaining("Devouring Plague", "target") - GCD;
+            
             bool Fighting = Aimsharp.Range("target") <= 45 && Aimsharp.TargetIsEnemy();
             bool UsePotion = Aimsharp.IsCustomCodeOn("Potions");
             string PotionType = GetDropDown("Potion Type");
@@ -555,6 +562,14 @@ namespace AimsharpWow.Modules
             if (Aimsharp.CanCast("Desperate Prayer", "player")) {
                 if (PlayerHealth <= GetSlider("Auto Desperate Prayer @ HP%")) {
                     Aimsharp.Cast("Desperate Prayer");
+                    return true;
+                }
+            }
+            
+            //Auto Healthstone
+            if (Aimsharp.CanUseItem("Healthstone")) {
+                if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
+                    Aimsharp.CanUseItem("Healthstone");
                     return true;
                 }
             }
@@ -1004,8 +1019,145 @@ namespace AimsharpWow.Modules
             bool IsMoving = Aimsharp.PlayerIsMoving();
             bool DebuffWeakenedSoulUp = Aimsharp.HasDebuff("Weakened Soul", "player");
             bool IsChanneling = Aimsharp.IsChanneling("player");
+            bool StartCombat = Aimsharp.IsCustomCodeOn("StartCombat");
+            int PlayerHealth = Aimsharp.Health("player");
+            
+            int CDMassDispel = Aimsharp.SpellCooldown("Mass Dispel");
+            int CDDispersion = Aimsharp.SpellCooldown(("Dispersion"));
+            int CDPsychicHorror = Aimsharp.SpellCooldown("Psychic Horror");
+            int CDPsychicScream = Aimsharp.SpellCooldown("Psychic Scream");
+            int CDS2M = Aimsharp.SpellCooldown("Surrender to Madness");
+
+            bool MassDispel = Aimsharp.IsCustomCodeOn("MassDispel");
+            bool JustEssences = Aimsharp.IsCustomCodeOn("JustEssences");
+            bool BuffSurrenderToMadnessUp = Aimsharp.HasBuff("Surrender to Madness");
+            bool MindControl = Aimsharp.IsCustomCodeOn("MindControl");
+            bool DispelMagic = Aimsharp.IsCustomCodeOn("DispelMagic");
+            bool S2M = Aimsharp.IsCustomCodeOn("S2M");
+            bool PsychicScream = Aimsharp.IsCustomCodeOn("PsychicScream");
+            bool PsychicHorror = Aimsharp.IsCustomCodeOn("PsychicHorror");
+            bool Dispersion = Aimsharp.IsCustomCodeOn("Dispersion");
 
             if (!IsChanneling) {
+                
+                
+                 #region UtillityOOC
+
+            // QUEUED MD
+            if (CDMassDispel > 5000 && MassDispel) {
+                Aimsharp.Cast("MassDispelOff");
+                return true;
+            }
+            
+            if (MassDispel && Aimsharp.CanCast("Mass Dispel", "player")) {
+                Aimsharp.PrintMessage("Queued Mass Dispel");
+                Aimsharp.Cast("MassDispel");
+                return true;
+            }
+            
+            // QUEUED DISPERSION
+            if (CDDispersion > 5000 && Dispersion) {
+                Aimsharp.Cast("DispersionOff");
+                return true;
+            }
+            
+            if (Dispersion && Aimsharp.CanCast("Dispersion", "player")) {
+                Aimsharp.PrintMessage("Queued Dispersion");
+                Aimsharp.Cast("Dispersion");
+                return true;
+            }
+            
+            // QUEUED DISPEL MAGIC
+            if (Aimsharp.LastCast() == "Dispel Magic" && DispelMagic) {
+                Aimsharp.Cast("DispelOff");
+                return true;
+            }
+            
+            if (DispelMagic && Aimsharp.CanCast("Dispel Magic")) {
+                Aimsharp.PrintMessage("Queued Dispel Magic");
+                Aimsharp.Cast("Dispel Magic");
+                return true;
+            }
+            
+            // QUEUED MC
+            if (Aimsharp.LastCast() == "Mind Control" && MindControl) {
+                Aimsharp.Cast("MindControlOff");
+                return true;
+            }
+            
+            if (MindControl && Aimsharp.CanCast("Mind Control", "target")) {
+                Aimsharp.PrintMessage("Queued Mind Control");
+                Aimsharp.Cast("Mind Control");
+                return true;
+            }
+            
+            // QUEUED Psychic Scream
+            if (CDPsychicScream > 5000 && PsychicScream) {
+                Aimsharp.Cast("PsychicScreamOff");
+                return true;
+            }
+            
+            if (PsychicScream && Aimsharp.CanCast("Psychic Scream", "player")) {
+                Aimsharp.PrintMessage("Queued Psychic Scream");
+                Aimsharp.Cast("Psychic Scream");
+                return true;
+            }
+            
+            // QUEUED Psychic Horror
+            if (CDPsychicHorror > 5000 && PsychicHorror) {
+                Aimsharp.Cast("PsychicHorrorOff");
+                return true;
+            }
+            
+            if (PsychicHorror && Aimsharp.CanCast("Psychic Horror", "target")) {
+                Aimsharp.PrintMessage("Queued Psychic Horror");
+                Aimsharp.Cast("Psychic Horror");
+                return true;
+            }
+            
+            // QUEUED S2m
+            if (CDS2M > 5000 && S2M) {
+                Aimsharp.Cast("S2MOff");
+                return true;
+            }
+            
+            if (S2M && Aimsharp.CanCast("Surrender to Madness")) {
+                Aimsharp.PrintMessage("Queued S2M");
+                Aimsharp.Cast("Surrender to Madness");
+                return true;
+            }
+
+            if (Aimsharp.CanCast("Shadow Mend", "player")) {
+                if (PlayerHealth <= GetSlider("Auto Shadow Mend Self @ HP%")) {
+                    Aimsharp.Cast("Shadow Mend");
+                    return true;
+                }
+            }
+            
+            if (Aimsharp.CanCast("Desperate Prayer", "player")) {
+                if (PlayerHealth <= GetSlider("Auto Desperate Prayer @ HP%")) {
+                    Aimsharp.Cast("Desperate Prayer");
+                    return true;
+                }
+            }
+            
+            //Auto Healthstone
+            if (Aimsharp.CanUseItem("Healthstone")) {
+                if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
+                    Aimsharp.CanUseItem("Healthstone");
+                    return true;
+                }
+            }
+
+
+            if (Aimsharp.CanCast("Vampiric Embrace", "player") && Aimsharp.GroupSize() > 0) {
+                if (PlayerHealth <= GetSlider("Auto Vampiric Embrace @ HP%")) {
+                    Aimsharp.Cast("Vampiric Embrace");
+                    return true;
+                }
+            }
+
+            #endregion
 
 
                 if (!Aimsharp.HasBuff("Shadowform")) {
@@ -1021,8 +1173,20 @@ namespace AimsharpWow.Modules
                     return true;
                 }
 
+                if (!IsMoving && Aimsharp.CanCast("Vampiric Touch") && StartCombat) {
+                    Aimsharp.Cast("Vampiric Touch");
+                    return true;
+                }
+                
+                
+
                 if (IsMoving && !DebuffWeakenedSoulUp) {
                     Aimsharp.Cast("ShieldSelf");
+                    return true;
+                }
+
+                if (IsMoving && Aimsharp.CanCast("Shadow Word: Pain") && StartCombat) {
+                    Aimsharp.Cast("Shadow Word: Pain");
                     return true;
                 }
             }
