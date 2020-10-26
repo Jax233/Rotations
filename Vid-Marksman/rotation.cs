@@ -102,6 +102,7 @@ namespace AimsharpWow.Modules
 			Spellbook.Add("Kill Shot");
             Spellbook.Add("Bursting Shot");
             Spellbook.Add("Exhilaration");
+            Spellbook.Add("Double Tap");
             
             
             
@@ -219,6 +220,7 @@ namespace AimsharpWow.Modules
                 if (NoAOE) {
                     EnemiesNearTarget = 1;
                     EnemiesInMelee = EnemiesInMelee > 0 ? 1 : 0;
+                    EnemiesNearTarget = EnemiesNearTarget > 0 ? 1 : 0;
                 }
 
                 if (IsChanneling || Aimsharp.CastingID("player") == 295261 || Aimsharp.CastingID("player") == 299338 ||
