@@ -883,7 +883,7 @@ namespace AimsharpWow.Modules
 
                 if (!CouncilDotsOff) {
                     if (!Aimsharp.TargetIsUnit("focus") && Aimsharp.Range("focus") < 40) {
-                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "focus") &&
                             (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
                             Aimsharp.Cast("VTFocus");
@@ -899,7 +899,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss1") && Aimsharp.Range("boss1") < 40) {
-                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss1") &&
                             (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
                             Aimsharp.Cast("VTBoss1");
@@ -914,7 +914,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss2") && Aimsharp.Range("boss2") < 40) {
-                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss2") &&
                             (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
                             Aimsharp.Cast("VTBoss2");
@@ -929,7 +929,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss3") && Aimsharp.Range("boss3") < 40) {
-                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss1") &&
                             (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
                             Aimsharp.Cast("VTBoss3");
@@ -944,7 +944,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss4") && Aimsharp.Range("boss4") < 40) {
-                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss1") &&
                             (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
                             Aimsharp.Cast("VTBoss4");
@@ -961,12 +961,7 @@ namespace AimsharpWow.Modules
 
                 #endregion
 
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 6000 && Aimsharp.CanCast("Vampiric Touch") && !CastingVampiricTouch &&
-                    (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable) || BuffUnfurlingDarknessUp)) {
-                    
-                    Aimsharp.Cast("Vampiric Touch");
-                    return true;
-                }
+                
 
 
 
