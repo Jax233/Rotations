@@ -164,6 +164,7 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Dispersion");
             Spellbook.Add("Dispel Magic");
             Spellbook.Add("Psychic Horror");
+            Spellbook.Add("Damnation");
 
             Buffs.Add("Bloodlust");
             Buffs.Add("Heroism");
@@ -599,8 +600,8 @@ namespace AimsharpWow.Modules
                 }
 
                 if (ChannelingMindFlay || ChannelingMindSear) {
-                    if ((SearingNightmaresCutoff && !PiOrVe) || (SWPRefreshable && EnemiesNearTarget > 1) &&
-                        Aimsharp.CanCast("Searing Nightmare", "player")) {
+                    if (((SearingNightmaresCutoff && !PiOrVe) || (SWPRefreshable && EnemiesNearTarget > 1)) &&
+                        Aimsharp.CanCast("Searing Nightmare", "player") && TalentSearingNightmareEnabled) {
                         Aimsharp.Cast("Searing Nightmare");
                         return true;
                     }
@@ -613,7 +614,7 @@ namespace AimsharpWow.Modules
 
 
 
-                    if ((Aimsharp.CanCast("Mind Blast", "target") || Aimsharp.SpellCharges("Mind Blast") >= 1) &&
+                    if ((Aimsharp.CanCast("Mind Blast") || Aimsharp.SpellCharges("Mind Blast") >= 1 || BuffDarkThoughtsUp) &&
                         (EnemiesNearTarget < 5 && !TalentSearingNightmareEnabled  || TalentSearingNightmareEnabled && BuffDarkThoughtsUp)) {
                         Aimsharp.Cast("Mind Blast");
                         return true;
@@ -630,7 +631,7 @@ namespace AimsharpWow.Modules
                 if (UsePotion) {
                     if (Aimsharp.CanUseItem(PotionType, false)) // don't check if equipped
                     {
-                        if ((HasLust || TargetTimeToDie <= 80000 || TargetHealth < 35)) {
+                        if ((HasLust ||  TTK <= 80000 || TargetHealth < 35)) {
                             Aimsharp.Cast("potion", true);
                             return true;
                         }
@@ -724,6 +725,7 @@ namespace AimsharpWow.Modules
 
                 if (Aimsharp.CanUseItem(BotTrinket)) {
                     Aimsharp.Cast(BotTrinket, true);
+                    return true;
                 }
 
                 if (Aimsharp.CanUseTrinket(0) && TopTrinket == "Generic") {
@@ -807,7 +809,7 @@ namespace AimsharpWow.Modules
 
                 //Use Void Torrent only if SW:P and VT are active and the target won't die during the channel.
                 //actions.main+=/void_torrent,target_if=variable.dots_up&target.time_to_die>4&buff.voidform.down&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 4 && Aimsharp.CanCast("Void Torrent") && AllDotsUp &&
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 4 && Aimsharp.CanCast("Void Torrent", "player") && DotsUp &&
                     !BuffVoidformUp &&
                     EnemiesNearTarget < (5 + (6 * (TalenTwistOfFateEnabled ? 1 : 0)))) {
                     Aimsharp.Cast("Void Torrent");
@@ -847,7 +849,7 @@ namespace AimsharpWow.Modules
                 #region Dots
                 
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 6000 && Aimsharp.CanCast("Vampiric Touch") && !CastingVampiricTouch &&
-                    (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable) || BuffUnfurlingDarknessUp)) {
+                    (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable))) {
                     
                     Aimsharp.Cast("Vampiric Touch");
                     return true;
@@ -881,7 +883,7 @@ namespace AimsharpWow.Modules
 
                 if (!CouncilDotsOff) {
                     if (!Aimsharp.TargetIsUnit("focus") && Aimsharp.Range("focus") < 40) {
-                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "focus") &&
                             (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
                             Aimsharp.Cast("VTFocus");
@@ -897,7 +899,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss1") && Aimsharp.Range("boss1") < 40) {
-                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss1") &&
                             (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
                             Aimsharp.Cast("VTBoss1");
@@ -912,7 +914,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss2") && Aimsharp.Range("boss2") < 40) {
-                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss2") &&
                             (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
                             Aimsharp.Cast("VTBoss2");
@@ -927,7 +929,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss3") && Aimsharp.Range("boss3") < 40) {
-                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss1") &&
                             (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
                             Aimsharp.Cast("VTBoss3");
@@ -942,7 +944,7 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss4") && Aimsharp.Range("boss4") < 40) {
-                        if (!CastingVampiricTouch && (!IsMoving || BuffSurrenderToMadnessUp) &&
+                        if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss1") &&
                             (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
                             Aimsharp.Cast("VTBoss4");
@@ -959,7 +961,12 @@ namespace AimsharpWow.Modules
 
                 #endregion
 
-                
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 6000 && Aimsharp.CanCast("Vampiric Touch") && !CastingVampiricTouch &&
+                    (VTRefreshable || (TalentMiseryEnabled && SWPRefreshable) || BuffUnfurlingDarknessUp)) {
+                    
+                    Aimsharp.Cast("Vampiric Touch");
+                    return true;
+                }
 
 
 
