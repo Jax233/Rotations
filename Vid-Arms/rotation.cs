@@ -690,7 +690,7 @@ namespace AimsharpWow.Modules {
 								return true;
 							}
 
-							if (CDSkullsplitterRemains <= 0 &&
+							if (Aimsharp.CanCast("Skullsplitter") &&
 							    ((!BuffMemoryOfLucidDreamsUp && Rage < 52) || Rage < 20)) {
 								Aimsharp.Cast("Skullsplitter");
 								return true;
@@ -731,7 +731,7 @@ namespace AimsharpWow.Modules {
 
 
 							if (!BuffDeadlyCalmUp && !BuffMemoryOfLucidDreamsUp && TestOfMightUp && Rage < 30 &&
-							    CDBladestormRemains <= 0) {
+							    Aimsharp.CanCast("Bladestorm")) {
 								Aimsharp.Cast("Bladestorm");
 								return true;
 							}
@@ -780,13 +780,13 @@ namespace AimsharpWow.Modules {
 							}
 
 							if (((Rage < 60 && !BuffMemoryOfLucidDreamsUp && !BuffDeadlyCalmUp) || Rage < 20) &&
-							    CDSkullsplitterRemains <= 0) {
+							    Aimsharp.CanCast("Skullsplitter")) {
 								Aimsharp.Cast("Skullsplitter");
 								return true;
 							}
 
 							if ((DebuffDeepWoundsRemaining < 3600 && (EnemiesInMelee == 1 || !TalentCleave)) &&
-							    CDMortalStrikeRemains <= 0 && Rage >= 30) {
+							    Aimsharp.CanCast("Mortal Strike")) {
 								Aimsharp.Cast("Mortal Strike");
 								return true;
 
@@ -826,7 +826,7 @@ namespace AimsharpWow.Modules {
 								return true;
 							}
 
-							if ((CDMortalStrikeRemains <= 0 && Rage >= 30 || Aimsharp.CanCast("Mortal Strike")) &&
+							if ((Aimsharp.CanCast("Mortal Strike")) &&
 							    (EnemiesInMelee == 1 || !TalentCleave)) {
 								Aimsharp.Cast("Mortal Strike");
 								return true;
