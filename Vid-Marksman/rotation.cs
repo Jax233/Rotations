@@ -44,6 +44,21 @@ namespace AimsharpWow.Modules
         string BotTrinket;
         string RacialPower;
         string usableitems;
+        
+        private int TTK = 10000000;
+
+        private int DPS = 0;
+        
+        private int FirstTime = 0;
+
+        private int FirstLife = 0;
+
+        private int UpdateTime = 0;
+
+        
+        private int FirstMaxHP = 10000000;
+        private int AmountHP;
+        private int PercentHP;
 
         private bool LastCastAimshot;
         private bool LastCastRapid;
@@ -61,7 +76,7 @@ namespace AimsharpWow.Modules
             Aimsharp.PrintMessage("Vid Marksman - v 1.0", Color.Yellow);
             
             Aimsharp.PrintMessage("These macros can be used for manual control:", Color.Blue);
-            Aimsharp.PrintMessage("/xxxxx AOE --Toggles AOE mode on/off.", Color.Blue);
+            Aimsharp.PrintMessage("/xxxxx NoAOE --Toggles AOE mode on/off.", Color.Blue);
             Aimsharp.PrintMessage("/xxxxx Potions --Toggles using buff potions on/off.", Color.Blue);
             Aimsharp.PrintMessage("/xxxxx SaveCooldowns --Toggles the use of big cooldowns on/off.", Color.Blue);
             Aimsharp.PrintMessage(" ");
@@ -161,6 +176,7 @@ namespace AimsharpWow.Modules
             int Focus = Aimsharp.Power("player");
             float FocusRegen = 10f * (1f + Haste);
             int BarbedShotBuffCount = Aimsharp.BuffStacks("Barbed Shot");
+            int CDAncestralCall = Aimsharp.SpellCooldown("Ancestral Call");
 
             int AimedShotCastTime = (int) (2500f / (Haste + 1f));
             bool IsMoving = Aimsharp.PlayerIsMoving();
@@ -202,6 +218,54 @@ namespace AimsharpWow.Modules
             float FocusTimeToMax = (FocusMax - Focus) * 1000f / FocusRegen;
             int FlameFullRecharge = (int)(Aimsharp.RechargeTime("Concentrated Flame") - GCD + (30000f) * (1f - Aimsharp.SpellCharges("Concentrated Flame")));
             bool NoCooldowns = Aimsharp.IsCustomCodeOn("SaveCooldowns");
+            
+            
+            #region TTK
+
+            int CurrentTime = Aimsharp.CombatTime();
+            int CurrentHP = Aimsharp.TargetExactCurrentHP();
+            int MaxHP = Aimsharp.TargetExactMaxHP();
+            if (FirstMaxHP != MaxHP) {
+                UpdateTime = 0;
+                TTK = 100000000;
+                FirstLife = CurrentHP;
+                FirstMaxHP = MaxHP;
+            }
+            if (CurrentTime >= UpdateTime + 1000) {
+                if (CurrentHP < FirstLife) {
+                    int HPDiff = FirstLife - CurrentHP;
+                    int TimeDiff = CurrentTime - UpdateTime;
+                    if (TimeDiff > 0) {
+                        DPS = HPDiff / TimeDiff;
+                    }
+
+                    if (DPS > 0) {
+
+                        TTK = CurrentHP / DPS;
+                        Aimsharp.PrintMessage("TTK: " + TimeSpan.FromMilliseconds(TTK).ToString());
+                    }
+
+
+                }
+
+                if (FirstLife == 0 && CurrentHP > 0) {
+                    FirstLife = MaxHP;
+                }
+            }
+
+            
+            
+            
+
+            
+            
+            
+            
+
+
+
+            #endregion
+
 
             #region Utillity
 
@@ -238,20 +302,20 @@ namespace AimsharpWow.Modules
                 if (!NoCooldowns) {
 
                     if (Aimsharp.CanCast("Double Tap", "player") &&
-                        (CDRapidFireRemains < GCD || CDRapidFireRemains < CDAimedShotRemains)) {
+                        (CDRapidFireRemains < GCD || CDRapidFireRemains < CDAimedShotRemains || TTK < 20000)) {
                         Aimsharp.Cast("Double Tap");
                         return true;
                     }
                     
                     //actions.cds+=/ancestral_call,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.ancestral_call.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
-                    if (Aimsharp.CanCast("Ancestral Call", "player") && (BuffTrueShotRemains > 14000)) {
-                        Aimsharp.Cast("Ancestrall Call");
+                    if (Aimsharp.CanCast("Ancestral Call", "player") && (BuffTrueShotRemains > 14000 && (TTK > CDAncestralCall + 15000) || (TargetHealth < 20 || !TalentCarefulAim)) || TTK < 16000) {
+                        Aimsharp.Cast("Ancestral Call");
                         return true;
                     }
 
                     
                     //actions.cds+=/trueshot,if=buff.trueshot.down&cooldown.rapid_fire.remains|target.time_to_die<15
-                    if (Aimsharp.CanCast("Trueshot", "player") && CDRapidFireRemains > 0 && !BuffTrueShotUp) {
+                    if (Aimsharp.CanCast("Trueshot", "player") && ((CDRapidFireRemains > 0 && !BuffTrueShotUp) || TTK < 15000)) {
                         Aimsharp.Cast("Trueshot");
                         return true;
                     }
@@ -281,7 +345,7 @@ namespace AimsharpWow.Modules
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Volley")) {
+                    if (Aimsharp.CanCast("Volley", "player")) {
                         Aimsharp.Cast("Volley");
                         return true;
                     }
@@ -306,13 +370,13 @@ namespace AimsharpWow.Modules
                     }
 
                     if (Aimsharp.CanCast("Arcane Shot") &&
-                        (!BuffTrueShotUp && (BuffPreciseShots && (Focus > 55) || (Focus > 75)))) {
+                        (!BuffTrueShotUp && (BuffPreciseShots && (Focus > 55) || (Focus > 75 || TTK < 5000)))) {
                         Aimsharp.Cast("Arcane Shot");
                         return true;
                     }
 
                     if (Aimsharp.CanCast("Chimaera Shot") &&
-                        (!BuffTrueShotUp && (BuffPreciseShots && (Focus > 55) || Focus > 75))) {
+                        (!BuffTrueShotUp && (BuffPreciseShots && (Focus > 55) || Focus > 75 || TTK < 5000))) {
                         Aimsharp.Cast("Chimaera Shot");
                         return true;
                     }
