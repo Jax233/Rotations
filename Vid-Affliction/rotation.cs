@@ -165,6 +165,7 @@ namespace AimsharpWow.Modules
             Debuffs.Add("Siphon Life");
             Debuffs.Add("Agony");
             Debuffs.Add("Unstable Affliction");
+            Debuffs.Add("Vile Taint");
             
 
 
@@ -349,6 +350,8 @@ namespace AimsharpWow.Modules
             int DebuffConcentratedFlameRemaining = Aimsharp.DebuffRemaining("Concentrated Flame", "target");
            
             bool PetActive = Aimsharp.TotemTimer() > GCD;
+
+            bool CastingUA = PlayerCastingID == 316099;
             
 
             /*
@@ -570,7 +573,7 @@ namespace AimsharpWow.Modules
                 EnemiesInMelee = EnemiesInMelee > 0 ? 1 : 0;
             }
 
-            if (IsChanneling) {
+            if (IsChanneling && PlayerCastingID != 198590) {
                 return false;
             }
 
@@ -656,7 +659,7 @@ namespace AimsharpWow.Modules
                 }
                 
                 //actions+=/unstable_affliction,if=refreshable
-                if (Aimsharp.CanCast("Unstable Affliction") && UARefreshable) {
+                if (Aimsharp.CanCast("Unstable Affliction") && UARefreshable && !CastingUA) {
                     Aimsharp.Cast("Unstable Affliction");
                     return true;
                 }
@@ -776,14 +779,16 @@ namespace AimsharpWow.Modules
                 actions.cooldowns+=/the_unbound_force,if=buff.reckless_force.remains
                 */
 
+                Aimsharp.PrintMessage("Soulshards" + SoulShard);
+
                 //actions+=/malefic_rapture,if=dot.vile_taint.ticking
-                if (SoulShard > 10 && DotVileTaintRemains > GCD) {
+                if (Aimsharp.CanCast("Malefic Rapture", "player") && DotVileTaintRemains > GCD) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
                 
                 //actions+=/malefic_rapture,if=!talent.vile_taint.enabled
-                if (SoulShard > 10 && !TalentVileTaint) {
+                if (Aimsharp.CanCast("Malefic Rapture", "player") && !TalentVileTaint) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
