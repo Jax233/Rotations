@@ -710,7 +710,7 @@ namespace AimsharpWow.Modules
                 
                 //actions+=/call_action_list,name=darkglare_prep,if=cooldown.summon_darkglare.remains<2&(dot.phantom_singularity.remains>2|!talent.phantom_singularity.enabled)
                 if (CDSummonDarkglareRemains < 2000 &&
-                    (DotPhantomSingularityRemains > 2000 || !TalentPhantomSingularityEnabled)) {
+                    (DotPhantomSingularityRemains > 2000 || !TalentPhantomSingularityEnabled) && !NoCooldowns) {
                     //actions.darkglare_prep=vile_taint
                     if (Aimsharp.CanCast("Vile Taint", "player")) {
                         Aimsharp.Cast("Vile Taint");
@@ -759,7 +759,7 @@ namespace AimsharpWow.Modules
                 }
 
                 //actions+=/dark_soul,if=cooldown.summon_darkglare.remains>time_to_die
-                if (Aimsharp.CanCast("Dark Soul") && CDSummonDarkglareRemains > TTK) {
+                if (Aimsharp.CanCast("Dark Soul") && CDSummonDarkglareRemains > TTK && !NoCooldowns) {
                     Aimsharp.Cast("Dark Soul");
                     return true;
                 }
