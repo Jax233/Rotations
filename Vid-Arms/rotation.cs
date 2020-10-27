@@ -731,7 +731,7 @@ namespace AimsharpWow.Modules {
 
 
 							if (!BuffDeadlyCalmUp && !BuffMemoryOfLucidDreamsUp && TestOfMightUp && Rage < 30 &&
-							    Aimsharp.CanCast("Bladestorm")) {
+							    Aimsharp.CanCast("Bladestorm", "player")) {
 								Aimsharp.Cast("Bladestorm");
 								return true;
 							}
