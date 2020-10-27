@@ -77,7 +77,7 @@ namespace AimsharpWow.Modules
             Aimsharp.PrintMessage("Vid Marksman - v 1.0", Color.Yellow);
             
             Aimsharp.PrintMessage("These macros can be used for manual control:", Color.Blue);
-            Aimsharp.PrintMessage("/xxxxx AOE --Toggles AOE mode on/off.", Color.Blue);
+            Aimsharp.PrintMessage("/xxxxx NoAOE --Toggles AOE mode on/off.", Color.Blue);
             Aimsharp.PrintMessage("/xxxxx Potions --Toggles using buff potions on/off.", Color.Blue);
             Aimsharp.PrintMessage("/xxxxx SaveCooldowns --Toggles the use of big cooldowns on/off.", Color.Blue);
             Aimsharp.PrintMessage(" ");
