@@ -310,30 +310,30 @@ namespace AimsharpWow.Modules
             bool CouncilDotsOff = Aimsharp.IsCustomCodeOn("CouncilDotsOff");
             
 
-            bool AGRefreshable = AGRemains < 6000 - GCD && Aimsharp.TargetExactCurrentHP() > AmountHP && TargetHealth > PercentHP;
-            bool AGFocusRefreshable = AGRemainsFocus < 6000;
-            bool AGBoss1Refreshable = AGRemainsBoss1 < 6000;
-            bool AGBoss2Refreshable = AGRemainsBoss2 < 6000;
-            bool AGBoss3Refreshable = AGRemainsBoss3 < 6000;
-            bool AGBoss4Refreshable = AGRemainsBoss4 < 6000;
+            bool AGRefreshable = AGRemains < 5400 - GCD && Aimsharp.TargetExactCurrentHP() > AmountHP && TargetHealth > PercentHP;
+            bool AGFocusRefreshable = AGRemainsFocus < 5400;
+            bool AGBoss1Refreshable = AGRemainsBoss1 < 5400;
+            bool AGBoss2Refreshable = AGRemainsBoss2 < 5400;
+            bool AGBoss3Refreshable = AGRemainsBoss3 < 5400;
+            bool AGBoss4Refreshable = AGRemainsBoss4 < 5400;
 
 
             bool TalentPhantomSingularityEnabled = Aimsharp.Talent(4, 2);
             bool TalentVileTaint = Aimsharp.Talent(4, 3);
 
-            bool CRRefreshable = CRRemains < 4666 - GCD && Aimsharp.TargetExactCurrentHP() > AmountHP;
-            bool CRFocusRefreshable = CRRemainsFocus < 4666;
-            bool CRBoss1Refreshable = CRRemainsBoss1 < 4666;
-            bool CRBoss2Refreshable = CRRemainsBoss2 < 4666;
-            bool CRBoss3Refreshable = CRRemainsBoss3 < 4666;
-            bool CRBoss4Refreshable = CRRemainsBoss4 < 4666 ;
+            bool CRRefreshable = CRRemains < 4200 - GCD && Aimsharp.TargetExactCurrentHP() > AmountHP;
+            bool CRFocusRefreshable = CRRemainsFocus < 4200;
+            bool CRBoss1Refreshable = CRRemainsBoss1 < 4200;
+            bool CRBoss2Refreshable = CRRemainsBoss2 < 4200;
+            bool CRBoss3Refreshable = CRRemainsBoss3 < 4200;
+            bool CRBoss4Refreshable = CRRemainsBoss4 < 4200 ;
             
-            bool SLRefreshable = SLRemains < 5000 - GCD && Aimsharp.TargetExactCurrentHP() > AmountHP;
-            bool SLFocusRefreshable = SLRemainsFocus < 5000;
-            bool SLBoss1Refreshable = SLRemainsBoss1 < 5000;
-            bool SLBoss2Refreshable = SLRemainsBoss2 < 5000;
-            bool SLBoss3Refreshable = SLRemainsBoss3 < 5000;
-            bool SLBoss4Refreshable = SLRemainsBoss4 < 5000;
+            bool SLRefreshable = SLRemains < 4500 - GCD && Aimsharp.TargetExactCurrentHP() > AmountHP;
+            bool SLFocusRefreshable = SLRemainsFocus < 4500;
+            bool SLBoss1Refreshable = SLRemainsBoss1 < 4500;
+            bool SLBoss2Refreshable = SLRemainsBoss2 < 4500;
+            bool SLBoss3Refreshable = SLRemainsBoss3 < 4500;
+            bool SLBoss4Refreshable = SLRemainsBoss4 < 4500;
             int SoulShard = Aimsharp.PlayerSecondaryPower();
 
             int CDSummonDarkglareRemains = Aimsharp.SpellCooldown("Summon Darkglare");
@@ -341,7 +341,7 @@ namespace AimsharpWow.Modules
             int DotVileTaintRemains = Aimsharp.DebuffRemaining("Vile Taint", "target");
             int BuffInevitableDemiseStack = Aimsharp.BuffStacks("Inevitable Demise", "player");
 
-            bool UARefreshable = UARemains < 5333;
+            bool UARefreshable = UARemains < 4800;
 
             int FlameFullRecharge = (int) (Aimsharp.RechargeTime("Concentrated Flame") - GCD +
                                            (30000f) * (1f - Aimsharp.SpellCharges("Concentrated Flame")));
