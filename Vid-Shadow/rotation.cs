@@ -239,6 +239,9 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("PsychicHorror");
             CustomCommands.Add("MindControl");
             CustomCommands.Add("StartCombat");
+            CustomCommands.Add("AutoS2M");
+
+
 
 
 
@@ -271,6 +274,8 @@ namespace AimsharpWow.Modules
             int VTRemainsBoss3 = Aimsharp.DebuffRemaining("Vampiric Touch", "boss3") - GCD;
             int VTRemainsBoss4 = Aimsharp.DebuffRemaining("Vampiric Touch", "boss4") - GCD;
             int DVPRemains = Aimsharp.DebuffRemaining("Devouring Plague", "target") - GCD;
+
+            bool AutoS2M = Aimsharp.IsCustomCodeOn("AutoS2M");
             
             bool Fighting = Aimsharp.Range("target") <= 45 && Aimsharp.TargetIsEnemy();
             bool UsePotion = Aimsharp.IsCustomCodeOn("Potions");
@@ -545,13 +550,13 @@ namespace AimsharpWow.Modules
                 return true;
             }
             
-            if (S2M && Aimsharp.CanCast("Surrender to Madness")) {
+            if (S2M && Aimsharp.CanCast("Surrender to Madness") && !VoidformUp) {
                 Aimsharp.PrintMessage("Queued S2M");
                 Aimsharp.Cast("Surrender to Madness");
                 return true;
             }
 
-            if (Aimsharp.CanCast("Shadow Mend", "player")) {
+            if (Aimsharp.CanCast("Shadow Mend", "player") && !IsMoving) {
                 if (PlayerHealth <= GetSlider("Auto Shadow Mend Self @ HP%")) {
                     Aimsharp.Cast("Shadow Mend");
                     return true;
@@ -795,7 +800,7 @@ namespace AimsharpWow.Modules
                 }
                 
                 //actions.main+=/surrender_to_madness,target_if=target.time_to_die<25&buff.voidform.down
-                if (Aimsharp.CanCast("Surrender to Madness") && TTK < 25000 && !BuffVoidformUp) {
+                if (Aimsharp.CanCast("Surrender to Madness") && TTK < 25000 && !BuffVoidformUp && AutoS2M) {
                     Aimsharp.Cast("Surrender to Madness");
                     return true;
                 }
