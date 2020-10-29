@@ -15,7 +15,7 @@ namespace AimsharpWow.Modules
         public override void LoadSettings() {
             List<string> MajorAzeritePower = new List<string>(new string[] {
                 "Guardian of Azeroth", "Focused Azerite Beam", "Concentrated Flame", "Worldvein Resonance",
-                "Memory of Lucid Dreams", "Blood of the Enemy", "None"
+                "Memory of Lucid Dreams", "Blood of the Enemy", "Reaping Flames", "None"
             });
             Settings.Add(new Setting("Major Power", MajorAzeritePower, "None"));
 
@@ -81,7 +81,7 @@ namespace AimsharpWow.Modules
 
         public override void Initialize() {
             //Aimsharp.DebugMode();
-            Aimsharp.PrintMessage("Vid Shadow - v 1.0", Color.Blue);
+            Aimsharp.PrintMessage("Vid Shadow", Color.Blue);
             Aimsharp.PrintMessage("These macros can be used for manual control:", Color.Blue);
             Aimsharp.PrintMessage("/xxxxx NoAOE", Color.Blue);
             Aimsharp.PrintMessage("--Toggles AOE mode on/off.", Color.Blue);
@@ -241,7 +241,7 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("StartCombat");
             CustomCommands.Add("AutoS2M");
             
-            CustomFunctions.Add("CorruptionCount", "local CorruptionCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Corruption\" and source == \"player\" then\nCorruptionCount = CorruptionCount + 1\nend\nend\nend\nend\nend\nreturn CorruptionCount");
+            
 
 
 
@@ -719,6 +719,13 @@ namespace AimsharpWow.Modules
                     if (MajorPower == "Concentrated Flame") {
                         if (Aimsharp.CanCast("Concentrated Flame") && (FlameFullRecharge < GCD || CurrentTime <= 10000 || TTK < 5000)) {
                             Aimsharp.Cast("Concentrated Flame");
+                            return true;
+                        }
+                    }
+
+                    if (MajorPower == "Reaping Flames") {
+                        if (Aimsharp.CanCast("Reaping Flames")) {
+                            Aimsharp.Cast("Reaping Flames");
                             return true;
                         }
                     }
