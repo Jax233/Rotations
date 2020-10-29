@@ -663,12 +663,12 @@ namespace AimsharpWow.Modules
                 }
                 
                 //actions+=/unstable_affliction,if=refreshable
-                if (Aimsharp.CanCast("Unstable Affliction") && UARefreshable && !CastingUA) {
+                if (Aimsharp.CanCast("Unstable Affliction") && UARefreshable && !CastingUA && !IsMoving && EnemiesNearTarget <2) {
                     Aimsharp.Cast("Unstable Affliction");
                     return true;
                 }
 
-                if (Aimsharp.CanCast("Seed of Corruption") && EnemiesNearTarget > 2 && CRRefreshable) {
+                if (Aimsharp.CanCast("Seed of Corruption") && EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) {
                     Aimsharp.Cast("Seed of Corruption");
                     return true;
                 }
@@ -705,6 +705,13 @@ namespace AimsharpWow.Modules
                         return true;
                     }
                 }
+                
+                if (Aimsharp.CanCast("Unstable Affliction") && UARefreshable && !CastingUA && !IsMoving && EnemiesNearTarget >=2) {
+                    Aimsharp.Cast("Unstable Affliction");
+                    return true;
+                }
+                
+                
 
                 //actions+=/haunt
                 if (Aimsharp.CanCast("Haunt")) {
