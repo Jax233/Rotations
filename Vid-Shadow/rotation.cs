@@ -240,6 +240,9 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("MindControl");
             CustomCommands.Add("StartCombat");
             CustomCommands.Add("AutoS2M");
+            
+            CustomFunctions.Add("CorruptionCount", "local CorruptionCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Corruption\" and source == \"player\" then\nCorruptionCount = CorruptionCount + 1\nend\nend\nend\nend\nend\nreturn CorruptionCount");
+
 
 
 
@@ -896,7 +899,7 @@ namespace AimsharpWow.Modules
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus") &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus") && Aimsharp.Range("focus") < 40 &&
                             (SWPFocusRefreshable && !TalentMiseryEnabled)) {
                             Aimsharp.Cast("SWPFocus");
                             return true;
@@ -911,7 +914,7 @@ namespace AimsharpWow.Modules
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1") &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1") && Aimsharp.Range("boss1") < 40 &&
                             (SWPBoss1Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.Cast("SWPBoss1");
                             return true;
@@ -926,7 +929,7 @@ namespace AimsharpWow.Modules
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") && Aimsharp.Range("boss2") < 40 &&
                             (SWPBoss2Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.Cast("SWPBoss2");
                             return true;
@@ -941,7 +944,7 @@ namespace AimsharpWow.Modules
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2") && Aimsharp.Range("boss3") < 40 &&
                             (SWPBoss3Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.Cast("SWPBoss3");
                             return true;
@@ -956,7 +959,7 @@ namespace AimsharpWow.Modules
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") && Aimsharp.Range("boss4") < 40 &&
                             (SWPBoss4Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.Cast("SWPBoss4");
                             return true;
