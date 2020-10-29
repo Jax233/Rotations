@@ -224,6 +224,8 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("PsychicHorror");
             CustomCommands.Add("MindControl");
             CustomCommands.Add("StartCombat");
+            
+            CustomFunctions.Add("CorruptionCount", "local CorruptionCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Corruption\" and source == \"player\" then\nCorruptionCount = CorruptionCount + 1\nend\nend\nend\nend\nend\nreturn CorruptionCount");
 
 
 
