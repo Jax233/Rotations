@@ -118,6 +118,8 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Bursting Shot");
             Spellbook.Add("Exhilaration");
             Spellbook.Add("Double Tap");
+            Spellbook.Add("Chimaera Shot");
+            Spellbook.Add("A Murder of Crows");
             
             
             
@@ -397,7 +399,7 @@ namespace AimsharpWow.Modules
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Volley")) {
+                    if (Aimsharp.CanCast("Volley", "player")) {
                         Aimsharp.Cast("Volley");
                         return true;
                     }
