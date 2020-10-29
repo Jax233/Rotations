@@ -340,7 +340,7 @@ namespace AimsharpWow.Modules
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Aspect of the Wild", "player") && (!BuffAspectOfTheWildUp &&
+                    if (Aimsharp.CanCast("Aspect of the Wild", "player") && !NoCooldowns && (!BuffAspectOfTheWildUp &&
                                                                    (BarbedShotCharges < 1 ||
                                                                     !AzeritePrimalInstinctsEnabled))) {
                         Aimsharp.Cast("Aspect of the Wild");
@@ -429,7 +429,7 @@ namespace AimsharpWow.Modules
                         return true;
                     }
 
-                    if (Aimsharp.CanCast("Aspect of the Wild", "player")) {
+                    if (Aimsharp.CanCast("Aspect of the Wild", "player") && !NoCooldowns) {
                         Aimsharp.Cast("Aspect of the Wild");
                         return true;
                     }
