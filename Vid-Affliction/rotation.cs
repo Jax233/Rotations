@@ -664,7 +664,7 @@ namespace AimsharpWow.Modules
                     return true;
                 }
 
-                if (Aimsharp.CanCast("Seed of Corruption") && EnemiesNearTarget > 2) {
+                if (Aimsharp.CanCast("Seed of Corruption") && EnemiesNearTarget > 2 && CRRefreshable) {
                     Aimsharp.Cast("Seed of Corruption");
                     return true;
                 }
@@ -778,8 +778,7 @@ namespace AimsharpWow.Modules
                 actions.cooldowns+=/concentrated_flame
                 actions.cooldowns+=/the_unbound_force,if=buff.reckless_force.remains
                 */
-
-                Aimsharp.PrintMessage("Soulshards" + SoulShard);
+                
 
                 //actions+=/malefic_rapture,if=dot.vile_taint.ticking
                 if (Aimsharp.CanCast("Malefic Rapture", "player") && DotVileTaintRemains > GCD) {
@@ -973,30 +972,10 @@ namespace AimsharpWow.Modules
             #endregion
 
 
-                if (!Aimsharp.HasBuff("Shadowform")) {
-                    if (Aimsharp.CanCast("Shadowform", "player")) {
-                        Aimsharp.Cast("Shadowform");
-                        return true;
-                    }
-                }
-
-                if (Aimsharp.CanCast("Power Word: Fortitude", "player") &&
-                    !Aimsharp.HasBuff("Power Word: Fortitude", "player", false)) {
-                    Aimsharp.Cast("Power Word: Fortitude");
-                    return true;
-                }
-
-                if (!IsMoving && Aimsharp.CanCast("Agony") && StartCombat) {
-                    Aimsharp.Cast("Agony");
-                    return true;
-                }
-                
                 
 
-                if (IsMoving && !DebuffWeakenedSoulUp) {
-                    Aimsharp.Cast("ShieldSelf");
-                    return true;
-                }
+                
+                
 
                 if (IsMoving && Aimsharp.CanCast("Corruption") && StartCombat) {
                     Aimsharp.Cast("Corruption");
