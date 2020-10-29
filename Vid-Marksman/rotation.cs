@@ -35,7 +35,7 @@ namespace AimsharpWow.Modules
             
             Settings.Add(new Setting("Auto Exhilaration @ HP%", 0, 100, 35));
 
-            List<string> Race = new List<string>(new string[] { "Orc", "Troll", "Dark Iron Dwarf", "Mag'har Orc", "Lightforged Draenei", "None" });
+            List<string> Race = new List<string>(new string[] { "Orc", "Troll", "Dark Iron Dwarf", "Mag'har Orc", "Lightforged Draenei", "Furry", "None" });
             Settings.Add(new Setting("Racial Power", Race, "None"));
         }
 
@@ -103,6 +103,8 @@ namespace AimsharpWow.Modules
                 Spellbook.Add("Ancestral Call");
             if (RacialPower == "Lightforged Draenei")
                 Spellbook.Add("Light's Judgment");
+            if (RacialPower == "Furry")
+                Spellbook.Add("Bag of Tricks");
 
             Spellbook.Add(MajorPower);
             Spellbook.Add("Rapid Fire");
@@ -195,6 +197,8 @@ namespace AimsharpWow.Modules
 
             int STRemains = Aimsharp.DebuffRemaining("Serpent Sting", "target") - GCD;
             bool STRefreshable = STRemains < (18000 / 3);
+            int CDBerserking = Aimsharp.SpellCooldown("Berserking");
+            int CDBloodFury = Aimsharp.SpellCooldown("Blood Fury");
 
             bool DebuffHunterMark = Aimsharp.HasDebuff("Hunter's Mark", "target");
             bool BuffPreciseShots = Aimsharp.HasBuff("Precise Shots", "player");
@@ -314,6 +318,26 @@ namespace AimsharpWow.Modules
                         Aimsharp.Cast("Ancestral Call");
                         return true;
                     }
+                    
+                    //actions.cds+=/bag_of_tricks,if=buff.trueshot.down
+                    if (Aimsharp.CanCast("Bag of Tricks", "player") && !BuffTrueShotUp) {
+                        Aimsharp.Cast("Bag of Tricks");
+                        return true;
+                    }
+                    
+                    //actions.cds+=/berserking,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.berserking.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<13
+                    if(Aimsharp.CanCast("Berserking", "player") && (BuffTrueShotRemains > 14000 && (TTK > CDBerserking+10000 || (TargetHealth < 20 || !TalentCarefulAim)) TTK < 13000)) {
+                        Aimsharp.Cast("Berserking");
+                        return true;
+                    }
+                    
+                    //actions.cds+=/blood_fury,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.blood_fury.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
+                    if(Aimsharp.CanCast("Blood Fury", "player") && (BuffTrueShotRemains > 14000 && (TTK > CDBloodFury+15000 || (TargetHealth < 20 || !TalentCarefulAim)) TTK < 16000)) {
+                        Aimsharp.Cast("Blood Fury");
+                        return true;
+                    }
+                    
+                    
 
                     
                     //actions.cds+=/trueshot,if=buff.trueshot.down&cooldown.rapid_fire.remains|target.time_to_die<15
