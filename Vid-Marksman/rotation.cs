@@ -326,13 +326,13 @@ namespace AimsharpWow.Modules
                     }
                     
                     //actions.cds+=/berserking,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.berserking.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<13
-                    if(Aimsharp.CanCast("Berserking", "player") && (BuffTrueShotRemains > 14000 && (TTK > CDBerserking+10000 || (TargetHealth < 20 || !TalentCarefulAim)) TTK < 13000)) {
+                    if(Aimsharp.CanCast("Berserking", "player") && (BuffTrueShotRemains > 14000 && (TTK > (CDBerserking + 10000) || (TargetHealth < 20 || !TalentCarefulAim)) || TTK < 13000)) {
                         Aimsharp.Cast("Berserking");
                         return true;
                     }
                     
                     //actions.cds+=/blood_fury,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.blood_fury.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
-                    if(Aimsharp.CanCast("Blood Fury", "player") && (BuffTrueShotRemains > 14000 && (TTK > CDBloodFury+15000 || (TargetHealth < 20 || !TalentCarefulAim)) TTK < 16000)) {
+                    if(Aimsharp.CanCast("Blood Fury", "player") && (BuffTrueShotRemains > 14000 && (TTK > (CDBloodFury + 15000) || (TargetHealth < 20 || !TalentCarefulAim)) || TTK < 16000)) {
                         Aimsharp.Cast("Blood Fury");
                         return true;
                     }
