@@ -686,22 +686,22 @@ namespace AimsharpWow.Modules
                     }
                     
                     if (Aimsharp.CanCast("Corruption", "boss1") && CRBoss1Refreshable && Aimsharp.Range("boss1") < 40) {
-                        Aimsharp.Cast("CorruptionFocus");
+                        Aimsharp.Cast("CorruptionBoss1");
                         return true;
                     }
                     
                     if (Aimsharp.CanCast("Corruption", "boss2") && CRBoss2Refreshable && Aimsharp.Range("boss2") < 40) {
-                        Aimsharp.Cast("CorruptionFocus");
+                        Aimsharp.Cast("CorruptionBoss2");
                         return true;
                     }
                     
                     if (Aimsharp.CanCast("Corruption", "boss3") && CRBoss3Refreshable && Aimsharp.Range("boss3") < 40) {
-                        Aimsharp.Cast("CorruptionFocus");
+                        Aimsharp.Cast("CorruptionBoss3");
                         return true;
                     }
                     
                     if (Aimsharp.CanCast("Corruption", "boss4") && CRBoss4Refreshable && Aimsharp.Range("boss4") < 40) {
-                        Aimsharp.Cast("CorruptionFocus");
+                        Aimsharp.Cast("CorruptionBoss4");
                         return true;
                     }
                 }
