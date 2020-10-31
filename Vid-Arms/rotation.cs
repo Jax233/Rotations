@@ -683,7 +683,7 @@ namespace AimsharpWow.Modules {
 					if (EnemiesInMelee >= 1) {
 
 						//EXECUTE RANGE
-						if (TargetHealth <= 20) {
+						if (TargetHealth <= 20 || (TalentMassacre && TargetHealth <= 35)) {
 
 							if (Aimsharp.CanCast("Deadly Calm", "player") && !NoCooldowns) {
 								Aimsharp.Cast("Deadly Calm");
