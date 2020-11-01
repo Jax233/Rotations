@@ -1207,12 +1207,7 @@ namespace AimsharpWow.Modules
             #endregion
 
 
-                if (!Aimsharp.HasBuff("Shadowform")) {
-                    if (Aimsharp.CanCast("Shadowform", "player")) {
-                        Aimsharp.Cast("Shadowform");
-                        return true;
-                    }
-                }
+                
 
                 if (Aimsharp.CanCast("Power Word: Fortitude", "player") &&
                     !Aimsharp.HasBuff("Power Word: Fortitude", "player", false)) {
@@ -1235,6 +1230,13 @@ namespace AimsharpWow.Modules
                 if (IsMoving && Aimsharp.CanCast("Shadow Word: Pain") && StartCombat) {
                     Aimsharp.Cast("Shadow Word: Pain");
                     return true;
+                }
+                
+                if (!Aimsharp.HasBuff("Shadowform")) {
+                    if (Aimsharp.CanCast("Shadowform", "player")) {
+                        Aimsharp.Cast("Shadowform");
+                        return true;
+                    }
                 }
             }
 
