@@ -225,8 +225,8 @@ namespace AimsharpWow.Modules
             int MaxRage = Aimsharp.PlayerMaxPower();
             int RageDefecit = MaxRage - Rage;
 
-            bool TalentBoomingVoice = Aimsharp.Talent(6, 1);
-            bool TalentUnstoppableForce = Aimsharp.Talent(3, 2);
+            bool TalentBoomingVoice = Aimsharp.Talent(3, 2);
+            bool TalentUnstoppableForce = Aimsharp.Talent(6, 2);
 
             int BuffAvatarRemains = Aimsharp.BuffRemaining("Avatar") - GCD;
             bool BuffAvatarUp = BuffAvatarRemains > 0;
