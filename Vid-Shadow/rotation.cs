@@ -656,6 +656,13 @@ namespace AimsharpWow.Modules
                         }
                     }
                 }
+                
+                if (Aimsharp.CanUseTrinket(1) && BotTrinket == "Manifesto") {
+                    if (VoidformUp || PlayerCastingID == 228260) {
+                        Aimsharp.Cast("BotTrink", true);
+                        return true;
+                    }
+                }
 
 
 
@@ -768,12 +775,7 @@ namespace AimsharpWow.Modules
 
                 }
 
-                if (Aimsharp.CanUseTrinket(1) && BotTrinket == "Manifesto") {
-                    if (VoidformUp) {
-                        Aimsharp.Cast("BotTrink", true);
-                        return true;
-                    }
-                }
+                
 
 
 
