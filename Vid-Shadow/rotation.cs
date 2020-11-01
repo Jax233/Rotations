@@ -242,6 +242,7 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("MindControl");
             CustomCommands.Add("StartCombat");
             CustomCommands.Add("AutoS2M");
+            CustomCommands.Add("IgnoreVTCount");
             
             CustomFunctions.Add("VTCount", "local VTCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Vampiric Touch\" and source == \"player\" then\nVTCount = VTCount + 1\nend\nend\nend\nend\nend\nreturn VTCount");
 
@@ -310,6 +311,8 @@ namespace AimsharpWow.Modules
             int VoidformStacks = Aimsharp.BuffStacks("Voidform");
             int GCDMAX = (int) ((1500f / (Haste + 1f)) + GCD);
             int MindBlastCastTime = (int) ((1500f / (Haste + 1f)));
+
+            bool IgnoreVTCount = Aimsharp.IsCustomCodeOn("IgnoreVTCount");
             
 
             bool IsMoving = Aimsharp.PlayerIsMoving();
@@ -375,6 +378,9 @@ namespace AimsharpWow.Modules
             bool ChannelingMindSear = PlayerCastingID == 48045;
             bool CastingVampiricTouch = PlayerCastingID == 34914;
             int VTCount = Aimsharp.CustomFunction("VTCount");
+            bool LOS = Aimsharp.LineOfSighted();
+            int CombatTime = Aimsharp.CombatTime();
+            bool AOEDotPeriod = VTCount >= EnemiesNearTarget || VTCount >= 4 || CombatTime >= 4 * GCDMAX || IgnoreVTCount;
 
             /*
             int ChannelDuration = (int) ((4500f / (Haste + 1f)));
@@ -671,7 +677,7 @@ namespace AimsharpWow.Modules
 
                 if (!NoCooldowns) {
                     if (Aimsharp.CanCast("Power Infusion") && BuffVoidformUp) {
-                        Aimsharp.Cast("Void Form");
+                        Aimsharp.Cast("Power Infusion");
                         return true;
                     }
 
@@ -852,7 +858,7 @@ namespace AimsharpWow.Modules
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&
                     EnemiesNearTarget > MindSearCutOff &&
                     BuffDarkThoughtsUp && Aimsharp.CanCast("Mind Sear") &&
-                    (EnemiesNearTarget <= VTCount || VTCount >= 4) &&
+                    AOEDotPeriod &&
                     !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
@@ -869,7 +875,7 @@ namespace AimsharpWow.Modules
 
                 //actions.main+=/mind_blast,if=variable.dots_up&raid_event.movement.in>cast_time+0.5&spell_targets.mind_sear<4
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Blast") && DotsUp &&
-                    EnemiesNearTarget < 4) {
+                    EnemiesNearTarget < 7) {
                     Aimsharp.Cast("Mind Blast");
                     return true;
                 }
@@ -912,7 +918,7 @@ namespace AimsharpWow.Modules
                 if (!CouncilDotsOff) {
                     if (!Aimsharp.TargetIsUnit("focus") ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "focus", true) &&
+                            Aimsharp.CanCast("Vampiric Touch", "focus", true) && !LOS &&
                             (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
                             Aimsharp.PrintMessage("VT focus");
                             Aimsharp.Cast("VTFocus");
@@ -920,7 +926,7 @@ namespace AimsharpWow.Modules
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus", true) &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus", true) && !LOS &&
                             (SWPFocusRefreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP focus");
                             Aimsharp.Cast("SWPFocus");
@@ -930,14 +936,14 @@ namespace AimsharpWow.Modules
 
                     if (!Aimsharp.TargetIsUnit("boss1") ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss1", true) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss1", true) && !LOS && 
                             (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
                             Aimsharp.PrintMessage("VT boss1");
                             Aimsharp.Cast("VTBoss1");
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1", true) &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1", true) && !LOS && 
                             (SWPBoss1Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP boss1");
                             Aimsharp.Cast("SWPBoss1");
@@ -947,14 +953,14 @@ namespace AimsharpWow.Modules
 
                     if (!Aimsharp.TargetIsUnit("boss2") ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss2", true) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss2", true) && !LOS && 
                             (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
                             Aimsharp.PrintMessage("VT boss2");
                             Aimsharp.Cast("VTBoss2");
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2", true) &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2", true) && !LOS && 
                             (SWPBoss2Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP boss2");
                             Aimsharp.Cast("SWPBoss2");
@@ -964,14 +970,14 @@ namespace AimsharpWow.Modules
 
                     if (!Aimsharp.TargetIsUnit("boss3")) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss3", true) &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss3", true) && !LOS && 
                             (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
                             Aimsharp.PrintMessage("VT boss3");
                             Aimsharp.Cast("VTBoss3");
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss3", true) &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss3", true) && !LOS && 
                             (SWPBoss3Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP boss3");
                             Aimsharp.Cast("SWPBoss3");
@@ -981,14 +987,14 @@ namespace AimsharpWow.Modules
 
                     if (!Aimsharp.TargetIsUnit("boss4") ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss4") &&
+                            Aimsharp.CanCast("Vampiric Touch", "boss4") && !LOS && 
                             (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
                             Aimsharp.PrintMessage("VT boss4");
                             Aimsharp.Cast("VTBoss4");
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") && !LOS && 
                             (SWPBoss4Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP boss4");
                             Aimsharp.Cast("SWPBoss4");
@@ -1008,7 +1014,7 @@ namespace AimsharpWow.Modules
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&
                     EnemiesNearTarget > MindSearCutOff && 
                     Aimsharp.CanCast("Mind Sear", "target") &&
-                    (EnemiesNearTarget <= VTCount || VTCount >= 4) &&
+                    AOEDotPeriod &&
                     !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
