@@ -314,7 +314,7 @@ namespace AimsharpWow.Modules
                     }
                     
                     //actions.cds+=/ancestral_call,if=buff.trueshot.remains>14&(target.time_to_die>cooldown.ancestral_call.duration+duration|(target.health.pct<20|!talent.careful_aim.enabled))|target.time_to_die<16
-                    if (Aimsharp.CanCast("Ancestral Call", "player") && (BuffTrueShotRemains > 14000 && (TTK > CDAncestralCall + 15000) || (TargetHealth < 20 || !TalentCarefulAim)) || TTK < 16000) {
+                    if (Aimsharp.CanCast("Ancestral Call", "player") && ((BuffTrueShotRemains > 14000 && (TTK > CDAncestralCall + 15000) || (TargetHealth < 20 || !TalentCarefulAim)) || TTK < 16000)) {
                         Aimsharp.Cast("Ancestral Call");
                         return true;
                     }
