@@ -166,6 +166,8 @@ namespace AimsharpWow.Modules
             Debuffs.Add("Agony");
             Debuffs.Add("Unstable Affliction");
             Debuffs.Add("Vile Taint");
+            Debuffs.Add("Phantom Singularity");
+			
             
 
 
@@ -225,8 +227,8 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("MindControl");
             CustomCommands.Add("StartCombat");
             
-            CustomFunctions.Add("UACount", "local UACount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) and UnitHealthMax(unit) > 40000 and UnitHealth(unit) > 30000 then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Unstable Affliction\" and source == \"player\" then\nUACount = UACount + 1\nend\nend\nend\nend\nend\nreturn UACount");
-            CustomFunctions.Add("CorruptionCount", "local CorruptionCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Corruption\" and source == \"player\" then\nCorruptionCount = CorruptionCount + 1\nend\nend\nend\nend\nend\nreturn CorruptionCount");
+            CustomFunctions.Add("UACount", "local UACount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Unstable Affliction\" and source == \"player\" then\nUACount = UACount + 1\nend\nend\nend\nend\nend\nreturn UACount");
+            CustomFunctions.Add("CorruptionCount", "local CorruptionCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) and UnitHealthMax(unit) > 40000 and UnitHealth(unit) > 30000 then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Corruption\" and source == \"player\" then\nCorruptionCount = CorruptionCount + 1\nend\nend\nend\nend\nend\nreturn CorruptionCount");
 
 
 
@@ -358,6 +360,7 @@ namespace AimsharpWow.Modules
 
             int CorruptionCount = Aimsharp.CustomFunction("CorruptionCount");
             int UACount = Aimsharp.CustomFunction("UACount");
+
             
 
             /*
@@ -670,7 +673,8 @@ namespace AimsharpWow.Modules
                     return true;
                 }
 
-                if (Aimsharp.CanCast("Seed of Corruption") && EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) {
+                if (Aimsharp.CanCast("Seed of Corruption") && ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
+                                                               CorruptionCount < EnemiesNearTarget && EnemiesNearTarget > 2)) {
                     Aimsharp.Cast("Seed of Corruption");
                     return true;
                 }
@@ -794,13 +798,15 @@ namespace AimsharpWow.Modules
                 
 
                 //actions+=/malefic_rapture,if=dot.vile_taint.ticking
-                if (Aimsharp.CanCast("Malefic Rapture", "player") && DotVileTaintRemains > GCD && CorruptionCount >= EnemiesNearTarget) {
+                if (Aimsharp.CanCast("Malefic Rapture", "player") && DotVileTaintRemains > GCD &&
+                    (CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
                 
                 //actions+=/malefic_rapture,if=!talent.vile_taint.enabled
-                if (Aimsharp.CanCast("Malefic Rapture", "player") && !TalentVileTaint && CorruptionCount >= EnemiesNearTarget) {
+                if (Aimsharp.CanCast("Malefic Rapture", "player") && !TalentVileTaint &&
+                    (CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
