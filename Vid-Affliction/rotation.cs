@@ -78,6 +78,7 @@ namespace AimsharpWow.Modules
 
         private int SoCTimer = 0;
         private int SoCTimerPrev = 0;
+        private bool NoSoC = false;
 
 
 
