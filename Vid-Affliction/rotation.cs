@@ -76,6 +76,9 @@ namespace AimsharpWow.Modules
         private int AmountHP;
         private int PercentHP;
 
+        private int SoCTimer = 0;
+        private int SoCTimerPrev = 0;
+
 
 
 
@@ -360,6 +363,25 @@ namespace AimsharpWow.Modules
 
             int CorruptionCount = Aimsharp.CustomFunction("CorruptionCount");
             int UACount = Aimsharp.CustomFunction("UACount");
+
+            bool CastingSoC = PlayerCastingID == 27243L;
+            if (CastingSoC) {
+                NoSoC = true;
+            }
+
+            int time = Aimsharp.CombatTime();
+            if (NoSoC = true && SoCTimer < 5000) {
+                SoCTimerPrev = time;
+                if (SoCTimerPrev < time) {
+                    SoCTimer = time - SoCTimerPrev;
+                }
+            }
+
+            if (SoCTimer > 5000) {
+                NoSoC = false;
+                SoCTimer = 0;
+            }
+            
 
             
 
