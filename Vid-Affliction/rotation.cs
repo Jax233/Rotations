@@ -580,7 +580,7 @@ namespace AimsharpWow.Modules
             if (Fighting) {
                 
                 //actions=phantom_singularity
-                if (Aimsharp.CanCast("Phantom Singularity")) {
+                if (Aimsharp.CanCast("Phantom Singularity") && !NoCooldowns) {
                     Aimsharp.Cast("Phantom Singularity");
                     return true;
                 }
@@ -712,7 +712,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss2")) {
+                    if (!Aimsharp.TargetIsUnit("boss1")) {
                         if (Aimsharp.CanCast("Corruption", "boss1") && CRBoss1Refreshable &&
                             Aimsharp.Range("boss1") < 40) {
                             Aimsharp.Cast("CorruptionBoss1");
