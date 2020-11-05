@@ -338,7 +338,7 @@ namespace AimsharpWow.Modules
             bool CastingDS = PlayerCastingID == 198590;
 
             int CorruptionCount = Aimsharp.CustomFunction("CorruptionCount");
-            int CorruptionTargets = Aimsharp.CustomFunction("CorruptionTargets")
+            int CorruptionTargets = Aimsharp.CustomFunction("CorruptionTargets");
             int UACount = Aimsharp.CustomFunction("UACount");
 
             bool CastingSoC = PlayerCastingID == 27243L;
