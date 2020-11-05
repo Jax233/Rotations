@@ -695,7 +695,8 @@ namespace AimsharpWow.Modules
                     return true;
                 }
 
-                if (Aimsharp.CanCast("Seed of Corruption") && ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
+                if (Aimsharp.CanCast("Seed of Corruption") && !NoSoC &&
+                    ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
                                                                CorruptionCount < EnemiesNearTarget && EnemiesNearTarget > 2)) {
                     Aimsharp.Cast("Seed of Corruption");
                     return true;
