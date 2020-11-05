@@ -371,14 +371,14 @@ namespace AimsharpWow.Modules
             }
 
             int time = Aimsharp.CombatTime();
-            if (NoSoC = true && SoCTimer < 5000) {
+            if (NoSoC == true && SoCTimer < 5000) {
                 SoCTimerPrev = time;
                 if (SoCTimerPrev < time) {
                     SoCTimer = time - SoCTimerPrev;
                 }
             }
 
-            if (SoCTimer > 5000) {
+            if (SoCTimer > 5000 && NoSoC == true) {
                 NoSoC = false;
                 SoCTimer = 0;
             }
