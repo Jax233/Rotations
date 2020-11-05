@@ -121,9 +121,9 @@ namespace AimsharpWow.Modules
             Aimsharp.PrintMessage("--Replace xxxxx with first 5 letters of your addon, lowercase.", Color.Blue);
 
 
-            Aimsharp.Latency = 50;
-            Aimsharp.QuickDelay = 125;
-            Aimsharp.SlowDelay = 250;
+            Aimsharp.Latency = 100;
+            Aimsharp.QuickDelay = 200;
+            Aimsharp.SlowDelay = 350;
 
             MajorPower = GetDropDown("Major Power");
             TopTrinket = GetDropDown("Top Trinket");
@@ -182,6 +182,7 @@ namespace AimsharpWow.Modules
             Buffs.Add("Power Word: Fortitude");
             Buffs.Add("Fae Guardian");
             Buffs.Add("Surrender to Madness");
+            Buffs.Add("Void Miasma");
 
             Debuffs.Add("Shadow Word: Pain");
             Debuffs.Add("Vampiric Touch");
@@ -245,9 +246,41 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("IgnoreVTCount");
             
             CustomFunctions.Add("VTCount", "local VTCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Vampiric Touch\" and source == \"player\" then\nVTCount = VTCount + 1\nend\nend\nend\nend\nend\nreturn VTCount");
+            CustomFunctions.Add("VTTargets", "local VTTargets = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) and UnitHealthMax(unit) > 90000 and UnitHealth(unit) > 60000 then\nVTTargets = VTTargets + 1\nend\nend\nend\nreturn VTTargets");
+            CustomFunctions.Add("Boss1ID",
+                "local Boss1ID = 0;" +
+                "\nif UnitExists(\"boss1\") then" +
+                "\nBoss1ID = tonumber(UnitGUID(\"boss1\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn Boss1ID;"
+            );
+            
+            CustomFunctions.Add("Boss2ID",
+                "local Boss2ID = 0;" +
+                "\nif UnitExists(\"boss2\") then" +
+                "\nBoss2ID = tonumber(UnitGUID(\"boss2\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn Boss2ID;"
+            );
+            
+            CustomFunctions.Add("Boss3ID",
+                "local Boss1ID = 0;" +
+                "\nif UnitExists(\"boss1\") then" +
+                "\nBoss1ID = tonumber(UnitGUID(\"boss1\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn Boss1ID;"
+            );
+            
+            CustomFunctions.Add("TargetID",
+                "local TargetID = 0;" +
+                "\nif UnitExists(\"target\") then" +
+                "\nTargetID = tonumber(UnitGUID(\"target\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn TargetID;"
+            );
 
-            
-            
+
+
 
 
 
@@ -321,9 +354,12 @@ namespace AimsharpWow.Modules
             bool IsChanneling = Aimsharp.IsChanneling("player");
             int PlayerCastingID = Aimsharp.CastingID("player");
             bool TalentSearingNightmareEnabled = Aimsharp.Talent(3, 3);
-            bool SearingNightmaresCutoff = EnemiesNearTarget > 2;
+            bool SearingNightmaresCutoff = EnemiesNearTarget > 3;
             bool HasHarvestedThoughts = Aimsharp.HasBuff("Harvested Thoughts");
-            int VoidBoltCD = Aimsharp.SpellCooldown("Void Bolt") - GCD;
+            
+            int VoidBoltCD = Aimsharp.SpellCooldown("Void Bolt");
+            int MindBlastCD = Aimsharp.SpellCooldown("Mind Blast");
+            
             int SWDCharges = Aimsharp.SpellCharges("Shadow Word: Death");
             int SWDFullRecharge = (int) (Aimsharp.RechargeTime("Shadow Word: Death") - GCD +
                                          (9000f) * (1f - Aimsharp.SpellCharges("Shadow Word: Death")));
@@ -378,9 +414,24 @@ namespace AimsharpWow.Modules
             bool ChannelingMindSear = PlayerCastingID == 48045;
             bool CastingVampiricTouch = PlayerCastingID == 34914;
             int VTCount = Aimsharp.CustomFunction("VTCount");
+            int VTTargets = Aimsharp.CustomFunction("VTTargets");
             bool LOS = Aimsharp.LineOfSighted();
             int CombatTime = Aimsharp.CombatTime();
-            bool AOEDotPeriod = VTCount >= EnemiesNearTarget || VTCount >= 4 || CombatTime >= 4 * GCDMAX || IgnoreVTCount;
+            
+
+            bool AOEDotPeriod = VTCount >= EnemiesNearTarget || VTCount >= 77 || IgnoreVTCount || NoAOE || VTCount >= VTTargets || (VoidformUp && EnemiesNearTarget >= 5);
+
+
+            int TargetID = Aimsharp.CustomFunction("TargetID");
+            Aimsharp.PrintMessage("TargetID " + TargetID);
+            
+            
+
+            bool IgnoreBoss1 = Aimsharp.HasBuff("Void Miasma", "boss1");
+            bool IgnoreBoss2 = Aimsharp.HasBuff("Void Miasma", "boss2");
+            bool IgnoreBoss3 = Aimsharp.HasBuff("Void Miasma", "boss3");
+            bool IgnoreBoss4 = Aimsharp.HasBuff("Void Miasma", "boss4");
+                
 
             /*
             int ChannelDuration = (int) ((4500f / (Haste + 1f)));
@@ -400,6 +451,7 @@ namespace AimsharpWow.Modules
             int CDPsychicHorror = Aimsharp.SpellCooldown("Psychic Horror");
             int CDPsychicScream = Aimsharp.SpellCooldown("Psychic Scream");
             int CDS2M = Aimsharp.SpellCooldown("Surrender to Madness");
+            
 
             bool MassDispel = Aimsharp.IsCustomCodeOn("MassDispel");
             bool JustEssences = Aimsharp.IsCustomCodeOn("JustEssences");
@@ -633,8 +685,7 @@ namespace AimsharpWow.Modules
 
 
 
-                    if ((Aimsharp.CanCast("Mind Blast") || Aimsharp.SpellCharges("Mind Blast") >= 1 || BuffDarkThoughtsUp) &&
-                        (EnemiesNearTarget < 5 && !TalentSearingNightmareEnabled  || TalentSearingNightmareEnabled && BuffDarkThoughtsUp)) {
+                    if ((Aimsharp.CanCast("Mind Blast") || Aimsharp.SpellCharges("Mind Blast") >= 1 || MindBlastCD <= GCD)) {
                         Aimsharp.Cast("Mind Blast");
                         return true;
                     }
@@ -707,7 +758,7 @@ namespace AimsharpWow.Modules
                     }
 
                     
-                    if (Aimsharp.CanCast("Blood of the Enemy", "player") && EnemiesInMelee >= 1 && EnemiesInMelee == EnemiesNearTarget && VoidformUp) {
+                    if (Aimsharp.CanCast("Blood of the Enemy", "player") && Aimsharp.Range("target") < 12 && VoidformUp) {
                         Aimsharp.Cast("Blood of the Enemy");
                         return true;
                     }
@@ -798,9 +849,9 @@ namespace AimsharpWow.Modules
                 
                 //Use Void Bolt at higher priority with Hungering Void up to 4 targets, or other talents on ST.
                 //actions.main+=/void_bolt,if=insanity<=85&((talent.hungering_void.enabled&spell_targets.mind_sear<5)|spell_targets.mind_sear=1)
-                if (Aimsharp.CanCast("Void Bolt") && VoidformUp && (Insanity <= 85 &&
+                if ((Aimsharp.CanCast("Void Bolt") || VoidBoltCD <= GCD) && VoidformUp && (Insanity <= 85 &&
                                                                     ((TalentHungeringVoidEnabled &&
-                                                                      EnemiesNearTarget < 5) ||
+                                                                      EnemiesNearTarget < 20) ||
                                                                      EnemiesNearTarget == 1))) {
                     Aimsharp.Cast("Void Bolt");
                 }
@@ -816,7 +867,7 @@ namespace AimsharpWow.Modules
 
                 // Use VB on CD if you don't need to cast Devouring Plague, and there are less than 4 targets out (5 with conduit).
                 // actions.main+=/void_bolt,if=spell_targets.mind_sear<(4+conduit.dissonant_echoes.enabled)&insanity<=85
-                if (Aimsharp.CanCast("Void Bolt") && EnemiesNearTarget < 4 && Insanity <= 85 && VoidformUp) {
+                if ((Aimsharp.CanCast("Void Bolt") || VoidBoltCD <= GCD) && EnemiesNearTarget < 20 && Insanity <= 85 && VoidformUp) {
                     Aimsharp.Cast("Void Bolt");
                     return true;
                 }
@@ -844,7 +895,7 @@ namespace AimsharpWow.Modules
 
                 //Use Void Torrent only if SW:P and VT are active and the target won't die during the channel.
                 //actions.main+=/void_torrent,target_if=variable.dots_up&target.time_to_die>4&buff.voidform.down&spell_targets.mind_sear<(5+(6*talent.twist_of_fate.enabled))
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 4 && Aimsharp.CanCast("Void Torrent", "player") && DotsUp &&
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && TTK > 3 && Aimsharp.CanCast("Void Torrent", "player") && DotsUp &&
                     !BuffVoidformUp &&
                     EnemiesNearTarget < (5 + (6 * (TalenTwistOfFateEnabled ? 1 : 0)))) {
                     Aimsharp.Cast("Void Torrent");
@@ -860,7 +911,7 @@ namespace AimsharpWow.Modules
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&
                     EnemiesNearTarget > MindSearCutOff &&
                     BuffDarkThoughtsUp && Aimsharp.CanCast("Mind Sear") &&
-                    AOEDotPeriod &&
+                    AOEDotPeriod && !(VoidformUp && VoidBoltCD <= GCD) &&
                     !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
@@ -870,14 +921,15 @@ namespace AimsharpWow.Modules
                 //actions.main+=/mind_flay,if=buff.dark_thoughts.up&variable.dots_up,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2&cooldown.void_bolt.up
                 if ((!IsMoving || BuffSurrenderToMadnessUp) && BuffDarkThoughtsUp && DotsUp &&
                     EnemiesNearTarget <= MindSearCutOff && Aimsharp.CanCast("Mind Flay") &&
+                    !(VoidformUp && VoidBoltCD <= GCD) &&
                     !ChannelingMindFlay ) {
                     Aimsharp.Cast("Mind Flay");
                     return true;
                 }
 
                 //actions.main+=/mind_blast,if=variable.dots_up&raid_event.movement.in>cast_time+0.5&spell_targets.mind_sear<4
-                if ((!IsMoving || BuffSurrenderToMadnessUp) && Aimsharp.CanCast("Mind Blast") && DotsUp &&
-                    EnemiesNearTarget < 7) {
+                if ((!IsMoving || BuffSurrenderToMadnessUp) && (Aimsharp.CanCast("Mind Blast") || MindBlastCD <= GCD) && DotsUp &&
+                    EnemiesNearTarget < 20) {
                     Aimsharp.Cast("Mind Blast");
                     return true;
                 }
@@ -936,7 +988,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1") ) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss1", true) && !LOS && 
                             (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
@@ -953,7 +1005,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss2") ) {
+                    if (!Aimsharp.TargetIsUnit("boss2") && !IgnoreBoss2) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss2", true) && !LOS && 
                             (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
@@ -970,7 +1022,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss3")) {
+                    if (!Aimsharp.TargetIsUnit("boss3") && !IgnoreBoss3) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss3", true) && !LOS && 
                             (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
@@ -987,7 +1039,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss4") ) {
+                    if (!Aimsharp.TargetIsUnit("boss4") && !IgnoreBoss4 ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             Aimsharp.CanCast("Vampiric Touch", "boss4") && !LOS && 
                             (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
@@ -1017,6 +1069,7 @@ namespace AimsharpWow.Modules
                     EnemiesNearTarget > MindSearCutOff && 
                     Aimsharp.CanCast("Mind Sear", "target") &&
                     AOEDotPeriod &&
+                    !(VoidformUp && VoidBoltCD <= GCD) &&
                     !ChannelingMindSear) {
                     Aimsharp.Cast("Mind Sear");
                     return true;
@@ -1025,12 +1078,13 @@ namespace AimsharpWow.Modules
 
                 if ((!IsMoving || BuffSurrenderToMadnessUp) &&  EnemiesNearTarget < 2 && 
                     Aimsharp.CanCast("Mind Flay", "target") &&
+                    !(VoidformUp && VoidBoltCD <= GCD) &&
                     !ChannelingMindFlay) {
                     Aimsharp.Cast("Mind Flay");
                     return true;
                 }
 
-                if (IsMoving) {
+                if (!(VoidformUp && VoidBoltCD <= GCD) && IsMoving) {
                     if (!DebuffWeakenedSoulUp) {
                         Aimsharp.Cast("ShieldSelf");
                         return true;
@@ -1048,7 +1102,7 @@ namespace AimsharpWow.Modules
                 }
             }
 
-			if (!DebuffWeakenedSoulUp && IsMoving) {
+			if (!DebuffWeakenedSoulUp && IsMoving && !(VoidformUp && VoidBoltCD <= GCD)) {
                  Aimsharp.Cast("ShieldSelf");
                  return true;
             }
