@@ -993,7 +993,7 @@ namespace AimsharpWow.Modules {
 					}
 				}
 
-				if (Fighting) {
+				if (Fighting || Burst) {
 					if (Burst) {
 						if (Aimsharp.CanCast("Avatar", "player")) {
 							Aimsharp.Cast("Avatar");
@@ -1072,6 +1072,11 @@ namespace AimsharpWow.Modules {
 
 						if (Aimsharp.CanCast("Slam")) {
 							Aimsharp.Cast("Slam");
+							return true;
+						}
+						
+						if (!DebuffHamstringUp && Aimsharp.CanCast("Hamstring")) {
+							Aimsharp.Cast("Hamstring");
 							return true;
 						}
 					}
