@@ -31,17 +31,11 @@ namespace AimsharpWow.Modules
                 {"Potion of Unbridled Fury", "Potion of Empowered Proximity", "Potion of Prolonged Power", "None"});
             Settings.Add(new Setting("Potion Type", Potions, "Potion of Unbridled Fury"));
             
-            Settings.Add(new Setting("Auto Shadow Mend Self @ HP%", 0, 100, 25));
-
-            Settings.Add(new Setting("Auto Vampiric Embrace @ HP%", 0, 100, 45));
-            
-            Settings.Add(new Setting("Auto Desperate Prayer @ HP%", 0, 100, 35));
-            
             Settings.Add(new Setting("Auto Healthstone @ HP%", 0, 100, 25));
             
-            Settings.Add(new Setting("Don't dot below HP%", 0, 100, 3));
+            Settings.Add(new Setting("Don't dot below HP%", 0, 100, 0));
             
-            Settings.Add(new Setting("Don't dot below HP Amount", 0, 20000, 4000));
+            Settings.Add(new Setting("Don't dot below HP Amount", 0, 20000, 0));
 
             Settings.Add(new Setting("First 5 Letters of the Addon:", "xxxxx"));
 
@@ -95,27 +89,6 @@ namespace AimsharpWow.Modules
             Aimsharp.PrintMessage(" ");
             Aimsharp.PrintMessage("/xxxxx SaveCooldowns", Color.Blue);
             Aimsharp.PrintMessage("--Toggles the use of big cooldowns on/off.", Color.Blue);
-            Aimsharp.PrintMessage(" ");
-            Aimsharp.PrintMessage("/xxxxx MassDispel", Color.Blue);
-            Aimsharp.PrintMessage("--Casts Mass Dispel at cursor.", Color.Blue);
-            Aimsharp.PrintMessage(" ");
-            Aimsharp.PrintMessage("/xxxxx Dispersion", Color.Blue);
-            Aimsharp.PrintMessage("--Casts Dispersion.", Color.Blue);
-            Aimsharp.PrintMessage(" ");
-            Aimsharp.PrintMessage("/xxxxx S2M", Color.Blue);
-            Aimsharp.PrintMessage("--Casts Surrender to Madness at target.", Color.Blue);
-            Aimsharp.PrintMessage(" ");
-            Aimsharp.PrintMessage("/xxxxx DispelMagic", Color.Blue);
-            Aimsharp.PrintMessage("--Casts Dispel Magic at target.", Color.Blue);
-            Aimsharp.PrintMessage(" ");
-            Aimsharp.PrintMessage("/xxxxx MindControl", Color.Blue);
-            Aimsharp.PrintMessage("--Casts Mind Control at target.", Color.Blue);
-            Aimsharp.PrintMessage(" ");
-            Aimsharp.PrintMessage("/xxxxx Psychic Scream", Color.Blue);
-            Aimsharp.PrintMessage("--Casts Psychic Scream.", Color.Blue);
-            Aimsharp.PrintMessage(" ");
-            Aimsharp.PrintMessage("/xxxxx Psychic Horror", Color.Blue);
-            Aimsharp.PrintMessage("--Casts Psychic Horror at target.", Color.Blue);
             Aimsharp.PrintMessage(" ");
             Aimsharp.PrintMessage("/xxxxx CouncilDotsOff", Color.Blue);
             Aimsharp.PrintMessage("--Will keep SW:P and VT up on focus and Boss 1-4.", Color.Blue);
@@ -232,7 +205,8 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("StartCombat");
             
             CustomFunctions.Add("UACount", "local UACount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Unstable Affliction\" and source == \"player\" then\nUACount = UACount + 1\nend\nend\nend\nend\nend\nreturn UACount");
-            CustomFunctions.Add("CorruptionCount", "local CorruptionCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) and UnitHealthMax(unit) > 40000 and UnitHealth(unit) > 30000 then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Corruption\" and source == \"player\" then\nCorruptionCount = CorruptionCount + 1\nend\nend\nend\nend\nend\nreturn CorruptionCount");
+            CustomFunctions.Add("CorruptionCount", "local CorruptionCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Corruption\" and source == \"player\" then\nCorruptionCount = CorruptionCount + 1\nend\nend\nend\nend\nend\nreturn CorruptionCount");
+            CustomFunctions.Add("CorruptionTargets", "local VTTargets = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) and UnitHealthMax(unit) > 90000 and UnitHealth(unit) > 60000 then\nCorruptionTargets = CorruptionTargets + 1\nend\nend\nend\nreturn CorruptionTargets");
 
 
 
@@ -361,26 +335,23 @@ namespace AimsharpWow.Modules
             bool PetActive = Aimsharp.TotemTimer() > GCD;
 
             bool CastingUA = PlayerCastingID == 316099;
+            bool CastingDS = PlayerCastingID == 198590;
 
             int CorruptionCount = Aimsharp.CustomFunction("CorruptionCount");
+            int CorruptionTargets = Aimsharp.CustomFunction("CorruptionTargets")
             int UACount = Aimsharp.CustomFunction("UACount");
 
             bool CastingSoC = PlayerCastingID == 27243L;
             if (CastingSoC) {
                 NoSoC = true;
-            }
-
-            int time = Aimsharp.CombatTime();
-            if (NoSoC == true && SoCTimer < 5000) {
-                SoCTimerPrev = time;
-                if (SoCTimerPrev < time) {
-                    SoCTimer = time - SoCTimerPrev;
-                }
-            }
-
-            if (SoCTimer > 5000 && NoSoC == true) {
-                NoSoC = false;
                 SoCTimer = 0;
+            }
+
+            if (!CastingSoC) {
+                SoCTimer = SoCTimer + 1;
+                if (SoCTimer > 5000) {
+                    NoSoC = false;
+                }
             }
             
 
@@ -823,14 +794,14 @@ namespace AimsharpWow.Modules
 
                 //actions+=/malefic_rapture,if=dot.vile_taint.ticking
                 if (Aimsharp.CanCast("Malefic Rapture", "player") && DotVileTaintRemains > GCD &&
-                    (CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
+                    (CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
                 
                 //actions+=/malefic_rapture,if=!talent.vile_taint.enabled
                 if (Aimsharp.CanCast("Malefic Rapture", "player") && !TalentVileTaint &&
-                    (CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
+                    (CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
@@ -842,7 +813,7 @@ namespace AimsharpWow.Modules
                 }
                 
                 //actions+=/drain_soul
-                if (Aimsharp.CanCast("Drain Soul")) {
+                if (Aimsharp.CanCast("Drain Soul") && !CastingDS) {
                     Aimsharp.Cast("Drain Soul");
                     return true;
                 }
