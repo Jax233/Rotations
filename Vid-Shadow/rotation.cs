@@ -247,9 +247,17 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("VTCount", "local VTCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Vampiric Touch\" and source == \"player\" then\nVTCount = VTCount + 1\nend\nend\nend\nend\nend\nreturn VTCount");
             CustomFunctions.Add("VTTargets", "local VTTargets = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) and UnitHealthMax(unit) > 90000 and UnitHealth(unit) > 60000 then\nVTTargets = VTTargets + 1\nend\nend\nend\nreturn VTTargets");
+            CustomFunctions.Add("TargetID",
+                "local TargetID = 0;" +
+                "\nif UnitExists(\"target\") then" +
+                "\nTargetID = tonumber(UnitGUID(\"target\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn TargetID;"
+            ); 
+            
             CustomFunctions.Add("Boss1ID",
                 "local Boss1ID = 0;" +
-                "\nif UnitExists(\"boss1\") then" +
+                "\nif UnitExists(\"boss1\") and UnitIsEnemy(\"boss1\") then" +
                 "\nBoss1ID = tonumber(UnitGUID(\"boss1\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss1ID;"
@@ -257,26 +265,26 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss2ID",
                 "local Boss2ID = 0;" +
-                "\nif UnitExists(\"boss2\") then" +
+                "\nif UnitExists(\"boss2\") and UnitIsEnemy(\"boss2\") then" +
                 "\nBoss2ID = tonumber(UnitGUID(\"boss2\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss2ID;"
             );
             
             CustomFunctions.Add("Boss3ID",
-                "local Boss1ID = 0;" +
-                "\nif UnitExists(\"boss1\") then" +
-                "\nBoss1ID = tonumber(UnitGUID(\"boss1\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "local Boss3ID = 0;" +
+                "\nif UnitExists(\"boss3\") and UnitIsEnemy(\"boss3\") then" +
+                "\nBoss3ID = tonumber(UnitGUID(\"boss3\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
-                "\nreturn Boss1ID;"
+                "\nreturn Boss3ID;"
             );
             
-            CustomFunctions.Add("TargetID",
-                "local TargetID = 0;" +
-                "\nif UnitExists(\"target\") then" +
-                "\nTargetID = tonumber(UnitGUID(\"target\"):match(\"-(%d+)-%x+$\"), 10);" +
+            CustomFunctions.Add("Boss4ID",
+                "local Boss4ID = 0;" +
+                "\nif UnitExists(\"boss4\") and UnitIsEnemy(\"boss4\") then" +
+                "\nBoss4ID = tonumber(UnitGUID(\"boss4\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
-                "\nreturn TargetID;"
+                "\nreturn Boss4ID;"
             );
 
 
@@ -423,7 +431,10 @@ namespace AimsharpWow.Modules
 
 
             int TargetID = Aimsharp.CustomFunction("TargetID");
-            Aimsharp.PrintMessage("TargetID " + TargetID);
+            int Boss1ID = Aimsharp.CustomFunction("Boss1ID");
+            int Boss2ID = Aimsharp.CustomFunction("Boss2ID");
+            int Boss3ID = Aimsharp.CustomFunction("Boss3ID");
+            int Boss4ID = Aimsharp.CustomFunction("Boss4ID");
             
             
 
@@ -988,9 +999,10 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 ) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0 ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss1", true) && !LOS && 
+                            (Aimsharp.CanCast("Vampiric Touch", "boss1", true) ||
+                             (Boss1ID > 0 && Aimsharp.Range("boss1") < 40)) && !LOS && 
                             (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
                             Aimsharp.PrintMessage("VT boss1");
                             Aimsharp.Cast("VTBoss1");
@@ -1005,9 +1017,10 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss2") && !IgnoreBoss2) {
+                    if (!Aimsharp.TargetIsUnit("boss2") && !IgnoreBoss2 && Boss2ID > 0) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss2", true) && !LOS && 
+                            (Aimsharp.CanCast("Vampiric Touch", "boss2", true) ||
+                             (Boss2ID > 0 && Aimsharp.Range("boss2") < 40)) && !LOS && 
                             (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
                             Aimsharp.PrintMessage("VT boss2");
                             Aimsharp.Cast("VTBoss2");
@@ -1022,9 +1035,10 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss3") && !IgnoreBoss3) {
+                    if (!Aimsharp.TargetIsUnit("boss3") && !IgnoreBoss3 && Boss3ID > 0) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss3", true) && !LOS && 
+                            (Aimsharp.CanCast("Vampiric Touch", "boss3", true) ||
+                             (Boss3ID > 0 && Aimsharp.Range("boss3") < 40)) && !LOS && 
                             (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
                             Aimsharp.PrintMessage("VT boss3");
                             Aimsharp.Cast("VTBoss3");
@@ -1039,9 +1053,10 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss4") && !IgnoreBoss4 ) {
+                    if (!Aimsharp.TargetIsUnit("boss4") && !IgnoreBoss4 && Boss4ID > 0) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "boss4") && !LOS && 
+                            (Aimsharp.CanCast("Vampiric Touch", "boss4") ||
+                             (Boss4ID > 0 && Aimsharp.Range("boss4") < 40)) && !LOS && 
                             (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
                             Aimsharp.PrintMessage("VT boss4");
                             Aimsharp.Cast("VTBoss4");

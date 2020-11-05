@@ -211,6 +211,45 @@ namespace AimsharpWow.Modules
             CustomFunctions.Add("CorruptionTargets", "local CorruptionTargets = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) and UnitHealthMax(unit) > 90000 and UnitHealth(unit) > 60000 then\nCorruptionTargets = CorruptionTargets + 1\nend\nend\nend\nreturn CorruptionTargets");
             CustomFunctions.Add("SoCCount", "local SoCCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Seed of Corruption\" and source == \"player\" then\nSoCCount = SoCCount + 1\nend\nend\nend\nend\nend\nreturn SoCCount");
 
+            CustomFunctions.Add("TargetID",
+                "local TargetID = 0;" +
+                "\nif UnitExists(\"target\") then" +
+                "\nTargetID = tonumber(UnitGUID(\"target\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn TargetID;"
+            ); 
+            
+            CustomFunctions.Add("Boss1ID",
+                "local Boss1ID = 0;" +
+                "\nif UnitExists(\"boss1\") and UnitIsEnemy(\"boss1\") then" +
+                "\nBoss1ID = tonumber(UnitGUID(\"boss1\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn Boss1ID;"
+            );
+            
+            CustomFunctions.Add("Boss2ID",
+                "local Boss2ID = 0;" +
+                "\nif UnitExists(\"boss2\") and UnitIsEnemy(\"boss2\") then" +
+                "\nBoss2ID = tonumber(UnitGUID(\"boss2\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn Boss2ID;"
+            );
+            
+            CustomFunctions.Add("Boss3ID",
+                "local Boss3ID = 0;" +
+                "\nif UnitExists(\"boss3\") and UnitIsEnemy(\"boss3\") then" +
+                "\nBoss3ID = tonumber(UnitGUID(\"boss3\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn Boss3ID;"
+            );
+            
+            CustomFunctions.Add("Boss4ID",
+                "local Boss4ID = 0;" +
+                "\nif UnitExists(\"boss4\") and UnitIsEnemy(\"boss4\") then" +
+                "\nBoss4ID = tonumber(UnitGUID(\"boss4\"):match(\"-(%d+)-%x+$\"), 10);" +
+                "\nend" +
+                "\nreturn Boss4ID;"
+            );
 
 
 
@@ -344,6 +383,19 @@ namespace AimsharpWow.Modules
             int SoCCount = Aimsharp.CustomFunction("SoCCount");
             int CorruptionTargets = Aimsharp.CustomFunction("CorruptionTargets");
             int UACount = Aimsharp.CustomFunction("UACount");
+            
+            int TargetID = Aimsharp.CustomFunction("TargetID");
+            int Boss1ID = Aimsharp.CustomFunction("Boss1ID");
+            int Boss2ID = Aimsharp.CustomFunction("Boss2ID");
+            int Boss3ID = Aimsharp.CustomFunction("Boss3ID");
+            int Boss4ID = Aimsharp.CustomFunction("Boss4ID");
+            
+            
+
+            bool IgnoreBoss1 = Aimsharp.HasBuff("Void Miasma", "boss1");
+            bool IgnoreBoss2 = Aimsharp.HasBuff("Void Miasma", "boss2");
+            bool IgnoreBoss3 = Aimsharp.HasBuff("Void Miasma", "boss3");
+            bool IgnoreBoss4 = Aimsharp.HasBuff("Void Miasma", "boss4");
 
             
             
@@ -605,28 +657,28 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1")) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0) {
                         if (Aimsharp.CanCast("Agony", "boss1", true) && AGBoss1Refreshable) {
                             Aimsharp.Cast("AgonyBoss1");
                             return true;
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss2")) {
+                    if (!Aimsharp.TargetIsUnit("boss2") && !IgnoreBoss2 && Boss2ID > 0) {
                         if (Aimsharp.CanCast("Agony", "boss2", true) && AGBoss2Refreshable) {
                             Aimsharp.Cast("AgonyBoss2");
                             return true;
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss3")) {
+                    if (!Aimsharp.TargetIsUnit("boss3") && !IgnoreBoss3 && Boss3ID > 0) {
                         if (Aimsharp.CanCast("Agony", "boss3", true) && AGBoss3Refreshable) {
                             Aimsharp.Cast("AgonyBoss3");
                             return true;
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss4")) {
+                    if (!Aimsharp.TargetIsUnit("boss4") && !IgnoreBoss4 && Boss4ID > 0) {
                         if (Aimsharp.CanCast("Agony", "boss4", true) && AGBoss4Refreshable) {
                             Aimsharp.Cast("AgonyBoss4");
                             return true;
@@ -641,14 +693,14 @@ namespace AimsharpWow.Modules
                 }
 
                 if (!CouncilDotsOff) {
-                    if (!Aimsharp.TargetIsUnit("focus")) {
+                    if (!Aimsharp.TargetIsUnit("focus") ) {
                         if (Aimsharp.CanCast("Siphon Life", "focus", true) && SLFocusRefreshable) {
                             Aimsharp.Cast("SLFocus");
                             return true;
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1")) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0) {
                         if (Aimsharp.CanCast("Siphon Life", "boss1", true) && SLBoss1Refreshable &&
                             Aimsharp.Range("boss1") < 40) {
                             Aimsharp.Cast("SLBoss1");
@@ -656,7 +708,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss2")) {
+                    if (!Aimsharp.TargetIsUnit("boss2") && !IgnoreBoss2 && Boss2ID > 0) {
                         if (Aimsharp.CanCast("Siphon Life", "boss2", true) && SLBoss2Refreshable &&
                             Aimsharp.Range("boss2") < 40) {
                             Aimsharp.Cast("SLBoss2");
@@ -664,14 +716,14 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss3")) {
+                    if (!Aimsharp.TargetIsUnit("boss3") && !IgnoreBoss3 && Boss3ID > 0) {
                         if (Aimsharp.CanCast("Siphon Life", "boss3", true) && SLBoss3Refreshable) {
                             Aimsharp.Cast("SLBoss3");
                             return true;
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss4")) {
+                    if (!Aimsharp.TargetIsUnit("boss4") && !IgnoreBoss4 && Boss4ID > 0) {
                         if (Aimsharp.CanCast("Siphon Life", "boss4", true) && SLBoss4Refreshable) {
                             Aimsharp.Cast("SLBoss4");
                             return true;
@@ -708,28 +760,28 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1")) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0) {
                         if (Aimsharp.CanCast("Corruption", "boss1", true) && CRBoss1Refreshable) {
                             Aimsharp.Cast("CorruptionBoss1");
                             return true;
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss2")) {
+                    if (!Aimsharp.TargetIsUnit("boss2") && !IgnoreBoss2 && Boss2ID > 0) {
                         if (Aimsharp.CanCast("Corruption", "boss2", true) && CRBoss2Refreshable) {
                             Aimsharp.Cast("CorruptionBoss2");
                             return true;
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss3")) {
+                    if (!Aimsharp.TargetIsUnit("boss3") && !IgnoreBoss3 && Boss3ID > 0) {
                         if (Aimsharp.CanCast("Corruption", "boss3", true) && CRBoss3Refreshable) {
                             Aimsharp.Cast("CorruptionBoss3");
                             return true;
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss4")) {
+                    if (!Aimsharp.TargetIsUnit("boss4") && !IgnoreBoss4 && Boss4ID > 0) {
                         if (Aimsharp.CanCast("Corruption", "boss4", true) && CRBoss4Refreshable) {
                             Aimsharp.Cast("CorruptionBoss4");
                             return true;
