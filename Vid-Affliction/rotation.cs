@@ -125,6 +125,7 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Shadow Bolt");
             Spellbook.Add("Drain Soul");
             Spellbook.Add("Haunt");
+            Spellbook.Add("Dark Soul: Misery");
             
 
             Buffs.Add("Bloodlust");
@@ -597,29 +598,39 @@ namespace AimsharpWow.Modules
                 }
 
                 if (!CouncilDotsOff) {
-                    if (Aimsharp.CanCast("Agony", "focus") && AGFocusRefreshable && Aimsharp.Range("focus") < 40) {
-                        Aimsharp.Cast("AgonyFocus");
-                        return true;
+                    if (!Aimsharp.TargetIsUnit("focus")) {
+                        if (Aimsharp.CanCast("Agony", "focus") && AGFocusRefreshable && Aimsharp.Range("focus") < 40) {
+                            Aimsharp.Cast("AgonyFocus");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Agony", "boss1") && AGBoss1Refreshable && Aimsharp.Range("boss1") < 40) {
-                        Aimsharp.Cast("AgonyBoss1");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss1")) {
+                        if (Aimsharp.CanCast("Agony", "boss1") && AGBoss1Refreshable && Aimsharp.Range("boss1") < 40) {
+                            Aimsharp.Cast("AgonyBoss1");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Agony", "boss2") && AGBoss2Refreshable && Aimsharp.Range("boss2") < 40) {
-                        Aimsharp.Cast("AgonyBoss2");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss2")) {
+                        if (Aimsharp.CanCast("Agony", "boss2") && AGBoss2Refreshable && Aimsharp.Range("boss2") < 40) {
+                            Aimsharp.Cast("AgonyBoss2");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Agony", "boss3") && AGBoss3Refreshable && Aimsharp.Range("boss3") < 40) {
-                        Aimsharp.Cast("AgonyBoss3");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss3")) {
+                        if (Aimsharp.CanCast("Agony", "boss3") && AGBoss3Refreshable && Aimsharp.Range("boss3") < 40) {
+                            Aimsharp.Cast("AgonyBoss3");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Agony", "boss4") && AGBoss4Refreshable && Aimsharp.Range("boss4") < 40) {
-                        Aimsharp.Cast("AgonyBoss4");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss4")) {
+                        if (Aimsharp.CanCast("Agony", "boss4") && AGBoss4Refreshable && Aimsharp.Range("boss4") < 40) {
+                            Aimsharp.Cast("AgonyBoss4");
+                            return true;
+                        }
                     }
                 }
                 
@@ -630,29 +641,44 @@ namespace AimsharpWow.Modules
                 }
 
                 if (!CouncilDotsOff) {
-                    if (Aimsharp.CanCast("Siphon Life", "focus") && SLFocusRefreshable && Aimsharp.Range("focus") < 40) {
-                        Aimsharp.Cast("SLFocus");
-                        return true;
+                    if (!Aimsharp.TargetIsUnit("focus")) {
+                        if (Aimsharp.CanCast("Siphon Life", "focus") && SLFocusRefreshable &&
+                            Aimsharp.Range("focus") < 40) {
+                            Aimsharp.Cast("SLFocus");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Siphon Life", "boss1") && SLBoss1Refreshable && Aimsharp.Range("boss1") < 40) {
-                        Aimsharp.Cast("SLBoss1");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss1")) {
+                        if (Aimsharp.CanCast("Siphon Life", "boss1") && SLBoss1Refreshable &&
+                            Aimsharp.Range("boss1") < 40) {
+                            Aimsharp.Cast("SLBoss1");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Siphon Life", "boss2") && SLBoss2Refreshable && Aimsharp.Range("boss2") < 40) {
-                        Aimsharp.Cast("SLBoss2");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss2")) {
+                        if (Aimsharp.CanCast("Siphon Life", "boss2") && SLBoss2Refreshable &&
+                            Aimsharp.Range("boss2") < 40) {
+                            Aimsharp.Cast("SLBoss2");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Siphon Life", "boss3") && SLBoss3Refreshable && Aimsharp.Range("boss3") < 40) {
-                        Aimsharp.Cast("SLBoss3");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss3")) {
+                        if (Aimsharp.CanCast("Siphon Life", "boss3") && SLBoss3Refreshable &&
+                            Aimsharp.Range("boss3") < 40) {
+                            Aimsharp.Cast("SLBoss3");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Siphon Life", "boss4") && SLBoss4Refreshable && Aimsharp.Range("boss4") < 40) {
-                        Aimsharp.Cast("SLBoss4");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss4")) {
+                        if (Aimsharp.CanCast("Siphon Life", "boss4") && SLBoss4Refreshable &&
+                            Aimsharp.Range("boss4") < 40) {
+                            Aimsharp.Cast("SLBoss4");
+                            return true;
+                        }
                     }
                 }
                 
@@ -678,29 +704,44 @@ namespace AimsharpWow.Modules
                 }
 
                 if (!CouncilDotsOff) {
-                    if (Aimsharp.CanCast("Corruption", "focus") && CRFocusRefreshable && Aimsharp.Range("focus") < 40) {
-                        Aimsharp.Cast("CorruptionFocus");
-                        return true;
+                    if (!Aimsharp.TargetIsUnit("focus")) {
+                        if (Aimsharp.CanCast("Corruption", "focus") && CRFocusRefreshable &&
+                            Aimsharp.Range("focus") < 40) {
+                            Aimsharp.Cast("CorruptionFocus");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Corruption", "boss1") && CRBoss1Refreshable && Aimsharp.Range("boss1") < 40) {
-                        Aimsharp.Cast("CorruptionBoss1");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss2")) {
+                        if (Aimsharp.CanCast("Corruption", "boss1") && CRBoss1Refreshable &&
+                            Aimsharp.Range("boss1") < 40) {
+                            Aimsharp.Cast("CorruptionBoss1");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Corruption", "boss2") && CRBoss2Refreshable && Aimsharp.Range("boss2") < 40) {
-                        Aimsharp.Cast("CorruptionBoss2");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss2")) {
+                        if (Aimsharp.CanCast("Corruption", "boss2") && CRBoss2Refreshable &&
+                            Aimsharp.Range("boss2") < 40) {
+                            Aimsharp.Cast("CorruptionBoss2");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Corruption", "boss3") && CRBoss3Refreshable && Aimsharp.Range("boss3") < 40) {
-                        Aimsharp.Cast("CorruptionBoss3");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss3")) {
+                        if (Aimsharp.CanCast("Corruption", "boss3") && CRBoss3Refreshable &&
+                            Aimsharp.Range("boss3") < 40) {
+                            Aimsharp.Cast("CorruptionBoss3");
+                            return true;
+                        }
                     }
-                    
-                    if (Aimsharp.CanCast("Corruption", "boss4") && CRBoss4Refreshable && Aimsharp.Range("boss4") < 40) {
-                        Aimsharp.Cast("CorruptionBoss4");
-                        return true;
+
+                    if (!Aimsharp.TargetIsUnit("boss4")) {
+                        if (Aimsharp.CanCast("Corruption", "boss4") && CRBoss4Refreshable &&
+                            Aimsharp.Range("boss4") < 40) {
+                            Aimsharp.Cast("CorruptionBoss4");
+                            return true;
+                        }
                     }
                 }
                 
@@ -727,8 +768,8 @@ namespace AimsharpWow.Modules
                     }
                     
                     //actions.darkglare_prep+=/dark_soul
-                    if (Aimsharp.CanCast("Dark Soul")) {
-                        Aimsharp.Cast("Dark Soul");
+                    if (Aimsharp.CanCast("Dark Soul: Misery")) {
+                        Aimsharp.Cast("Dark Soul: Misery");
                         return true;
                     }
                     
