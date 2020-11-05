@@ -144,6 +144,7 @@ namespace AimsharpWow.Modules
             Debuffs.Add("Unstable Affliction");
             Debuffs.Add("Vile Taint");
             Debuffs.Add("Phantom Singularity");
+            Debuffs.Add("Seed of Corruption");
 			
             
 
@@ -207,6 +208,7 @@ namespace AimsharpWow.Modules
             CustomFunctions.Add("UACount", "local UACount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Unstable Affliction\" and source == \"player\" then\nUACount = UACount + 1\nend\nend\nend\nend\nend\nreturn UACount");
             CustomFunctions.Add("CorruptionCount", "local CorruptionCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Corruption\" and source == \"player\" then\nCorruptionCount = CorruptionCount + 1\nend\nend\nend\nend\nend\nreturn CorruptionCount");
             CustomFunctions.Add("CorruptionTargets", "local CorruptionTargets = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) and UnitHealthMax(unit) > 90000 and UnitHealth(unit) > 60000 then\nCorruptionTargets = CorruptionTargets + 1\nend\nend\nend\nreturn CorruptionTargets");
+            CustomFunctions.Add("SoCCount", "local SoCCount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Seed of Corruption\" and source == \"player\" then\nSoCCount = SoCCount + 1\nend\nend\nend\nend\nend\nreturn SoCCount");
 
 
 
@@ -338,21 +340,11 @@ namespace AimsharpWow.Modules
             bool CastingDS = PlayerCastingID == 198590;
 
             int CorruptionCount = Aimsharp.CustomFunction("CorruptionCount");
+            int SoCCount = Aimsharp.CustomFunction("SoCCount");
             int CorruptionTargets = Aimsharp.CustomFunction("CorruptionTargets");
             int UACount = Aimsharp.CustomFunction("UACount");
 
-            bool CastingSoC = PlayerCastingID == 27243L;
-            if (CastingSoC) {
-                NoSoC = true;
-                SoCTimer = 0;
-            }
-
-            if (!CastingSoC) {
-                SoCTimer = SoCTimer + 1;
-                if (SoCTimer > 5000) {
-                    NoSoC = false;
-                }
-            }
+            
             
 
             
@@ -385,6 +377,9 @@ namespace AimsharpWow.Modules
             bool PsychicScream = Aimsharp.IsCustomCodeOn("PsychicScream");
             bool PsychicHorror = Aimsharp.IsCustomCodeOn("PsychicHorror");
             bool Dispersion = Aimsharp.IsCustomCodeOn("Dispersion");
+
+            bool NoSoC = PlayerCastingID == 27243L || Aimsharp.HasDebuff("Seed of Corruption", "target") ||
+                         Aimsharp.LastCast() == "Seed of Corruption" || SoCCount >= 1;
 
 
 
@@ -595,6 +590,39 @@ namespace AimsharpWow.Modules
                     return true;
                 }
                 
+                //actions+=/agony,if=refreshable
+                if (Aimsharp.CanCast("Agony") && AGRefreshable) {
+                    Aimsharp.Cast("Agony");
+                    return true;
+                }
+
+                if (!CouncilDotsOff) {
+                    if (Aimsharp.CanCast("Agony", "focus") && AGFocusRefreshable && Aimsharp.Range("focus") < 40) {
+                        Aimsharp.Cast("AgonyFocus");
+                        return true;
+                    }
+                    
+                    if (Aimsharp.CanCast("Agony", "boss1") && AGBoss1Refreshable && Aimsharp.Range("boss1") < 40) {
+                        Aimsharp.Cast("AgonyBoss1");
+                        return true;
+                    }
+                    
+                    if (Aimsharp.CanCast("Agony", "boss2") && AGBoss2Refreshable && Aimsharp.Range("boss2") < 40) {
+                        Aimsharp.Cast("AgonyBoss2");
+                        return true;
+                    }
+                    
+                    if (Aimsharp.CanCast("Agony", "boss3") && AGBoss3Refreshable && Aimsharp.Range("boss3") < 40) {
+                        Aimsharp.Cast("AgonyBoss3");
+                        return true;
+                    }
+                    
+                    if (Aimsharp.CanCast("Agony", "boss4") && AGBoss4Refreshable && Aimsharp.Range("boss4") < 40) {
+                        Aimsharp.Cast("AgonyBoss4");
+                        return true;
+                    }
+                }
+                
                 //actions+=/siphon_life,if=refreshable
                 if (Aimsharp.CanCast("Siphon Life") && SLRefreshable) {
                     Aimsharp.Cast("Siphon Life");
@@ -628,38 +656,7 @@ namespace AimsharpWow.Modules
                     }
                 }
                 
-                //actions+=/agony,if=refreshable
-                if (Aimsharp.CanCast("Agony") && AGRefreshable) {
-                    Aimsharp.Cast("Agony");
-                    return true;
-                }
-
-                if (!CouncilDotsOff) {
-                    if (Aimsharp.CanCast("Agony", "focus") && AGFocusRefreshable && Aimsharp.Range("focus") < 40) {
-                        Aimsharp.Cast("AgonyFocus");
-                        return true;
-                    }
-                    
-                    if (Aimsharp.CanCast("Agony", "boss1") && AGBoss1Refreshable && Aimsharp.Range("boss1") < 40) {
-                        Aimsharp.Cast("AgonyBoss1");
-                        return true;
-                    }
-                    
-                    if (Aimsharp.CanCast("Agony", "boss2") && AGBoss2Refreshable && Aimsharp.Range("boss2") < 40) {
-                        Aimsharp.Cast("AgonyBoss2");
-                        return true;
-                    }
-                    
-                    if (Aimsharp.CanCast("Agony", "boss3") && AGBoss3Refreshable && Aimsharp.Range("boss3") < 40) {
-                        Aimsharp.Cast("AgonyBoss3");
-                        return true;
-                    }
-                    
-                    if (Aimsharp.CanCast("Agony", "boss4") && AGBoss4Refreshable && Aimsharp.Range("boss4") < 40) {
-                        Aimsharp.Cast("AgonyBoss4");
-                        return true;
-                    }
-                }
+                
                 
                 //actions+=/unstable_affliction,if=refreshable
                 if (Aimsharp.CanCast("Unstable Affliction") && UARefreshable && !CastingUA && !IsMoving && EnemiesNearTarget <2) {
@@ -813,13 +810,13 @@ namespace AimsharpWow.Modules
                 }
                 
                 //actions+=/drain_soul
-                if (Aimsharp.CanCast("Drain Soul") && !CastingDS) {
+                if (Aimsharp.CanCast("Drain Soul") && !CastingDS && !IsChanneling) {
                     Aimsharp.Cast("Drain Soul");
                     return true;
                 }
                 
                 //actions+=/shadow_bolt
-                if (Aimsharp.CanCast("Shadow Bolt")) {
+                if (Aimsharp.CanCast("Shadow Bolt") && !CastingDS && !IsChanneling) {
                     Aimsharp.Cast("Shadow Bolt");
                     return true;
                 }
