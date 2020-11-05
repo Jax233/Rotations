@@ -257,7 +257,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss1ID",
                 "local Boss1ID = 0;" +
-                "\nif UnitExists(\"boss1\") and UnitIsEnemy(\"boss1\") then" +
+                "\nif UnitExists(\"boss1\") and UnitIsEnemy(\"boss1\", \"player\") then" +
                 "\nBoss1ID = tonumber(UnitGUID(\"boss1\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss1ID;"
@@ -265,7 +265,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss2ID",
                 "local Boss2ID = 0;" +
-                "\nif UnitExists(\"boss2\") and UnitIsEnemy(\"boss2\") then" +
+                "\nif UnitExists(\"boss2\") and UnitIsEnemy(\"boss2\", \"player\") then" +
                 "\nBoss2ID = tonumber(UnitGUID(\"boss2\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss2ID;"
@@ -273,7 +273,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss3ID",
                 "local Boss3ID = 0;" +
-                "\nif UnitExists(\"boss3\") and UnitIsEnemy(\"boss3\") then" +
+                "\nif UnitExists(\"boss3\") and UnitIsEnemy(\"boss3\", \"player\") then" +
                 "\nBoss3ID = tonumber(UnitGUID(\"boss3\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss3ID;"
@@ -281,7 +281,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss4ID",
                 "local Boss4ID = 0;" +
-                "\nif UnitExists(\"boss4\") and UnitIsEnemy(\"boss4\") then" +
+                "\nif UnitExists(\"boss4\") and UnitIsEnemy(\"boss4\", \"player\") then" +
                 "\nBoss4ID = tonumber(UnitGUID(\"boss4\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss4ID;"
