@@ -585,7 +585,7 @@ namespace AimsharpWow.Modules
                 }
                 
                 //actions+=/vile_taint,if=soul_shard>1
-                if (Aimsharp.CanCast("Vile Taint", "player") && (SoulShard > 10)) {
+                if (Aimsharp.CanCast("Vile Taint", "player") && (SoulShard > 10) && !IsMoving) {
                     Aimsharp.Cast("Vile Taint");
                     return true;
                 }
@@ -712,7 +712,7 @@ namespace AimsharpWow.Modules
                 
 
                 //actions+=/haunt
-                if (Aimsharp.CanCast("Haunt")) {
+                if (Aimsharp.CanCast("Haunt") && !IsMoving) {
                     Aimsharp.Cast("Haunt");
                     return true;
                 }
@@ -721,7 +721,7 @@ namespace AimsharpWow.Modules
                 if (CDSummonDarkglareRemains < 2000 &&
                     (DotPhantomSingularityRemains > 2000 || !TalentPhantomSingularityEnabled) && !NoCooldowns) {
                     //actions.darkglare_prep=vile_taint
-                    if (Aimsharp.CanCast("Vile Taint", "player")) {
+                    if (Aimsharp.CanCast("Vile Taint", "player") && !IsMoving) {
                         Aimsharp.Cast("Vile Taint");
                         return true;
                     }
@@ -790,33 +790,33 @@ namespace AimsharpWow.Modules
                 
 
                 //actions+=/malefic_rapture,if=dot.vile_taint.ticking
-                if (Aimsharp.CanCast("Malefic Rapture", "player") && DotVileTaintRemains > GCD &&
+                if (Aimsharp.CanCast("Malefic Rapture", "player") && DotVileTaintRemains > GCD && !IsMoving && 
                     (CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
                 
                 //actions+=/malefic_rapture,if=!talent.vile_taint.enabled
-                if (Aimsharp.CanCast("Malefic Rapture", "player") && !TalentVileTaint &&
+                if (Aimsharp.CanCast("Malefic Rapture", "player") && !TalentVileTaint && !IsMoving &&
                     (CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
                 
                 //actions+=/drain_life,if=buff.inevitable_demise.stack>30
-                if (Aimsharp.CanCast("Drain Life") && BuffInevitableDemiseStack > 30) {
+                if (Aimsharp.CanCast("Drain Life") && BuffInevitableDemiseStack > 30 && !IsMoving) {
                     Aimsharp.Cast("Drain Life");
                     return true;
                 }
                 
                 //actions+=/drain_soul
-                if (Aimsharp.CanCast("Drain Soul") && !CastingDS && !IsChanneling) {
+                if (Aimsharp.CanCast("Drain Soul") && !CastingDS && !IsChanneling && !IsMoving) {
                     Aimsharp.Cast("Drain Soul");
                     return true;
                 }
                 
                 //actions+=/shadow_bolt
-                if (Aimsharp.CanCast("Shadow Bolt") && !CastingDS && !IsChanneling) {
+                if (Aimsharp.CanCast("Shadow Bolt") && !CastingDS && !IsChanneling ) {
                     Aimsharp.Cast("Shadow Bolt");
                     return true;
                 }
