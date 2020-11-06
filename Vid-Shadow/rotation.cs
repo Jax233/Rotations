@@ -1012,7 +1012,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0 ) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0  && Boss1ID != 134069) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             (Aimsharp.CanCast("Vampiric Touch", "boss1", true) ||
                              (Boss1ID > 0 && Aimsharp.Range("boss1") < 40)) && 

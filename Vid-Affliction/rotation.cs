@@ -559,7 +559,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0 && Boss1ID != 134069) {
                         if (Aimsharp.CanCast("Agony", "boss1", true) && AGBoss1Refreshable) {
                             Aimsharp.Cast("AgonyBoss1");
                             return true;
@@ -609,7 +609,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0 && Boss1ID != 134069) {
                         if (Aimsharp.CanCast("Siphon Life", "boss1", true) && SLBoss1Refreshable &&
                             Aimsharp.Range("boss1") < 40) {
                             Aimsharp.Cast("SLBoss1");
@@ -671,7 +671,7 @@ namespace AimsharpWow.Modules
                         }
                     }
 
-                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0) {
+                    if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0 && Boss1ID != 134069) {
                         if (Aimsharp.CanCast("Corruption", "boss1", true) && CRBoss1Refreshable) {
                             Aimsharp.Cast("CorruptionBoss1");
                             return true;
