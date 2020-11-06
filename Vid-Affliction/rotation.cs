@@ -130,7 +130,7 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Dark Soul: Misery");
             Spellbook.Add("Unending Resolve");
 
-            Items.Add("Heralthstone");
+            Items.Add("Healthstone");
             
 
             Buffs.Add("Bloodlust");
