@@ -590,7 +590,7 @@ namespace AimsharpWow.Modules
                 
                 if (Aimsharp.CanCast("Malefic Rapture", "player") && !IsMoving && EnemiesNearTarget > 2 &&
                     ((CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget ||
-                      EnemiesNearTarget == 1) || SoulShard > 40)) {
+                      EnemiesNearTarget == 1) && SoulShard > 40)) {
                     Aimsharp.Cast("Malefic Rapture");
                     return true;
                 }
