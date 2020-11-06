@@ -841,26 +841,11 @@ namespace AimsharpWow.Modules
 
         public override bool OutOfCombatTick() {
             bool IsMoving = Aimsharp.PlayerIsMoving();
-            bool DebuffWeakenedSoulUp = Aimsharp.HasDebuff("Weakened Soul", "player");
             bool IsChanneling = Aimsharp.IsChanneling("player");
             bool StartCombat = Aimsharp.IsCustomCodeOn("StartCombat");
             int PlayerHealth = Aimsharp.Health("player");
             
-            int CDMassDispel = Aimsharp.SpellCooldown("Mass Dispel");
-            int CDDispersion = Aimsharp.SpellCooldown(("Dispersion"));
-            int CDPsychicHorror = Aimsharp.SpellCooldown("Psychic Horror");
-            int CDPsychicScream = Aimsharp.SpellCooldown("Psychic Scream");
-            int CDS2M = Aimsharp.SpellCooldown("Surrender to Madness");
-
-            bool MassDispel = Aimsharp.IsCustomCodeOn("MassDispel");
-            bool JustEssences = Aimsharp.IsCustomCodeOn("JustEssences");
-            bool BuffSurrenderToMadnessUp = Aimsharp.HasBuff("Surrender to Madness");
-            bool MindControl = Aimsharp.IsCustomCodeOn("MindControl");
-            bool DispelMagic = Aimsharp.IsCustomCodeOn("DispelMagic");
-            bool S2M = Aimsharp.IsCustomCodeOn("S2M");
-            bool PsychicScream = Aimsharp.IsCustomCodeOn("PsychicScream");
-            bool PsychicHorror = Aimsharp.IsCustomCodeOn("PsychicHorror");
-            bool Dispersion = Aimsharp.IsCustomCodeOn("Dispersion");
+            
 
             if (!IsChanneling) {
                 
