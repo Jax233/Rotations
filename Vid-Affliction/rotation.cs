@@ -509,7 +509,7 @@ namespace AimsharpWow.Modules
             
             
             //Auto Healthstone
-            if (Aimsharp.CanUseItem("Healthstone")) {
+            if (Aimsharp.CanUseItem("Healthstone", false)) {
                 if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
                     Aimsharp.Cast("Healthstone");
                     return true;

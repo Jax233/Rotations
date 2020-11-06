@@ -198,6 +198,15 @@ namespace AimsharpWow.Modules
             Items.Add(TopTrinket);
             Items.Add(BotTrinket);
             Items.Add(GetDropDown("Potion Type"));
+            
+            Macros.Add("ToggleCD", "#showtooltip Void Eruption" +
+                                   "\\n/" + FiveLetters + " SaveCooldowns" +
+                                   "\\n/run local cvar=\\\"CooldownToggle\\\" SetCVar(cvar,1-GetCVar(cvar),cvar)");
+            
+            
+            
+            
+            
 
             Macros.Add(TopTrinket, "/use " + TopTrinket);
             Macros.Add(BotTrinket, "/use " + BotTrinket);
@@ -210,11 +219,14 @@ namespace AimsharpWow.Modules
             Macros.Add("MassDispelOff", "/" + FiveLetters + " MassDispel");
             Macros.Add("S2MOff", "/" + FiveLetters + " S2M");
             Macros.Add("DispelOff", "/" + FiveLetters + " DispelMagic");
-            Macros.Add("DispersionOff", "/" + FiveLetters + " Dispersion");
+            Macros.Add("DispersionOff", "#showtooltip Dispersion"+
+                                        "\\n/" + FiveLetters + " Dispersion");
             Macros.Add("MindControlOff", "/" + FiveLetters + " MindControl");
             Macros.Add("PsychicScreamOff", "/" + FiveLetters + " PsychicScream");
             Macros.Add("PsychicHorrorOff", "/" + FiveLetters + " PsychicHorror");
             Macros.Add("DispelMagicOff", "/" + FiveLetters + " DispelMagic");
+
+            
 
             Macros.Add("VTFocus", "/cast [@focus] Vampiric Touch");
             Macros.Add("VTBoss1", "/cast [@boss1] Vampiric Touch");
@@ -651,7 +663,7 @@ namespace AimsharpWow.Modules
             }
             
             //Auto Healthstone
-            if (Aimsharp.CanUseItem("Healthstone")) {
+            if (Aimsharp.CanUseItem("Healthstone", false)) {
                 if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
                     Aimsharp.Cast("Healthstone");
                     return true;
