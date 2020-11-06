@@ -198,12 +198,7 @@ namespace AimsharpWow.Modules
             CustomCommands.Add("MassDispel");
             CustomCommands.Add("JustEssences");
             CustomCommands.Add("CouncilDotsOff");
-            CustomCommands.Add("S2M");
-            CustomCommands.Add("DispelMagic");
-            CustomCommands.Add("Dispersion");
-            CustomCommands.Add("PsychicScream");
-            CustomCommands.Add("PsychicHorror");
-            CustomCommands.Add("MindControl");
+            CustomCommands.Add("SavePS");
             CustomCommands.Add("StartCombat");
             
             CustomFunctions.Add("UACount", "local UACount = 0\nfor i=1,20 do\nlocal unit = \"nameplate\" .. i\nif UnitExists(unit) then\nif UnitCanAttack(\"player\", unit) then\nfor j = 1, 40 do\nlocal name,_,_,_,_,_,source = UnitDebuff(unit, j)\nif name == \"Unstable Affliction\" and source == \"player\" then\nUACount = UACount + 1\nend\nend\nend\nend\nend\nreturn UACount");
@@ -221,7 +216,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss1ID",
                 "local Boss1ID = 0;" +
-                "\nif UnitExists(\"boss1\") and UnitIsEnemy(\"boss1\", \"player\") then" +
+                "\nif UnitExists(\"boss1\") and UnitCanAttack(\"player\", \"boss1\") then" +
                 "\nBoss1ID = tonumber(UnitGUID(\"boss1\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss1ID;"
@@ -229,7 +224,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss2ID",
                 "local Boss2ID = 0;" +
-                "\nif UnitExists(\"boss2\") and UnitIsEnemy(\"boss2\", \"player\") then" +
+                "\nif UnitExists(\"boss2\") and UnitCanAttack(\"player\", \"boss2\") then" +
                 "\nBoss2ID = tonumber(UnitGUID(\"boss2\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss2ID;"
@@ -237,7 +232,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss3ID",
                 "local Boss3ID = 0;" +
-                "\nif UnitExists(\"boss3\") and UnitIsEnemy(\"boss3\", \"player\") then" +
+                "\nif UnitExists(\"boss3\") and UnitCanAttack(\"player\", \"boss3\") then" +
                 "\nBoss3ID = tonumber(UnitGUID(\"boss3\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss3ID;"
@@ -245,7 +240,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss4ID",
                 "local Boss4ID = 0;" +
-                "\nif UnitExists(\"boss4\") and UnitIsEnemy(\"boss4\", \"player\") then" +
+                "\nif UnitExists(\"boss4\") and UnitCanAttack(\"player\", \"boss4\") then" +
                 "\nBoss4ID = tonumber(UnitGUID(\"boss4\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss4ID;"
@@ -366,6 +361,8 @@ namespace AimsharpWow.Modules
             int DotPhantomSingularityRemains = Aimsharp.DebuffRemaining("Phantom Singularity", "target");
             int DotVileTaintRemains = Aimsharp.DebuffRemaining("Vile Taint", "target");
             int BuffInevitableDemiseStack = Aimsharp.BuffStacks("Inevitable Demise", "player");
+
+			bool SavePS = Aimsharp.IsCustomCodeOn("SavePS");
 
             bool UARefreshable = UARemains < 4800;
 
@@ -632,7 +629,7 @@ namespace AimsharpWow.Modules
             if (Fighting) {
                 
                 //actions=phantom_singularity
-                if (Aimsharp.CanCast("Phantom Singularity") ) {
+                if (Aimsharp.CanCast("Phantom Singularity") && !SavePS ) {
                     Aimsharp.Cast("Phantom Singularity");
                     return true;
                 }
@@ -640,6 +637,13 @@ namespace AimsharpWow.Modules
                 //actions+=/vile_taint,if=soul_shard>1
                 if (Aimsharp.CanCast("Vile Taint", "player") && (SoulShard > 10) && !IsMoving) {
                     Aimsharp.Cast("Vile Taint");
+                    return true;
+                }
+
+				if (Aimsharp.CanCast("Seed of Corruption") && !NoSoC &&
+                    ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
+                                                               CorruptionCount < EnemiesNearTarget && EnemiesNearTarget > 2)) {
+                    Aimsharp.Cast("Seed of Corruption");
                     return true;
                 }
                 
@@ -739,12 +743,7 @@ namespace AimsharpWow.Modules
                     return true;
                 }
 
-                if (Aimsharp.CanCast("Seed of Corruption") && !NoSoC &&
-                    ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
-                                                               CorruptionCount < EnemiesNearTarget && EnemiesNearTarget > 2)) {
-                    Aimsharp.Cast("Seed of Corruption");
-                    return true;
-                }
+                
                 
                 //actions+=/corruption,if=refreshable
                 if (Aimsharp.CanCast("Corruption") && CRRefreshable && EnemiesNearTarget < 3) {
