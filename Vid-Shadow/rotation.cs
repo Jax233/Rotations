@@ -199,9 +199,6 @@ namespace AimsharpWow.Modules
             Items.Add(BotTrinket);
             Items.Add(GetDropDown("Potion Type"));
             
-            Macros.Add("ToggleCD", "#showtooltip Void Eruption" +
-                                   "\\n/" + FiveLetters + " SaveCooldowns" +
-                                   "\\n/run local cvar=\\\"CooldownToggle\\\" SetCVar(cvar,1-GetCVar(cvar),cvar)");
             
             
             
