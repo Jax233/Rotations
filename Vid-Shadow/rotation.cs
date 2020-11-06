@@ -257,7 +257,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss1ID",
                 "local Boss1ID = 0;" +
-                "\nif UnitExists(\"boss1\") and UnitIsEnemy(\"boss1\", \"player\") then" +
+                "\nif UnitExists(\"boss1\") and UnitCanAttack(\"player\", \"boss1\") then" +
                 "\nBoss1ID = tonumber(UnitGUID(\"boss1\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss1ID;"
@@ -265,7 +265,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss2ID",
                 "local Boss2ID = 0;" +
-                "\nif UnitExists(\"boss2\") and UnitIsEnemy(\"boss2\", \"player\") then" +
+                "\nif UnitExists(\"boss2\") and UnitCanAttack(\"player\", \"boss2\") then" +
                 "\nBoss2ID = tonumber(UnitGUID(\"boss2\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss2ID;"
@@ -273,7 +273,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss3ID",
                 "local Boss3ID = 0;" +
-                "\nif UnitExists(\"boss3\") and UnitIsEnemy(\"boss3\", \"player\") then" +
+                "\nif UnitExists(\"boss3\") and UnitCanAttack(\"player\", \"boss3\") then" +
                 "\nBoss3ID = tonumber(UnitGUID(\"boss3\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss3ID;"
@@ -281,7 +281,7 @@ namespace AimsharpWow.Modules
             
             CustomFunctions.Add("Boss4ID",
                 "local Boss4ID = 0;" +
-                "\nif UnitExists(\"boss4\") and UnitIsEnemy(\"boss4\", \"player\") then" +
+                "\nif UnitExists(\"boss4\") and UnitCanAttack(\"player\", \"boss4\") then" +
                 "\nBoss4ID = tonumber(UnitGUID(\"boss4\"):match(\"-(%d+)-%x+$\"), 10);" +
                 "\nend" +
                 "\nreturn Boss4ID;"
@@ -983,7 +983,7 @@ namespace AimsharpWow.Modules
                 if (!CouncilDotsOff) {
                     if (!Aimsharp.TargetIsUnit("focus") ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
-                            Aimsharp.CanCast("Vampiric Touch", "focus", true) && !LOS &&
+                            Aimsharp.CanCast("Vampiric Touch", "focus", true) && 
                             (VTFocusRefreshable || (TalentMiseryEnabled && SWPFocusRefreshable))) {
                             Aimsharp.PrintMessage("VT focus");
                             Aimsharp.Cast("VTFocus");
@@ -991,7 +991,7 @@ namespace AimsharpWow.Modules
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus", true) && !LOS &&
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "focus", true) && 
                             (SWPFocusRefreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP focus");
                             Aimsharp.Cast("SWPFocus");
@@ -1002,14 +1002,14 @@ namespace AimsharpWow.Modules
                     if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0 ) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             (Aimsharp.CanCast("Vampiric Touch", "boss1", true) ||
-                             (Boss1ID > 0 && Aimsharp.Range("boss1") < 40)) && !LOS && 
+                             (Boss1ID > 0 && Aimsharp.Range("boss1") < 40)) && 
                             (VTBoss1Refreshable || (TalentMiseryEnabled && SWPBoss1Refreshable))) {
                             Aimsharp.PrintMessage("VT boss1");
                             Aimsharp.Cast("VTBoss1");
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1", true) && !LOS && 
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss1", true) && 
                             (SWPBoss1Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP boss1");
                             Aimsharp.Cast("SWPBoss1");
@@ -1020,14 +1020,14 @@ namespace AimsharpWow.Modules
                     if (!Aimsharp.TargetIsUnit("boss2") && !IgnoreBoss2 && Boss2ID > 0) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             (Aimsharp.CanCast("Vampiric Touch", "boss2", true) ||
-                             (Boss2ID > 0 && Aimsharp.Range("boss2") < 40)) && !LOS && 
+                             (Boss2ID > 0 && Aimsharp.Range("boss2") < 40)) && 
                             (VTBoss2Refreshable || (TalentMiseryEnabled && SWPBoss2Refreshable))) {
                             Aimsharp.PrintMessage("VT boss2");
                             Aimsharp.Cast("VTBoss2");
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2", true) && !LOS && 
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss2", true) && 
                             (SWPBoss2Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP boss2");
                             Aimsharp.Cast("SWPBoss2");
@@ -1038,14 +1038,14 @@ namespace AimsharpWow.Modules
                     if (!Aimsharp.TargetIsUnit("boss3") && !IgnoreBoss3 && Boss3ID > 0) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             (Aimsharp.CanCast("Vampiric Touch", "boss3", true) ||
-                             (Boss3ID > 0 && Aimsharp.Range("boss3") < 40)) && !LOS && 
+                             (Boss3ID > 0 && Aimsharp.Range("boss3") < 40)) && 
                             (VTBoss3Refreshable || (TalentMiseryEnabled && SWPBoss3Refreshable))) {
                             Aimsharp.PrintMessage("VT boss3");
                             Aimsharp.Cast("VTBoss3");
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss3", true) && !LOS && 
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss3", true) && 
                             (SWPBoss3Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP boss3");
                             Aimsharp.Cast("SWPBoss3");
@@ -1056,14 +1056,14 @@ namespace AimsharpWow.Modules
                     if (!Aimsharp.TargetIsUnit("boss4") && !IgnoreBoss4 && Boss4ID > 0) {
                         if ((BuffUnfurlingDarknessUp || !CastingVampiricTouch) && (!IsMoving || BuffSurrenderToMadnessUp || BuffUnfurlingDarknessUp) &&
                             (Aimsharp.CanCast("Vampiric Touch", "boss4") ||
-                             (Boss4ID > 0 && Aimsharp.Range("boss4") < 40)) && !LOS && 
+                             (Boss4ID > 0 && Aimsharp.Range("boss4") < 40)) && 
                             (VTBoss4Refreshable || (TalentMiseryEnabled && SWPBoss4Refreshable))) {
                             Aimsharp.PrintMessage("VT boss4");
                             Aimsharp.Cast("VTBoss4");
                             return true;
                         }
 
-                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") && !LOS && 
+                        if (Aimsharp.CanCast("Shadow Word: Pain", "boss4") && 
                             (SWPBoss4Refreshable && !TalentMiseryEnabled)) {
                             Aimsharp.PrintMessage("SWP boss4");
                             Aimsharp.Cast("SWPBoss4");
