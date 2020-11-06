@@ -418,21 +418,9 @@ namespace AimsharpWow.Modules
             */
 
 
-            int CDMassDispel = Aimsharp.SpellCooldown("Mass Dispel");
-            int CDDispersion = Aimsharp.SpellCooldown(("Dispersion"));
-            int CDPsychicHorror = Aimsharp.SpellCooldown("Psychic Horror");
-            int CDPsychicScream = Aimsharp.SpellCooldown("Psychic Scream");
-            int CDS2M = Aimsharp.SpellCooldown("Surrender to Madness");
-
-            bool MassDispel = Aimsharp.IsCustomCodeOn("MassDispel");
+            
             bool JustEssences = Aimsharp.IsCustomCodeOn("JustEssences");
-            bool BuffSurrenderToMadnessUp = Aimsharp.HasBuff("Surrender to Madness");
-            bool MindControl = Aimsharp.IsCustomCodeOn("MindControl");
-            bool DispelMagic = Aimsharp.IsCustomCodeOn("DispelMagic");
-            bool S2M = Aimsharp.IsCustomCodeOn("S2M");
-            bool PsychicScream = Aimsharp.IsCustomCodeOn("PsychicScream");
-            bool PsychicHorror = Aimsharp.IsCustomCodeOn("PsychicHorror");
-            bool Dispersion = Aimsharp.IsCustomCodeOn("Dispersion");
+            
 
             bool NoSoC = PlayerCastingID == 27243L || Aimsharp.HasDebuff("Seed of Corruption", "target") ||
                          Aimsharp.LastCast() == "Seed of Corruption" || SoCCount >= 1;
@@ -553,12 +541,7 @@ namespace AimsharpWow.Modules
                     return true;
                 }
 
-				if (Aimsharp.CanCast("Seed of Corruption") && !NoSoC &&
-                    ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
-                                                               CorruptionCount < EnemiesNearTarget && EnemiesNearTarget > 2)) {
-                    Aimsharp.Cast("Seed of Corruption");
-                    return true;
-                }
+				
                 
                 
                 
@@ -605,7 +588,7 @@ namespace AimsharpWow.Modules
                     }
                 }
                 
-                if (Aimsharp.CanCast("Malefic Rapture", "player") && !IsMoving &&
+                if (Aimsharp.CanCast("Malefic Rapture", "player") && !IsMoving && EnemiesNearTarget > 2 &&
                     ((CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget ||
                       EnemiesNearTarget == 1) || SoulShard > 40)) {
                     Aimsharp.Cast("Malefic Rapture");
@@ -655,6 +638,13 @@ namespace AimsharpWow.Modules
                             return true;
                         }
                     }
+                }
+                
+                if (Aimsharp.CanCast("Seed of Corruption") && !NoSoC &&
+                    ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
+                     CorruptionCount < EnemiesNearTarget && EnemiesNearTarget > 2)) {
+                    Aimsharp.Cast("Seed of Corruption");
+                    return true;
                 }
                 
                 
