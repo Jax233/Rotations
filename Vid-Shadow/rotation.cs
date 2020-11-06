@@ -868,6 +868,7 @@ namespace AimsharpWow.Modules
                                                                       EnemiesNearTarget < 20) ||
                                                                      EnemiesNearTarget == 1))) {
                     Aimsharp.Cast("Void Bolt");
+                    return true;
                 }
 
 
