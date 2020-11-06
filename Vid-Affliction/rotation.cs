@@ -642,7 +642,7 @@ namespace AimsharpWow.Modules
                 
                 if (Aimsharp.CanCast("Seed of Corruption") && !NoSoC &&
                     ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
-                     CorruptionCount < EnemiesNearTarget && EnemiesNearTarget > 2)) {
+                     CorruptionCount + 2 < EnemiesNearTarget && EnemiesNearTarget > 2)) {
                     Aimsharp.Cast("Seed of Corruption");
                     return true;
                 }
@@ -708,7 +708,7 @@ namespace AimsharpWow.Modules
                 
 
                 //actions+=/haunt
-                if (Aimsharp.CanCast("Haunt") && !IsMoving) {
+                if (Aimsharp.CanCast("Haunt") && !IsMoving && EnemiesNearTarget <3) {
                     Aimsharp.Cast("Haunt");
                     return true;
                 }
@@ -796,6 +796,11 @@ namespace AimsharpWow.Modules
                 if (Aimsharp.CanCast("Malefic Rapture", "player") && !TalentVileTaint && !IsMoving &&
                     (CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget || EnemiesNearTarget == 1)) {
                     Aimsharp.Cast("Malefic Rapture");
+                    return true;
+                }
+                
+                if (Aimsharp.CanCast("Haunt") && !IsMoving && EnemiesNearTarget >=3) {
+                    Aimsharp.Cast("Haunt");
                     return true;
                 }
                 
