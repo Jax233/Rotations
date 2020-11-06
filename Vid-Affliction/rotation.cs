@@ -588,6 +588,13 @@ namespace AimsharpWow.Modules
                     }
                 }
                 
+                if (Aimsharp.CanCast("Seed of Corruption") && !NoSoC &&
+                    ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
+                     CorruptionCount + 2 < EnemiesNearTarget && EnemiesNearTarget > 2)) {
+                    Aimsharp.Cast("Seed of Corruption");
+                    return true;
+                }SoC
+                
                 if (Aimsharp.CanCast("Malefic Rapture", "player") && !IsMoving && EnemiesNearTarget > 2 &&
                     ((CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget ||
                       EnemiesNearTarget == 1) && SoulShard > 40)) {
@@ -640,12 +647,7 @@ namespace AimsharpWow.Modules
                     }
                 }
                 
-                if (Aimsharp.CanCast("Seed of Corruption") && !NoSoC &&
-                    ((EnemiesNearTarget > 2 && CRRefreshable && !IsMoving) ||
-                     CorruptionCount + 2 < EnemiesNearTarget && EnemiesNearTarget > 2)) {
-                    Aimsharp.Cast("Seed of Corruption");
-                    return true;
-                }
+                
                 
                 
                 
