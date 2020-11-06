@@ -168,6 +168,8 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Blood of the Enemy");
             Spellbook.Add("Concentrated Flame");
 
+            Items.Add("Healthstone");
+
             Buffs.Add("Bloodlust");
             Buffs.Add("Heroism");
             Buffs.Add("Time Warp");
@@ -203,6 +205,7 @@ namespace AimsharpWow.Modules
             Macros.Add("BotTrink", "/use 14");
             Macros.Add("potion", "/use " + GetDropDown("Potion Type"));
             Macros.Add("crash cursor", "/cast [@cursor] Shadow Crash");
+            Macros.Add("Healthstone", "/use Healthstone");
             Macros.Add("MassDispel", "/cast [@cursor] Mass Dispel");
             Macros.Add("MassDispelOff", "/" + FiveLetters + " MassDispel");
             Macros.Add("S2MOff", "/" + FiveLetters + " S2M");
@@ -650,7 +653,7 @@ namespace AimsharpWow.Modules
             //Auto Healthstone
             if (Aimsharp.CanUseItem("Healthstone")) {
                 if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
-                    Aimsharp.CanUseItem("Healthstone");
+                    Aimsharp.Cast("Healthstone");
                     return true;
                 }
             }

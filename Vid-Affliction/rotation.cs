@@ -33,6 +33,8 @@ namespace AimsharpWow.Modules
             
             Settings.Add(new Setting("Auto Healthstone @ HP%", 0, 100, 25));
             
+            Settings.Add(new Setting("Auto Unending Resolve @ HP%", 0, 100, 0));
+            
             Settings.Add(new Setting("Don't dot below HP%", 0, 100, 0));
             
             Settings.Add(new Setting("Don't dot below HP Amount", 0, 20000, 0));
@@ -126,6 +128,9 @@ namespace AimsharpWow.Modules
             Spellbook.Add("Drain Soul");
             Spellbook.Add("Haunt");
             Spellbook.Add("Dark Soul: Misery");
+            Spellbook.Add("Unending Resolve");
+
+            Items.Add("Heralthstone");
             
 
             Buffs.Add("Bloodlust");
@@ -159,6 +164,7 @@ namespace AimsharpWow.Modules
             Macros.Add("TopTrink", "/use 13");
             Macros.Add("BotTrink", "/use 14");
             Macros.Add("potion", "/use " + GetDropDown("Potion Type"));
+            Macros.Add("Healthstone", "/use Healthstone");
             Macros.Add("crash cursor", "/cast [@cursor] Shadow Crash");
             Macros.Add("MassDispel", "/cast [@cursor] Mass Dispel");
             Macros.Add("MassDispelOff", "/" + FiveLetters + " MassDispel");
@@ -500,118 +506,25 @@ namespace AimsharpWow.Modules
             #region Utillity
 
             // QUEUED MD
-            if (CDMassDispel > 5000 && MassDispel) {
-                Aimsharp.Cast("MassDispelOff");
-                return true;
-            }
             
-            if (MassDispel && Aimsharp.CanCast("Mass Dispel", "player")) {
-                Aimsharp.PrintMessage("Queued Mass Dispel");
-                Aimsharp.Cast("MassDispel");
-                return true;
-            }
-            
-            // QUEUED DISPERSION
-            if (CDDispersion > 5000 && Dispersion) {
-                Aimsharp.Cast("DispersionOff");
-                return true;
-            }
-            
-            if (Dispersion && Aimsharp.CanCast("Dispersion", "player")) {
-                Aimsharp.PrintMessage("Queued Dispersion");
-                Aimsharp.Cast("Dispersion");
-                return true;
-            }
-            
-            // QUEUED DISPEL MAGIC
-            if (Aimsharp.LastCast() == "Dispel Magic" && DispelMagic) {
-                Aimsharp.Cast("DispelOff");
-                return true;
-            }
-            
-            if (DispelMagic && Aimsharp.CanCast("Dispel Magic")) {
-                Aimsharp.PrintMessage("Queued Dispel Magic");
-                Aimsharp.Cast("Dispel Magic");
-                return true;
-            }
-            
-            // QUEUED MC
-            if (Aimsharp.LastCast() == "Mind Control" && MindControl) {
-                Aimsharp.Cast("MindControlOff");
-                return true;
-            }
-            
-            if (MindControl && Aimsharp.CanCast("Mind Control", "target")) {
-                Aimsharp.PrintMessage("Queued Mind Control");
-                Aimsharp.Cast("Mind Control");
-                return true;
-            }
-            
-            // QUEUED Psychic Scream
-            if (CDPsychicScream > 5000 && PsychicScream) {
-                Aimsharp.Cast("PsychicScreamOff");
-                return true;
-            }
-            
-            if (PsychicScream && Aimsharp.CanCast("Psychic Scream", "player")) {
-                Aimsharp.PrintMessage("Queued Psychic Scream");
-                Aimsharp.Cast("Psychic Scream");
-                return true;
-            }
-            
-            // QUEUED Psychic Horror
-            if (CDPsychicHorror > 5000 && PsychicHorror) {
-                Aimsharp.Cast("PsychicHorrorOff");
-                return true;
-            }
-            
-            if (PsychicHorror && Aimsharp.CanCast("Psychic Horror", "target")) {
-                Aimsharp.PrintMessage("Queued Psychic Horror");
-                Aimsharp.Cast("Psychic Horror");
-                return true;
-            }
-            
-            // QUEUED S2m
-            if (CDS2M > 5000 && S2M) {
-                Aimsharp.Cast("S2MOff");
-                return true;
-            }
-            
-            if (S2M && Aimsharp.CanCast("Surrender to Madness")) {
-                Aimsharp.PrintMessage("Queued S2M");
-                Aimsharp.Cast("Surrender to Madness");
-                return true;
-            }
-
-            if (Aimsharp.CanCast("Shadow Mend", "player")) {
-                if (PlayerHealth <= GetSlider("Auto Shadow Mend Self @ HP%")) {
-                    Aimsharp.Cast("Shadow Mend");
-                    return true;
-                }
-            }
-            
-            if (Aimsharp.CanCast("Desperate Prayer", "player")) {
-                if (PlayerHealth <= GetSlider("Auto Desperate Prayer @ HP%")) {
-                    Aimsharp.Cast("Desperate Prayer");
-                    return true;
-                }
-            }
             
             //Auto Healthstone
             if (Aimsharp.CanUseItem("Healthstone")) {
                 if (PlayerHealth <= GetSlider("Auto Healthstone @ HP%")) {
-                    Aimsharp.CanUseItem("Healthstone");
+                    Aimsharp.Cast("Healthstone");
+                    return true;
+                }
+            }
+            
+            if (Aimsharp.CanCast("Unending Resolve")) {
+                if (PlayerHealth <= GetSlider("Auto Unending Resolve @ HP%")) {
+                    Aimsharp.Cast("Unending Resolve");
                     return true;
                 }
             }
 
 
-            if (Aimsharp.CanCast("Vampiric Embrace", "player") && Aimsharp.GroupSize() > 0) {
-                if (PlayerHealth <= GetSlider("Auto Vampiric Embrace @ HP%")) {
-                    Aimsharp.Cast("Vampiric Embrace");
-                    return true;
-                }
-            }
+            
 
             #endregion
 
