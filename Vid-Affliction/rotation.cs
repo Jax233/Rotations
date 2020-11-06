@@ -560,6 +560,8 @@ namespace AimsharpWow.Modules
                     return true;
                 }
                 
+                
+                
                 //actions+=/agony,if=refreshable
                 if (Aimsharp.CanCast("Agony") && AGRefreshable) {
                     Aimsharp.Cast("Agony");
@@ -601,6 +603,13 @@ namespace AimsharpWow.Modules
                             return true;
                         }
                     }
+                }
+                
+                if (Aimsharp.CanCast("Malefic Rapture", "player") && !IsMoving &&
+                    ((CorruptionCount >= CorruptionTargets || CorruptionCount >= EnemiesNearTarget ||
+                      EnemiesNearTarget == 1) || SoulShard > 40)) {
+                    Aimsharp.Cast("Malefic Rapture");
+                    return true;
                 }
                 
                 //actions+=/siphon_life,if=refreshable
