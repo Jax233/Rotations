@@ -553,6 +553,7 @@ namespace AimsharpWow.Modules
                 }
 
                 if (!CouncilDotsOff) {
+                    Aimsharp.PrintMessage("In Agony Council Block");
                     if (!Aimsharp.TargetIsUnit("focus")) {
                         if (Aimsharp.CanCast("Agony", "focus", true) && AGFocusRefreshable) {
                             Aimsharp.Cast("AgonyFocus");
@@ -561,7 +562,9 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0 && Boss1ID != 134069) {
+                        Aimsharp.PrintMessage("Agony Boss1");
                         if (Aimsharp.CanCast("Agony", "boss1", true) && AGBoss1Refreshable) {
+                            Aimsharp.PrintMessage("CanCast Agony Boss1");
                             Aimsharp.Cast("AgonyBoss1");
                             return true;
                         }
@@ -618,8 +621,10 @@ namespace AimsharpWow.Modules
                     }
 
                     if (!Aimsharp.TargetIsUnit("boss1") && !IgnoreBoss1 && Boss1ID > 0 && Boss1ID != 134069) {
+                        Aimsharp.PrintMessage("Siphon Life Boss1");
                         if (Aimsharp.CanCast("Siphon Life", "boss1", true) && SLBoss1Refreshable &&
                             Aimsharp.Range("boss1") < 40) {
+                            Aimsharp.PrintMessage("CanCast SL Boss1");
                             Aimsharp.Cast("SLBoss1");
                             return true;
                         }
