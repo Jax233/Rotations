@@ -140,6 +140,7 @@ namespace AimsharpWow.Modules
             Buffs.Add("Netherwinds");
             Buffs.Add("Drums of Rage");
             Buffs.Add("Lifeblood");
+            Buffs.Add("Void Miasma");
             
 
             
