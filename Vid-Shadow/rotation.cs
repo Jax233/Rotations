@@ -439,7 +439,7 @@ namespace AimsharpWow.Modules
             int CombatTime = Aimsharp.CombatTime();
             
 
-            bool AOEDotPeriod = VTCount >= EnemiesNearTarget || VTCount >= 77 || IgnoreVTCount || NoAOE || VTCount >= VTTargets || (VoidformUp && EnemiesNearTarget >= 5);
+            bool AOEDotPeriod = VTCount >= EnemiesNearTarget || VTCount >= 7 || IgnoreVTCount || NoAOE || VTCount >= VTTargets || (VoidformUp && EnemiesNearTarget >= 5) || Aimsharp.TargetIsBoss();
 
 
             int TargetID = Aimsharp.CustomFunction("TargetID");
